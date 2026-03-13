@@ -1,63 +1,175 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { FormEventHandler, useState } from 'react';
 import { dashboard, login, register } from '@/routes';
+import forms from '@/routes/forms';
 
 /* ─────────────────────────────────────────────
    Inline SVG icons (no extra dep needed)
 ───────────────────────────────────────────── */
 const HeartIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
     </svg>
 );
 const ShieldIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+        />
     </svg>
 );
 const UsersIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+        />
     </svg>
 );
 const MegaphoneIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+        />
     </svg>
 );
 const ArrowRightIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+        />
     </svg>
 );
-const CheckIcon = ({ className = 'h-4 w-4 text-sna-teal shrink-0' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+const CheckIcon = ({
+    className = 'h-4 w-4 text-sna-teal shrink-0',
+}: {
+    className?: string;
+}) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2.5}
+    >
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
 );
 const ChevronDownIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
 );
 const HandIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
+        />
     </svg>
 );
 const StarIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+    >
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
 );
 const ScaleIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+        />
     </svg>
 );
 const SunIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8.66-9H21M3 12H2m15.07-6.93l-.71.71M7.64 17.36l-.71.71M18.36 17.36l-.71-.71M6.34 6.34l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 3v1m0 16v1m8.66-9H21M3 12H2m15.07-6.93l-.71.71M7.64 17.36l-.71.71M18.36 17.36l-.71-.71M6.34 6.34l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+        />
     </svg>
 );
 
@@ -66,13 +178,25 @@ const SunIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
    A stylised parent & child with a heart
 ───────────────────────────────────────────── */
 const HeroIllustration = () => (
-    <svg viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="w-full h-auto max-w-lg">
+    <svg
+        viewBox="0 0 520 480"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        className="h-auto w-full max-w-lg"
+    >
         {/* Background circles */}
         <circle cx="260" cy="240" r="210" fill="#e8f8f8" />
         <circle cx="260" cy="240" r="165" fill="#d2f2f2" opacity="0.5" />
 
         {/* Ground */}
-        <ellipse cx="260" cy="410" rx="160" ry="18" fill="#4abfbf" opacity="0.12" />
+        <ellipse
+            cx="260"
+            cy="410"
+            rx="160"
+            ry="18"
+            fill="#4abfbf"
+            opacity="0.12"
+        />
 
         {/* ── Parent figure (left) ── */}
         {/* Body */}
@@ -82,8 +206,20 @@ const HeroIllustration = () => (
         {/* Hair */}
         <path d="M162 192 Q169 168 189 170 Q209 168 216 192" fill="#5a3825" />
         {/* Arms */}
-        <path d="M155 255 Q125 268 118 290" stroke="#fcd9b6" strokeWidth="14" strokeLinecap="round" fill="none" />
-        <path d="M223 255 Q248 260 258 275" stroke="#fcd9b6" strokeWidth="14" strokeLinecap="round" fill="none" />
+        <path
+            d="M155 255 Q125 268 118 290"
+            stroke="#fcd9b6"
+            strokeWidth="14"
+            strokeLinecap="round"
+            fill="none"
+        />
+        <path
+            d="M223 255 Q248 260 258 275"
+            stroke="#fcd9b6"
+            strokeWidth="14"
+            strokeLinecap="round"
+            fill="none"
+        />
         {/* Legs */}
         <rect x="165" y="330" width="22" height="70" rx="11" fill="#2d7a8a" />
         <rect x="196" y="330" width="22" height="70" rx="11" fill="#2d7a8a" />
@@ -99,8 +235,20 @@ const HeroIllustration = () => (
         {/* Hair */}
         <path d="M276 243 Q282 224 298 226 Q314 224 320 243" fill="#c97b3a" />
         {/* Arms stretched up toward parent */}
-        <path d="M272 290 Q256 278 250 270" stroke="#fcd9b6" strokeWidth="11" strokeLinecap="round" fill="none" />
-        <path d="M324 290 Q338 280 344 272" stroke="#fcd9b6" strokeWidth="11" strokeLinecap="round" fill="none" />
+        <path
+            d="M272 290 Q256 278 250 270"
+            stroke="#fcd9b6"
+            strokeWidth="11"
+            strokeLinecap="round"
+            fill="none"
+        />
+        <path
+            d="M324 290 Q338 280 344 272"
+            stroke="#fcd9b6"
+            strokeWidth="11"
+            strokeLinecap="round"
+            fill="none"
+        />
         {/* Legs */}
         <rect x="278" y="350" width="18" height="54" rx="9" fill="#6a8a20" />
         <rect x="302" y="350" width="18" height="54" rx="9" fill="#6a8a20" />
@@ -109,25 +257,61 @@ const HeroIllustration = () => (
         <ellipse cx="311" cy="404" rx="12" ry="6" fill="#4a5a15" />
 
         {/* Wheelchair (accessibility icon) */}
-        <circle cx="355" cy="385" r="22" stroke="#4abfbf" strokeWidth="4" fill="none" />
-        <circle cx="340" cy="385" r="15" stroke="#a8c84a" strokeWidth="3" fill="none" />
-        <path d="M340 368 L340 355 Q340 348 347 348 L362 348" stroke="#4abfbf" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <circle
+            cx="355"
+            cy="385"
+            r="22"
+            stroke="#4abfbf"
+            strokeWidth="4"
+            fill="none"
+        />
+        <circle
+            cx="340"
+            cy="385"
+            r="15"
+            stroke="#a8c84a"
+            strokeWidth="3"
+            fill="none"
+        />
+        <path
+            d="M340 368 L340 355 Q340 348 347 348 L362 348"
+            stroke="#4abfbf"
+            strokeWidth="4"
+            strokeLinecap="round"
+            fill="none"
+        />
         <circle cx="345" cy="344" r="6" fill="#4abfbf" />
 
         {/* Holding hands / connection line */}
-        <path d="M258 275 Q265 282 272 290" stroke="#fcd9b6" strokeWidth="10" strokeLinecap="round" fill="none" />
+        <path
+            d="M258 275 Q265 282 272 290"
+            stroke="#fcd9b6"
+            strokeWidth="10"
+            strokeLinecap="round"
+            fill="none"
+        />
 
         {/* ── Floating heart ── */}
         <g transform="translate(310, 185)">
-            <path d="M0,-12 C0,-22 -18,-22 -18,-8 C-18,2 0,16 0,16 C0,16 18,2 18,-8 C18,-22 0,-22 0,-12 Z" fill="#f97066" opacity="0.9" />
+            <path
+                d="M0,-12 C0,-22 -18,-22 -18,-8 C-18,2 0,16 0,16 C0,16 18,2 18,-8 C18,-22 0,-22 0,-12 Z"
+                fill="#f97066"
+                opacity="0.9"
+            />
         </g>
 
         {/* ── Floating sparkles / stars ── */}
         <g fill="#a8c84a" opacity="0.8">
-            <polygon points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140" transform="scale(0.7) translate(170,10)" />
+            <polygon
+                points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140"
+                transform="scale(0.7) translate(170,10)"
+            />
         </g>
         <g fill="#4abfbf" opacity="0.7">
-            <polygon points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140" transform="scale(0.5) translate(-280,230)" />
+            <polygon
+                points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140"
+                transform="scale(0.5) translate(-280,230)"
+            />
         </g>
         <circle cx="420" cy="160" r="5" fill="#a8c84a" opacity="0.6" />
         <circle cx="108" cy="300" r="4" fill="#4abfbf" opacity="0.5" />
@@ -139,13 +323,13 @@ const HeroIllustration = () => (
         <circle cx="415" cy="95" r="18" fill="#fbbf24" opacity="0.5" />
 
         {/* Rays */}
-        {[0,45,90,135,180,225,270,315].map((angle, i) => (
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
             <line
                 key={i}
-                x1={415 + Math.cos(angle * Math.PI / 180) * 22}
-                y1={95 + Math.sin(angle * Math.PI / 180) * 22}
-                x2={415 + Math.cos(angle * Math.PI / 180) * 32}
-                y2={95 + Math.sin(angle * Math.PI / 180) * 32}
+                x1={415 + Math.cos((angle * Math.PI) / 180) * 22}
+                y1={95 + Math.sin((angle * Math.PI) / 180) * 22}
+                x2={415 + Math.cos((angle * Math.PI) / 180) * 32}
+                y2={95 + Math.sin((angle * Math.PI) / 180) * 32}
                 stroke="#fbbf24"
                 strokeWidth="2.5"
                 strokeLinecap="round"
@@ -158,16 +342,28 @@ const HeroIllustration = () => (
 /* ─────────────────────────────────────────────
    Reusable Section Header
 ───────────────────────────────────────────── */
-function SectionHeader({ badge, title, subtitle }: { badge?: string; title: string; subtitle?: string }) {
+function SectionHeader({
+    badge,
+    title,
+    subtitle,
+}: {
+    badge?: string;
+    title: string;
+    subtitle?: string;
+}) {
     return (
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <div className="mx-auto max-w-2xl space-y-3 text-center">
             {badge && (
-                <span className="inline-block rounded-full bg-sna-teal/15 px-4 py-1 text-xs font-bold text-sna-teal-dark tracking-widest uppercase">
+                <span className="inline-block rounded-full bg-sna-teal/15 px-4 py-1 text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
                     {badge}
                 </span>
             )}
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 leading-tight">{title}</h2>
-            {subtitle && <p className="text-gray-500 leading-relaxed">{subtitle}</p>}
+            <h2 className="text-3xl leading-tight font-bold text-gray-800 sm:text-4xl">
+                {title}
+            </h2>
+            {subtitle && (
+                <p className="leading-relaxed text-gray-500">{subtitle}</p>
+            )}
         </div>
     );
 }
@@ -178,22 +374,854 @@ function SectionHeader({ badge, title, subtitle }: { badge?: string; title: stri
 function FaqItem({ question, answer }: { question: string; answer: string }) {
     const [open, setOpen] = useState(false);
     return (
-        <div className="border border-gray-100 rounded-2xl bg-white overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
             <button
                 onClick={() => setOpen(!open)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left gap-4 hover:bg-gray-50 transition-colors"
+                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-gray-50"
             >
-                <span className="font-semibold text-gray-800 text-sm sm:text-base">{question}</span>
-                <span className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+                <span className="text-sm font-semibold text-gray-800 sm:text-base">
+                    {question}
+                </span>
+                <span
+                    className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                >
                     <ChevronDownIcon />
                 </span>
             </button>
             {open && (
-                <div className="px-6 pb-5 text-sm text-gray-500 leading-relaxed border-t border-gray-50">
+                <div className="border-t border-gray-50 px-6 pb-5 text-sm leading-relaxed text-gray-500">
                     <p className="pt-4">{answer}</p>
                 </div>
             )}
         </div>
+    );
+}
+
+/* ─────────────────────────────────────────────
+   FORMULAIRE SOUTIEN
+───────────────────────────────────────────── */
+function SoutienForm() {
+    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
+        useForm({
+            name: '',
+            organisation: '',
+            statut: 'physique',
+            email: '',
+            phone: '',
+            wants_partnership: false,
+            wants_events: false,
+            wants_participation: false,
+            message: '',
+            consents_email: false,
+            consents_rgpd: false,
+        });
+
+    const handleSubmit: FormEventHandler = (e) => {
+        e.preventDefault();
+        submit(forms.soutien.store(), { onSuccess: () => reset() });
+    };
+
+    if (wasSuccessful) {
+        return (
+            <div className="space-y-3 rounded-3xl border border-teal-100 bg-teal-50 p-10 text-center shadow-sm">
+                <span className="text-4xl">✅</span>
+                <p className="font-bold text-teal-800">Demande envoyée !</p>
+                <p className="text-sm text-teal-700">
+                    Votre demande de soutien a bien été enregistrée. Merci pour
+                    votre engagement.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm"
+        >
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Nom et prénom *
+                    </label>
+                    <input
+                        type="text"
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                        placeholder="Marie Dupont"
+                    />
+                    {errors.name && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.name}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Nom de l'organisation (si personne morale)
+                    </label>
+                    <input
+                        type="text"
+                        value={data.organisation}
+                        onChange={(e) =>
+                            setData('organisation', e.target.value)
+                        }
+                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                        placeholder="Association XYZ"
+                    />
+                </div>
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Statut *
+                </label>
+                <div className="flex gap-6">
+                    {[
+                        { value: 'physique', label: 'Personne physique' },
+                        { value: 'morale', label: 'Personne morale' },
+                    ].map((opt) => (
+                        <label
+                            key={opt.value}
+                            className="flex cursor-pointer items-center gap-2 text-sm text-gray-600"
+                        >
+                            <input
+                                type="radio"
+                                name="statut"
+                                value={opt.value}
+                                checked={data.statut === opt.value}
+                                onChange={() => setData('statut', opt.value)}
+                                className="accent-sna-teal"
+                            />
+                            {opt.label}
+                        </label>
+                    ))}
+                </div>
+                {errors.statut && (
+                    <p className="mt-1 text-xs text-red-500">{errors.statut}</p>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Email *
+                    </label>
+                    <input
+                        type="email"
+                        value={data.email}
+                        onChange={(e) => setData('email', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                        placeholder="marie@exemple.fr"
+                    />
+                    {errors.email && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.email}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Téléphone
+                    </label>
+                    <input
+                        type="tel"
+                        value={data.phone}
+                        onChange={(e) => setData('phone', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                        placeholder="+33 6 00 00 00 00"
+                    />
+                </div>
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Engagements souhaités
+                </label>
+                <div className="space-y-2">
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.wants_partnership}
+                            onChange={(e) =>
+                                setData('wants_partnership', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        Souhaitez-vous être partenaire ?
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.wants_events}
+                            onChange={(e) =>
+                                setData('wants_events', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        Souhaitez-vous être informé(e) des événements ou projets
+                        ?
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.wants_participation}
+                            onChange={(e) =>
+                                setData('wants_participation', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        Souhaitez-vous participer aux événements ou projets ?
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    Message libre (facultatif)
+                </label>
+                <textarea
+                    rows={3}
+                    value={data.message}
+                    onChange={(e) => setData('message', e.target.value)}
+                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                    placeholder="Partagez vos motivations ou questions…"
+                />
+            </div>
+
+            <div className="space-y-2 border-t border-gray-50 pt-2">
+                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                    <input
+                        type="checkbox"
+                        checked={data.consents_email}
+                        onChange={(e) =>
+                            setData('consents_email', e.target.checked)
+                        }
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
+                    />
+                    J'autorise la réception d'informations par email
+                </label>
+                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                    <input
+                        type="checkbox"
+                        checked={data.consents_rgpd}
+                        onChange={(e) =>
+                            setData('consents_rgpd', e.target.checked)
+                        }
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
+                    />
+                    Je consens au traitement de mes données personnelles
+                    conformément au RGPD *
+                </label>
+                {errors.consents_rgpd && (
+                    <p className="text-xs text-red-500">
+                        {errors.consents_rgpd}
+                    </p>
+                )}
+            </div>
+
+            <button
+                type="submit"
+                disabled={processing}
+                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark disabled:opacity-60"
+            >
+                {processing
+                    ? 'Envoi en cours…'
+                    : 'Envoyer ma demande de soutien'}
+            </button>
+        </form>
+    );
+}
+
+/* ─────────────────────────────────────────────
+   FORMULAIRE PARTENAIRE
+───────────────────────────────────────────── */
+function PartenaireForm() {
+    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
+        useForm({
+            organisation_name: '',
+            legal_status: '',
+            email: '',
+            contact_name: '',
+            partnership_moral: false,
+            partnership_technical: false,
+            partnership_financial: false,
+            objectives: '',
+            commitment_projects: false,
+            commitment_communication: false,
+            commitment_expertise: false,
+            consents_email: false,
+            consents_rgpd: false,
+        });
+
+    const handleSubmit: FormEventHandler = (e) => {
+        e.preventDefault();
+        submit(forms.partenaire.store(), { onSuccess: () => reset() });
+    };
+
+    if (wasSuccessful) {
+        return (
+            <div className="space-y-3 rounded-3xl border border-green-100 bg-green-50 p-10 text-center shadow-sm">
+                <span className="text-4xl">✅</span>
+                <p className="font-bold text-green-800">Demande envoyée !</p>
+                <p className="text-sm text-green-700">
+                    Votre demande de partenariat a bien été enregistrée. Nous
+                    vous contacterons prochainement.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="space-y-6 rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm"
+        >
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Nom de l'organisation *
+                    </label>
+                    <input
+                        type="text"
+                        value={data.organisation_name}
+                        onChange={(e) =>
+                            setData('organisation_name', e.target.value)
+                        }
+                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                        placeholder="Mairie de Paris"
+                    />
+                    {errors.organisation_name && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.organisation_name}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Statut juridique *
+                    </label>
+                    <select
+                        value={data.legal_status}
+                        onChange={(e) =>
+                            setData('legal_status', e.target.value)
+                        }
+                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                    >
+                        <option value="">Sélectionner…</option>
+                        <option value="Collectivité territoriale">
+                            Collectivité territoriale
+                        </option>
+                        <option value="Association">Association</option>
+                        <option value="Entreprise">Entreprise</option>
+                        <option value="Service de l'État">
+                            Service de l'État
+                        </option>
+                        <option value="Autre organisme public">
+                            Autre organisme public
+                        </option>
+                    </select>
+                    {errors.legal_status && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.legal_status}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Email *
+                    </label>
+                    <input
+                        type="email"
+                        value={data.email}
+                        onChange={(e) => setData('email', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                        placeholder="contact@organisation.fr"
+                    />
+                    {errors.email && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.email}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        Nom et fonction du contact *
+                    </label>
+                    <input
+                        type="text"
+                        value={data.contact_name}
+                        onChange={(e) =>
+                            setData('contact_name', e.target.value)
+                        }
+                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                        placeholder="Jean Martin, Directeur"
+                    />
+                    {errors.contact_name && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.contact_name}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Type de partenariat souhaité *
+                </label>
+                <div className="space-y-2">
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.partnership_moral}
+                            onChange={(e) =>
+                                setData('partnership_moral', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded"
+                            style={{ accentColor: 'var(--color-sna-green)' }}
+                        />
+                        Soutien moral ou promotionnel (visibilité,
+                        communication)
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.partnership_technical}
+                            onChange={(e) =>
+                                setData(
+                                    'partnership_technical',
+                                    e.target.checked,
+                                )
+                            }
+                            className="h-4 w-4 rounded"
+                            style={{ accentColor: 'var(--color-sna-green)' }}
+                        />
+                        Soutien technique ou expertise (conseil, appui sur
+                        projets)
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.partnership_financial}
+                            onChange={(e) =>
+                                setData(
+                                    'partnership_financial',
+                                    e.target.checked,
+                                )
+                            }
+                            className="h-4 w-4 rounded"
+                            style={{ accentColor: 'var(--color-sna-green)' }}
+                        />
+                        Soutien financier
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    Objectifs et motivations du partenariat *
+                </label>
+                <textarea
+                    rows={4}
+                    value={data.objectives}
+                    onChange={(e) => setData('objectives', e.target.value)}
+                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                    placeholder="Précisez l'objet de votre partenariat et les objectifs que vous souhaitez atteindre avec le SNA…"
+                />
+                {errors.objectives && (
+                    <p className="mt-1 text-xs text-red-500">
+                        {errors.objectives}
+                    </p>
+                )}
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Engagements envisagés
+                </label>
+                <div className="grid gap-3 sm:grid-cols-3">
+                    {[
+                        {
+                            key: 'commitment_projects' as const,
+                            label: 'Participation aux projets et événements',
+                        },
+                        {
+                            key: 'commitment_communication' as const,
+                            label: 'Communication et promotion des actions',
+                        },
+                        {
+                            key: 'commitment_expertise' as const,
+                            label: "Apport d'expertise ou de services",
+                        },
+                    ].map((item) => (
+                        <label
+                            key={item.key}
+                            className="flex cursor-pointer items-start gap-2 rounded-xl border border-gray-100 bg-white p-3 text-xs text-gray-600 transition hover:border-sna-green/50"
+                        >
+                            <input
+                                type="checkbox"
+                                checked={data[item.key]}
+                                onChange={(e) =>
+                                    setData(item.key, e.target.checked)
+                                }
+                                className="mt-0.5 h-4 w-4"
+                                style={{
+                                    accentColor: 'var(--color-sna-green)',
+                                }}
+                            />
+                            {item.label}
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            <div className="space-y-2 border-t border-gray-100 pt-2">
+                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                    <input
+                        type="checkbox"
+                        checked={data.consents_email}
+                        onChange={(e) =>
+                            setData('consents_email', e.target.checked)
+                        }
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
+                        style={{ accentColor: 'var(--color-sna-green)' }}
+                    />
+                    J'autorise la réception d'informations par email
+                </label>
+                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                    <input
+                        type="checkbox"
+                        checked={data.consents_rgpd}
+                        onChange={(e) =>
+                            setData('consents_rgpd', e.target.checked)
+                        }
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
+                        style={{ accentColor: 'var(--color-sna-green)' }}
+                    />
+                    Je consens au traitement des données personnelles
+                    conformément au RGPD *
+                </label>
+                {errors.consents_rgpd && (
+                    <p className="text-xs text-red-500">
+                        {errors.consents_rgpd}
+                    </p>
+                )}
+            </div>
+
+            <button
+                type="submit"
+                disabled={processing}
+                className="w-full rounded-full py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:opacity-90 disabled:opacity-60"
+                style={{
+                    background: '#a8c84a',
+                    boxShadow: '0 8px 20px rgba(168,200,74,0.25)',
+                }}
+            >
+                {processing
+                    ? 'Envoi en cours…'
+                    : 'Soumettre notre demande de partenariat'}
+            </button>
+        </form>
+    );
+}
+
+/* ─────────────────────────────────────────────
+   FORMULAIRE MOI AUSSI
+───────────────────────────────────────────── */
+function MoiAussiForm() {
+    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
+        useForm<{
+            situation: string;
+            testimony: string;
+            consequences: string[];
+            contacted_institution: string;
+            institution_name: string;
+            usage_anonymised: boolean;
+            usage_collective: boolean;
+            usage_legislation: boolean;
+            usage_confidential: boolean;
+            name: string;
+            email: string;
+            phone: string;
+        }>({
+            situation: '',
+            testimony: '',
+            consequences: [],
+            contacted_institution: '',
+            institution_name: '',
+            usage_anonymised: false,
+            usage_collective: false,
+            usage_legislation: false,
+            usage_confidential: false,
+            name: '',
+            email: '',
+            phone: '',
+        });
+
+    const toggleConsequence = (item: string) => {
+        setData(
+            'consequences',
+            data.consequences.includes(item)
+                ? data.consequences.filter((c) => c !== item)
+                : [...data.consequences, item],
+        );
+    };
+
+    const handleSubmit: FormEventHandler = (e) => {
+        e.preventDefault();
+        submit(forms.moiAussi.store(), { onSuccess: () => reset() });
+    };
+
+    if (wasSuccessful) {
+        return (
+            <div className="space-y-3 rounded-3xl border border-teal-100 bg-teal-50 p-10 text-center shadow-sm">
+                <span className="text-4xl">💙</span>
+                <p className="font-bold text-teal-800">Témoignage envoyé !</p>
+                <p className="text-sm text-teal-700">
+                    Merci de votre confiance. Votre témoignage contribue à notre
+                    action collective.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm"
+        >
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Avez-vous été confronté(e) à cette problématique ? *
+                </label>
+                <div className="flex flex-wrap gap-3">
+                    {[
+                        { value: 'oui', label: 'Oui' },
+                        { value: 'en_cours', label: 'En cours' },
+                        { value: 'resolu', label: 'Résolu mais difficile' },
+                    ].map((opt) => (
+                        <label
+                            key={opt.value}
+                            className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-600 transition hover:border-sna-teal"
+                        >
+                            <input
+                                type="radio"
+                                name="situation"
+                                value={opt.value}
+                                checked={data.situation === opt.value}
+                                onChange={() => setData('situation', opt.value)}
+                                className="accent-sna-teal"
+                            />
+                            {opt.label}
+                        </label>
+                    ))}
+                </div>
+                {errors.situation && (
+                    <p className="mt-1 text-xs text-red-500">
+                        {errors.situation}
+                    </p>
+                )}
+            </div>
+
+            <div>
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    Racontez-nous ce que vous avez vécu *
+                </label>
+                <textarea
+                    rows={5}
+                    value={data.testimony}
+                    onChange={(e) => setData('testimony', e.target.value)}
+                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                    placeholder="Décrivez librement votre expérience. Chaque détail compte pour renforcer notre action collective…"
+                />
+                {errors.testimony && (
+                    <p className="mt-1 text-xs text-red-500">
+                        {errors.testimony}
+                    </p>
+                )}
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Quelles ont été les conséquences pour vous ?
+                </label>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {[
+                        'Perte financière',
+                        'Impact professionnel',
+                        'Impact sur la santé / sécurité',
+                        'Démarches administratives lourdes',
+                        'Isolement',
+                        'Autre',
+                    ].map((item) => (
+                        <label
+                            key={item}
+                            className="flex cursor-pointer items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-600 transition hover:border-sna-teal/50"
+                        >
+                            <input
+                                type="checkbox"
+                                checked={data.consequences.includes(item)}
+                                onChange={() => toggleConsequence(item)}
+                                className="h-4 w-4 rounded accent-sna-teal"
+                            />
+                            {item}
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Avez-vous saisi une institution ?
+                </label>
+                <div className="mb-3 flex gap-4">
+                    {[
+                        { value: 'oui', label: 'Oui' },
+                        { value: 'non', label: 'Non' },
+                    ].map((opt) => (
+                        <label
+                            key={opt.value}
+                            className="flex cursor-pointer items-center gap-2 text-sm text-gray-600"
+                        >
+                            <input
+                                type="radio"
+                                name="institution"
+                                value={opt.value}
+                                checked={
+                                    data.contacted_institution === opt.value
+                                }
+                                onChange={() =>
+                                    setData('contacted_institution', opt.value)
+                                }
+                                className="accent-sna-teal"
+                            />
+                            {opt.label}
+                        </label>
+                    ))}
+                </div>
+                <input
+                    type="text"
+                    value={data.institution_name}
+                    onChange={(e) =>
+                        setData('institution_name', e.target.value)
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                    placeholder="Si oui, laquelle ? (CAF, MDPH, employeur, assurance…)"
+                />
+            </div>
+
+            <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Acceptez-vous que votre témoignage soit utilisé *
+                </label>
+                <div className="space-y-2">
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.usage_anonymised}
+                            onChange={(e) =>
+                                setData('usage_anonymised', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        De manière anonymisée
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.usage_collective}
+                            onChange={(e) =>
+                                setData('usage_collective', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        Dans une action collective
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.usage_legislation}
+                            onChange={(e) =>
+                                setData('usage_legislation', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        Pour appuyer une proposition de loi
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={data.usage_confidential}
+                            onChange={(e) =>
+                                setData('usage_confidential', e.target.checked)
+                            }
+                            className="h-4 w-4 rounded accent-sna-teal"
+                        />
+                        Je souhaite rester totalement confidentiel(le)
+                    </label>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 border-t border-gray-50 pt-2 sm:grid-cols-3">
+                <div>
+                    <label className="mb-1 block text-xs font-semibold text-gray-600">
+                        Nom (facultatif)
+                    </label>
+                    <input
+                        type="text"
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                    />
+                </div>
+                <div>
+                    <label className="mb-1 block text-xs font-semibold text-gray-600">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        value={data.email}
+                        onChange={(e) => setData('email', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                    />
+                    {errors.email && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.email}
+                        </p>
+                    )}
+                </div>
+                <div>
+                    <label className="mb-1 block text-xs font-semibold text-gray-600">
+                        Téléphone
+                    </label>
+                    <input
+                        type="tel"
+                        value={data.phone}
+                        onChange={(e) => setData('phone', e.target.value)}
+                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                    />
+                </div>
+            </div>
+
+            <p className="rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-400">
+                🔒 Les informations recueillies sont strictement confidentielles
+                et utilisées uniquement dans le cadre des actions collectives du
+                SNA. Aucun témoignage ne sera publié sans votre accord
+                explicite.
+            </p>
+
+            <button
+                type="submit"
+                disabled={processing}
+                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark disabled:opacity-60"
+            >
+                {processing ? 'Envoi en cours…' : 'Envoyer mon témoignage'}
+            </button>
+        </form>
     );
 }
 
@@ -938,141 +1966,7 @@ export default function Welcome({
                             subtitle="Merci de votre engagement en faveur des aidants. Formalisez votre soutien moral, technique ou financier."
                         />
 
-                        <form className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Nom et prénom *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                        placeholder="Marie Dupont"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Nom de l'organisation (si personne
-                                        morale)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                        placeholder="Association XYZ"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Statut *
-                                </label>
-                                <div className="flex gap-6">
-                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-                                        <input
-                                            type="radio"
-                                            name="statut"
-                                            value="physique"
-                                            className="accent-sna-teal"
-                                        />
-                                        Personne physique
-                                    </label>
-                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-                                        <input
-                                            type="radio"
-                                            name="statut"
-                                            value="morale"
-                                            className="accent-sna-teal"
-                                        />
-                                        Personne morale
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Email *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                        placeholder="marie@exemple.fr"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Téléphone
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                        placeholder="+33 6 00 00 00 00"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Engagements souhaités
-                                </label>
-                                <div className="space-y-2">
-                                    {[
-                                        'Souhaitez-vous être partenaire ?',
-                                        'Souhaitez-vous être informé(e) des événements ou projets ?',
-                                        'Souhaitez-vous participer aux événements ou projets ?',
-                                    ].map((item) => (
-                                        <label
-                                            key={item}
-                                            className="flex cursor-pointer items-center gap-3 text-sm text-gray-600"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="h-4 w-4 rounded accent-sna-teal"
-                                            />
-                                            {item}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                    Message libre (facultatif)
-                                </label>
-                                <textarea
-                                    rows={3}
-                                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                    placeholder="Partagez vos motivations ou questions…"
-                                />
-                            </div>
-
-                            <div className="space-y-2 border-t border-gray-50 pt-2">
-                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                                    <input
-                                        type="checkbox"
-                                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
-                                    />
-                                    J'autorise la réception d'informations par
-                                    email
-                                </label>
-                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                                    <input
-                                        type="checkbox"
-                                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
-                                    />
-                                    Je consens au traitement de mes données
-                                    personnelles conformément au RGPD
-                                </label>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
-                            >
-                                Envoyer ma demande de soutien
-                            </button>
-                        </form>
+                        <SoutienForm />
                     </div>
                 </section>
 
@@ -1090,173 +1984,7 @@ export default function Welcome({
                             subtitle="Le SNA souhaite développer des partenariats avec des entités publiques et privées pour soutenir ses projets."
                         />
 
-                        <form className="space-y-6 rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm">
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Nom de l'organisation *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                                        placeholder="Mairie de Paris"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Statut juridique *
-                                    </label>
-                                    <select className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none">
-                                        <option value="">Sélectionner…</option>
-                                        <option>
-                                            Collectivité territoriale
-                                        </option>
-                                        <option>Association</option>
-                                        <option>Entreprise</option>
-                                        <option>Service de l'État</option>
-                                        <option>Autre organisme public</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Email *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                                        placeholder="contact@organisation.fr"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                        Nom et fonction du contact *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                                        placeholder="Jean Martin, Directeur"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Type de partenariat souhaité *
-                                </label>
-                                <div className="space-y-2">
-                                    {[
-                                        'Soutien moral ou promotionnel (visibilité, communication)',
-                                        'Soutien technique ou expertise (conseil, appui sur projets)',
-                                        'Soutien financier',
-                                    ].map((item) => (
-                                        <label
-                                            key={item}
-                                            className="flex cursor-pointer items-center gap-3 text-sm text-gray-600"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="h-4 w-4 rounded"
-                                                style={{
-                                                    accentColor:
-                                                        'var(--color-sna-green)',
-                                                }}
-                                            />
-                                            {item}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                    Objectifs et motivations du partenariat *
-                                </label>
-                                <textarea
-                                    rows={4}
-                                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                                    placeholder="Précisez l'objet de votre partenariat et les objectifs que vous souhaitez atteindre avec le SNA…"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Engagements envisagés
-                                </label>
-                                <div className="grid gap-3 sm:grid-cols-3">
-                                    {[
-                                        {
-                                            label: 'Participation aux projets et événements',
-                                            id: 'part',
-                                        },
-                                        {
-                                            label: 'Communication et promotion des actions',
-                                            id: 'comm',
-                                        },
-                                        {
-                                            label: "Apport d'expertise ou de services",
-                                            id: 'exp',
-                                        },
-                                    ].map((item) => (
-                                        <label
-                                            key={item.id}
-                                            className="flex cursor-pointer items-start gap-2 rounded-xl border border-gray-100 bg-white p-3 text-xs text-gray-600 transition hover:border-sna-green/50"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="mt-0.5 h-4 w-4"
-                                                style={{
-                                                    accentColor:
-                                                        'var(--color-sna-green)',
-                                                }}
-                                            />
-                                            {item.label}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 border-t border-gray-100 pt-2">
-                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                                    <input
-                                        type="checkbox"
-                                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
-                                        style={{
-                                            accentColor:
-                                                'var(--color-sna-green)',
-                                        }}
-                                    />
-                                    J'autorise la réception d'informations par
-                                    email
-                                </label>
-                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                                    <input
-                                        type="checkbox"
-                                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
-                                        style={{
-                                            accentColor:
-                                                'var(--color-sna-green)',
-                                        }}
-                                    />
-                                    Je consens au traitement des données
-                                    personnelles conformément au RGPD
-                                </label>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full rounded-full py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:opacity-90"
-                                style={{
-                                    background: '#a8c84a',
-                                    boxShadow:
-                                        '0 8px 20px rgba(168,200,74,0.25)',
-                                }}
-                            >
-                                Soumettre notre demande de partenariat
-                            </button>
-                        </form>
+                        <PartenaireForm />
                     </div>
                 </section>
 
@@ -1270,7 +1998,7 @@ export default function Welcome({
                     <div className="mx-auto max-w-3xl space-y-8">
                         <SectionHeader
                             badge="Témoignage"
-                            title="« Moi aussi, j\u2019ai vécu ça »"
+                            title="« Moi aussi, j'ai vécu ça »"
                             subtitle="Cette difficulté ne concerne pas qu'une seule famille. Votre témoignage renforce l'action collective et peut changer les choses."
                         />
 
@@ -1282,174 +2010,7 @@ export default function Welcome({
                             </blockquote>
                         </div>
 
-                        <form className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Avez-vous été confronté(e) à cette
-                                    problématique ? *
-                                </label>
-                                <div className="flex flex-wrap gap-3">
-                                    {[
-                                        'Oui',
-                                        'En cours',
-                                        'Résolu mais difficile',
-                                    ].map((val) => (
-                                        <label
-                                            key={val}
-                                            className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-600 transition hover:border-sna-teal"
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="situation"
-                                                value={val}
-                                                className="accent-sna-teal"
-                                            />
-                                            {val}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                    Racontez-nous ce que vous avez vécu *
-                                </label>
-                                <textarea
-                                    rows={5}
-                                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                    placeholder="Décrivez librement votre expérience. Chaque détail compte pour renforcer notre action collective…"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Quelles ont été les conséquences pour vous ?
-                                </label>
-                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                                    {[
-                                        'Perte financière',
-                                        'Impact professionnel',
-                                        'Impact sur la santé / sécurité',
-                                        'Démarches administratives lourdes',
-                                        'Isolement',
-                                        'Autre',
-                                    ].map((item) => (
-                                        <label
-                                            key={item}
-                                            className="flex cursor-pointer items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-600 transition hover:border-sna-teal/50"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="h-4 w-4 rounded accent-sna-teal"
-                                            />
-                                            {item}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Avez-vous saisi une institution ?
-                                </label>
-                                <div className="mb-3 flex gap-4">
-                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-                                        <input
-                                            type="radio"
-                                            name="institution"
-                                            value="oui"
-                                            className="accent-sna-teal"
-                                        />{' '}
-                                        Oui
-                                    </label>
-                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-                                        <input
-                                            type="radio"
-                                            name="institution"
-                                            value="non"
-                                            className="accent-sna-teal"
-                                        />{' '}
-                                        Non
-                                    </label>
-                                </div>
-                                <input
-                                    type="text"
-                                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                    placeholder="Si oui, laquelle ? (CAF, MDPH, employeur, assurance…)"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Acceptez-vous que votre témoignage soit
-                                    utilisé *
-                                </label>
-                                <div className="space-y-2">
-                                    {[
-                                        'De manière anonymisée',
-                                        'Dans une action collective',
-                                        'Pour appuyer une proposition de loi',
-                                        'Je souhaite rester totalement confidentiel(le)',
-                                    ].map((item) => (
-                                        <label
-                                            key={item}
-                                            className="flex cursor-pointer items-center gap-3 text-sm text-gray-600"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="h-4 w-4 rounded accent-sna-teal"
-                                            />
-                                            {item}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-4 border-t border-gray-50 pt-2 sm:grid-cols-3">
-                                <div>
-                                    <label className="mb-1 block text-xs font-semibold text-gray-600">
-                                        Nom (facultatif)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block text-xs font-semibold text-gray-600">
-                                        Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block text-xs font-semibold text-gray-600">
-                                        Téléphone
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            <p className="rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-400">
-                                🔒 Les informations recueillies sont strictement
-                                confidentielles et utilisées uniquement dans le
-                                cadre des actions collectives du SNA. Aucun
-                                témoignage ne sera publié sans votre accord
-                                explicite.
-                            </p>
-
-                            <button
-                                type="submit"
-                                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
-                            >
-                                Envoyer mon témoignage
-                            </button>
-                        </form>
+                        <MoiAussiForm />
                     </div>
                 </section>
 
