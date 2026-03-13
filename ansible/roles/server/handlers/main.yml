@@ -1,0 +1,22 @@
+---
+- name: Restart PHP-FPM
+  systemd:
+    name: 'php{{ php_version }}-fpm'
+    state: restarted
+
+- name: Reload Nginx
+  systemd:
+    name: nginx
+    state: reloaded
+
+- name: Restart Redis
+  systemd:
+    name: redis-server
+    state: restarted
+
+- name: Reload Supervisor
+  command: supervisorctl reread
+  notify: Update Supervisor
+
+- name: Update Supervisor
+  command: supervisorctl update

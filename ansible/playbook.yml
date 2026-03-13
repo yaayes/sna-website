@@ -1,0 +1,8 @@
+---
+- name: Provision server
+  hosts: "{{ target | default('staging') }}"
+  become: true
+  vars_files:
+    - vars.yml
+  roles:
+    - server

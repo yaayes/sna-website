@@ -1,0 +1,371 @@
+---
+# ─── System base ────────────────────────────────────────────────────────────
+- name: Update apt cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install base packages
+  apt:
+    name:
+      - curl
+      - wget
+      - git
+      - unzip
+      - zip
+      - acl
+      - ufw
+      - fail2ban
+      - software-properties-common
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - cron
+    state: present
+
+# ─── UFW firewall ────────────────────────────────────────────────────────────
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+- name: Allow HTTP
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: Allow HTTPS
+  ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny
+
+# ─── PHP ─────────────────────────────────────────────────────────────────────
+- name: Add Ondrej PHP PPA
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+    state: present
+    update_cache: true
+
+- name: Install PHP {{ php_version }} and extensions
+  apt:
+    name:
+      - 'php{{ php_version }}'
+      - 'php{{ php_version }}-fpm'
+      - 'php{{ php_version }}-cli'
+      - 'php{{ php_version }}-pgsql'
+      - 'php{{ php_version }}-mbstring'
+      - 'php{{ php_version }}-xml'
+      - 'php{{ php_version }}-curl'
+      - 'php{{ php_version }}-zip'
+      - 'php{{ php_version }}-bcmath'
+      - 'php{{ php_version }}-intl'
+      - 'php{{ php_version }}-redis'
+      - 'php{{ php_version }}-gd'
+      - 'php{{ php_version }}-tokenizer'
+      - 'php{{ php_version }}-opcache'
+    state: present
+
+- name: Set php{{ php_version }} as default
+  alternatives:
+    name: php
+    path: '/usr/bin/php{{ php_version }}'
+
+- name: Configure PHP-FPM pool for {{ app_user }}
+  template:
+    src: php-fpm-pool.conf.j2
+    dest: '/etc/php/{{ php_version }}/fpm/pool.d/{{ app_user }}.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart PHP-FPM
+
+- name: Configure PHP OPcache
+  template:
+    src: opcache.ini.j2
+    dest: '/etc/php/{{ php_version }}/fpm/conf.d/10-opcache-tuned.ini'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart PHP-FPM
+
+- name: Enable and start PHP-FPM
+  systemd:
+    name: 'php{{ php_version }}-fpm'
+    enabled: true
+    state: started
+
+# ─── Composer ────────────────────────────────────────────────────────────────
+- name: Download Composer installer
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-installer.php
+    mode: '0755'
+
+- name: Install Composer globally
+  command: 'php{{ php_version }} /tmp/composer-installer.php --install-dir=/usr/local/bin --filename=composer'
+  args:
+    creates: /usr/local/bin/composer
+
+# ─── Node.js ─────────────────────────────────────────────────────────────────
+- name: Download NodeSource setup script
+  get_url:
+    url: 'https://deb.nodesource.com/setup_{{ node_version }}.x'
+    dest: /tmp/nodesource_setup.sh
+    mode: '0755'
+
+- name: Run NodeSource setup script
+  command: bash /tmp/nodesource_setup.sh
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: present
+    update_cache: true
+
+# ─── PostgreSQL ───────────────────────────────────────────────────────────────
+- name: Add PostgreSQL apt key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add PostgreSQL apt repository
+  apt_repository:
+    repo: 'deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main'
+    state: present
+    update_cache: true
+
+- name: Install PostgreSQL {{ postgresql_version }}
+  apt:
+    name:
+      - 'postgresql-{{ postgresql_version }}'
+      - 'postgresql-client-{{ postgresql_version }}'
+      - python3-psycopg2
+    state: present
+
+- name: Enable and start PostgreSQL
+  systemd:
+    name: postgresql
+    enabled: true
+    state: started
+
+- name: Create PostgreSQL user
+  become_user: postgres
+  postgresql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_password }}'
+    role_attr_flags: CREATEDB,NOSUPERUSER
+    state: present
+
+- name: Create PostgreSQL database
+  become_user: postgres
+  postgresql_db:
+    name: '{{ db_name }}'
+    owner: '{{ db_user }}'
+    encoding: UTF8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
+    state: present
+
+# ─── Redis ────────────────────────────────────────────────────────────────────
+- name: Install Redis
+  apt:
+    name: redis-server
+    state: present
+
+- name: Configure Redis
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis.conf
+    owner: redis
+    group: redis
+    mode: '0640'
+  notify: Restart Redis
+
+- name: Enable and start Redis
+  systemd:
+    name: redis-server
+    enabled: true
+    state: started
+
+# ─── Nginx ────────────────────────────────────────────────────────────────────
+- name: Add Ondrej Nginx PPA
+  apt_repository:
+    repo: 'ppa:ondrej/nginx'
+    state: present
+    update_cache: true
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Generate DH params (4096 bit — runs once, takes a few minutes)
+  command: openssl dhparam -out /etc/nginx/dhparams.pem 4096
+  args:
+    creates: /etc/nginx/dhparams.pem
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload Nginx
+
+- name: Deploy nginx site config (HTTP only for certbot challenge)
+  template:
+    src: nginx-http.conf.j2
+    dest: '/etc/nginx/sites-available/{{ app_domain }}'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable nginx site
+  file:
+    src: '/etc/nginx/sites-available/{{ app_domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ app_domain }}'
+    state: link
+  notify: Reload Nginx
+
+- name: Enable and start Nginx
+  systemd:
+    name: nginx
+    enabled: true
+    state: started
+
+# ─── App user & directory ─────────────────────────────────────────────────────
+- name: Ensure app user exists
+  user:
+    name: '{{ app_user }}'
+    shell: /bin/bash
+    create_home: true
+    state: present
+
+- name: Create app directory
+  file:
+    path: '{{ app_path }}'
+    state: directory
+    owner: '{{ app_user }}'
+    group: '{{ app_user }}'
+    mode: '0755'
+
+- name: Add deploy SSH key for GitHub
+  authorized_key:
+    user: '{{ app_user }}'
+    key: "{{ lookup('file', 'files/deploy_key.pub') }}"
+    state: present
+
+- name: Copy deploy private key to server
+  copy:
+    src: files/deploy_key
+    dest: '/home/{{ app_user }}/.ssh/deploy_key'
+    owner: '{{ app_user }}'
+    group: '{{ app_user }}'
+    mode: '0600'
+
+- name: Configure SSH to use deploy key for GitHub
+  blockinfile:
+    path: '/home/{{ app_user }}/.ssh/config'
+    create: true
+    owner: '{{ app_user }}'
+    group: '{{ app_user }}'
+    mode: '0600'
+    block: |
+      Host github.com
+          HostName github.com
+          User git
+          IdentityFile ~/.ssh/deploy_key
+          StrictHostKeyChecking no
+
+# ─── Certbot / Let's Encrypt ─────────────────────────────────────────────────
+- name: Install Certbot and Nginx plugin
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Reload Nginx before certbot challenge
+  systemd:
+    name: nginx
+    state: reloaded
+
+- name: Obtain Let's Encrypt certificate
+  command: >
+    certbot certonly --webroot
+    -w {{ app_path }}/public
+    -d {{ app_domain }}
+    --non-interactive
+    --agree-tos
+    -m {{ certbot_email }}
+  args:
+    creates: '/etc/letsencrypt/live/{{ app_domain }}/fullchain.pem'
+
+- name: Deploy nginx HTTPS site config
+  template:
+    src: nginx-https.conf.j2
+    dest: '/etc/nginx/sites-available/{{ app_domain }}'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload Nginx
+
+- name: Add certbot renewal cron job
+  cron:
+    name: 'Certbot renew {{ app_domain }}'
+    minute: '0'
+    hour: '3'
+    weekday: '1'
+    job: "certbot renew --quiet --deploy-hook 'systemctl reload nginx'"
+    user: root
+
+# ─── Supervisor ──────────────────────────────────────────────────────────────
+- name: Install Supervisor
+  apt:
+    name: supervisor
+    state: present
+
+- name: Deploy Laravel queue worker supervisor config
+  template:
+    src: supervisor-worker.conf.j2
+    dest: '/etc/supervisor/conf.d/{{ app_name }}-worker.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload Supervisor
+
+- name: Enable and start Supervisor
+  systemd:
+    name: supervisor
+    enabled: true
+    state: started
+
+# ─── Sudoers — passwordless PHP-FPM reload for deploy script ─────────────────
+- name: Allow {{ app_user }} to reload PHP-FPM without password
+  lineinfile:
+    path: /etc/sudoers.d/{{ app_user }}-php-fpm
+    line: '{{ app_user }} ALL=(ALL) NOPASSWD: /bin/systemctl reload php{{ php_version }}-fpm'
+    create: true
+    mode: '0440'
+    validate: 'visudo -cf %s'
+
+# ─── Laravel log directory permissions ───────────────────────────────────────
+- name: Ensure storage & bootstrap/cache are writable
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ app_user }}'
+    group: www-data
+    mode: '0775'
+    recurse: true
+  loop:
+    - '{{ app_path }}/storage'
+    - '{{ app_path }}/bootstrap/cache'

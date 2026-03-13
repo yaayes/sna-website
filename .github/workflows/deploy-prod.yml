@@ -1,0 +1,42 @@
+name: Deploy to Production
+
+# ⚠️  This workflow is currently INACTIVE.
+# To activate: change `branches` below to your release branch (e.g. "release")
+# or uncomment the `release` trigger, then set the required GitHub secrets.
+on:
+  # Uncomment when ready to activate:
+  # release:
+  #   types: [published]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy" to confirm production deployment'
+        required: true
+
+jobs:
+  guard:
+    name: Confirm deployment
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.confirm == 'deploy' || github.event_name == 'release' }}
+    steps:
+      - name: Guard passed
+        run: echo "Deployment confirmed"
+
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    needs: guard
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            APP_PATH=${{ secrets.PROD_APP_PATH }} bash ${{ secrets.PROD_APP_PATH }}/scripts/deploy.sh

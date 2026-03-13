@@ -1,0 +1,12 @@
+[program:{{ app_name }}-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php {{ app_path }}/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user={{ app_user }}
+numprocs=2
+redirect_stderr=true
+stdout_logfile={{ app_path }}/storage/logs/worker.log
+stopwaitsecs=3600
