@@ -1,5 +1,201 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { dashboard, login, register } from '@/routes';
+
+/* ─────────────────────────────────────────────
+   Inline SVG icons (no extra dep needed)
+───────────────────────────────────────────── */
+const HeartIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+);
+const ShieldIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    </svg>
+);
+const UsersIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+);
+const MegaphoneIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+    </svg>
+);
+const ArrowRightIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+    </svg>
+);
+const CheckIcon = ({ className = 'h-4 w-4 text-sna-teal shrink-0' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+);
+const ChevronDownIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+);
+const HandIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+    </svg>
+);
+const StarIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+);
+const ScaleIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+    </svg>
+);
+const SunIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8.66-9H21M3 12H2m15.07-6.93l-.71.71M7.64 17.36l-.71.71M18.36 17.36l-.71-.71M6.34 6.34l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+);
+
+/* ─────────────────────────────────────────────
+   Hero Illustration – inline SVG scene
+   A stylised parent & child with a heart
+───────────────────────────────────────────── */
+const HeroIllustration = () => (
+    <svg viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="w-full h-auto max-w-lg">
+        {/* Background circles */}
+        <circle cx="260" cy="240" r="210" fill="#e8f8f8" />
+        <circle cx="260" cy="240" r="165" fill="#d2f2f2" opacity="0.5" />
+
+        {/* Ground */}
+        <ellipse cx="260" cy="410" rx="160" ry="18" fill="#4abfbf" opacity="0.12" />
+
+        {/* ── Parent figure (left) ── */}
+        {/* Body */}
+        <rect x="155" y="220" width="68" height="120" rx="20" fill="#4abfbf" />
+        {/* Head */}
+        <circle cx="189" cy="200" r="30" fill="#fcd9b6" />
+        {/* Hair */}
+        <path d="M162 192 Q169 168 189 170 Q209 168 216 192" fill="#5a3825" />
+        {/* Arms */}
+        <path d="M155 255 Q125 268 118 290" stroke="#fcd9b6" strokeWidth="14" strokeLinecap="round" fill="none" />
+        <path d="M223 255 Q248 260 258 275" stroke="#fcd9b6" strokeWidth="14" strokeLinecap="round" fill="none" />
+        {/* Legs */}
+        <rect x="165" y="330" width="22" height="70" rx="11" fill="#2d7a8a" />
+        <rect x="196" y="330" width="22" height="70" rx="11" fill="#2d7a8a" />
+        {/* Feet */}
+        <ellipse cx="176" cy="400" rx="14" ry="7" fill="#1a4a55" />
+        <ellipse cx="207" cy="400" rx="14" ry="7" fill="#1a4a55" />
+
+        {/* ── Child figure (right, smaller) ── */}
+        {/* Body */}
+        <rect x="272" y="268" width="52" height="90" rx="16" fill="#a8c84a" />
+        {/* Head */}
+        <circle cx="298" cy="250" r="24" fill="#fcd9b6" />
+        {/* Hair */}
+        <path d="M276 243 Q282 224 298 226 Q314 224 320 243" fill="#c97b3a" />
+        {/* Arms stretched up toward parent */}
+        <path d="M272 290 Q256 278 250 270" stroke="#fcd9b6" strokeWidth="11" strokeLinecap="round" fill="none" />
+        <path d="M324 290 Q338 280 344 272" stroke="#fcd9b6" strokeWidth="11" strokeLinecap="round" fill="none" />
+        {/* Legs */}
+        <rect x="278" y="350" width="18" height="54" rx="9" fill="#6a8a20" />
+        <rect x="302" y="350" width="18" height="54" rx="9" fill="#6a8a20" />
+        {/* Feet */}
+        <ellipse cx="287" cy="404" rx="12" ry="6" fill="#4a5a15" />
+        <ellipse cx="311" cy="404" rx="12" ry="6" fill="#4a5a15" />
+
+        {/* Wheelchair (accessibility icon) */}
+        <circle cx="355" cy="385" r="22" stroke="#4abfbf" strokeWidth="4" fill="none" />
+        <circle cx="340" cy="385" r="15" stroke="#a8c84a" strokeWidth="3" fill="none" />
+        <path d="M340 368 L340 355 Q340 348 347 348 L362 348" stroke="#4abfbf" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <circle cx="345" cy="344" r="6" fill="#4abfbf" />
+
+        {/* Holding hands / connection line */}
+        <path d="M258 275 Q265 282 272 290" stroke="#fcd9b6" strokeWidth="10" strokeLinecap="round" fill="none" />
+
+        {/* ── Floating heart ── */}
+        <g transform="translate(310, 185)">
+            <path d="M0,-12 C0,-22 -18,-22 -18,-8 C-18,2 0,16 0,16 C0,16 18,2 18,-8 C18,-22 0,-22 0,-12 Z" fill="#f97066" opacity="0.9" />
+        </g>
+
+        {/* ── Floating sparkles / stars ── */}
+        <g fill="#a8c84a" opacity="0.8">
+            <polygon points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140" transform="scale(0.7) translate(170,10)" />
+        </g>
+        <g fill="#4abfbf" opacity="0.7">
+            <polygon points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140" transform="scale(0.5) translate(-280,230)" />
+        </g>
+        <circle cx="420" cy="160" r="5" fill="#a8c84a" opacity="0.6" />
+        <circle cx="108" cy="300" r="4" fill="#4abfbf" opacity="0.5" />
+        <circle cx="148" cy="148" r="6" fill="#4abfbf" opacity="0.4" />
+        <circle cx="390" cy="310" r="4" fill="#a8c84a" opacity="0.5" />
+
+        {/* ── Sun / warmth ── */}
+        <circle cx="415" cy="95" r="28" fill="#fbbf24" opacity="0.3" />
+        <circle cx="415" cy="95" r="18" fill="#fbbf24" opacity="0.5" />
+
+        {/* Rays */}
+        {[0,45,90,135,180,225,270,315].map((angle, i) => (
+            <line
+                key={i}
+                x1={415 + Math.cos(angle * Math.PI / 180) * 22}
+                y1={95 + Math.sin(angle * Math.PI / 180) * 22}
+                x2={415 + Math.cos(angle * Math.PI / 180) * 32}
+                y2={95 + Math.sin(angle * Math.PI / 180) * 32}
+                stroke="#fbbf24"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                opacity="0.6"
+            />
+        ))}
+    </svg>
+);
+
+/* ─────────────────────────────────────────────
+   Reusable Section Header
+───────────────────────────────────────────── */
+function SectionHeader({ badge, title, subtitle }: { badge?: string; title: string; subtitle?: string }) {
+    return (
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
+            {badge && (
+                <span className="inline-block rounded-full bg-sna-teal/15 px-4 py-1 text-xs font-bold text-sna-teal-dark tracking-widest uppercase">
+                    {badge}
+                </span>
+            )}
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 leading-tight">{title}</h2>
+            {subtitle && <p className="text-gray-500 leading-relaxed">{subtitle}</p>}
+        </div>
+    );
+}
+
+/* ─────────────────────────────────────────────
+   FAQ Accordion Item
+───────────────────────────────────────────── */
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="border border-gray-100 rounded-2xl bg-white overflow-hidden">
+            <button
+                onClick={() => setOpen(!open)}
+                className="w-full flex items-center justify-between px-6 py-5 text-left gap-4 hover:bg-gray-50 transition-colors"
+            >
+                <span className="font-semibold text-gray-800 text-sm sm:text-base">{question}</span>
+                <span className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+                    <ChevronDownIcon />
+                </span>
+            </button>
+            {open && (
+                <div className="px-6 pb-5 text-sm text-gray-500 leading-relaxed border-t border-gray-50">
+                    <p className="pt-4">{answer}</p>
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function Welcome({
     canRegister = true,
@@ -10,797 +206,1483 @@ export default function Welcome({
 
     return (
         <>
-            <Head title="Welcome">
+            <Head title="SNA – Familles d'enfants en situation de handicap">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
+                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
                     rel="stylesheet"
                 />
+                <meta
+                    name="description"
+                    content="Le Syndicat National des Aidants défend les droits des familles qui accompagnent un enfant en situation de handicap. Rejoignez le mouvement."
+                />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
-                <header className="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
-                    <nav className="flex items-center justify-end gap-4">
-                        {auth.user ? (
-                            <Link
-                                href={dashboard()}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+
+            <div className="min-h-screen bg-white font-sans text-gray-800">
+                {/* ══════════════════════════════
+                    HEADER
+                ══════════════════════════════ */}
+                <header className="sticky top-0 z-50 bg-white/95 shadow-sm backdrop-blur">
+                    <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-3">
+                            <img
+                                src="/images/logo.png"
+                                alt="Syndicat National des Aidants"
+                                className="h-12 w-auto"
+                            />
+                        </Link>
+
+                        {/* Nav links */}
+                        <nav className="hidden items-center gap-8 text-sm font-medium text-gray-600 md:flex">
+                            <a
+                                href="#apropos"
+                                className="transition-colors hover:text-sna-teal"
                             >
-                                Dashboard
-                            </Link>
-                        ) : (
-                            <>
+                                À propos
+                            </a>
+                            <a
+                                href="#mission"
+                                className="transition-colors hover:text-sna-teal"
+                            >
+                                Notre mission
+                            </a>
+                            <a
+                                href="#actions"
+                                className="transition-colors hover:text-sna-teal"
+                            >
+                                Nos actions
+                            </a>
+                            <a
+                                href="#contact"
+                                className="transition-colors hover:text-sna-teal"
+                            >
+                                Contact
+                            </a>
+                        </nav>
+
+                        {/* Auth buttons */}
+                        <div className="flex items-center gap-3">
+                            {auth.user ? (
                                 <Link
-                                    href={login()}
-                                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                    href={dashboard()}
+                                    className="rounded-full bg-sna-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-sna-teal-dark"
                                 >
-                                    Log in
+                                    Mon espace
                                 </Link>
-                                {canRegister && (
+                            ) : (
+                                <>
                                     <Link
-                                        href={register()}
-                                        className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        href={login()}
+                                        className="text-sm font-medium text-gray-600 transition-colors hover:text-sna-teal"
                                     >
-                                        Register
+                                        Se connecter
                                     </Link>
-                                )}
-                            </>
-                        )}
-                    </nav>
+                                    {canRegister && (
+                                        <Link
+                                            href={register()}
+                                            className="rounded-full bg-sna-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-sna-teal-dark"
+                                        >
+                                            S'inscrire
+                                        </Link>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </header>
-                <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex w-full max-w-[335px] flex-col-reverse lg:max-w-4xl lg:flex-row">
-                        <div className="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                            <h1 className="mb-1 font-medium">
-                                Let's get started
-                            </h1>
-                            <p className="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
-                                Laravel has an incredibly rich ecosystem.
-                                <br />
-                                We suggest starting with the following.
-                            </p>
-                            <ul className="mb-4 flex flex-col lg:mb-6">
-                                <li className="relative flex items-center gap-4 py-2 before:absolute before:top-1/2 before:bottom-0 before:left-[0.4rem] before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A]">
-                                    <span className="relative bg-white py-1 dark:bg-[#161615]">
-                                        <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[#e3e3e0] bg-[#FDFDFC] shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] dark:border-[#3E3E3A] dark:bg-[#161615]">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-[#dbdbd7] dark:bg-[#3E3E3A]" />
-                                        </span>
-                                    </span>
-                                    <span>
-                                        Read the
-                                        <a
-                                            href="https://laravel.com/docs"
-                                            target="_blank"
-                                            className="ml-1 inline-flex items-center space-x-1 font-medium text-[#f53003] underline underline-offset-4 dark:text-[#FF4433]"
-                                        >
-                                            <span>Documentation</span>
-                                            <svg
-                                                width={10}
-                                                height={11}
-                                                viewBox="0 0 10 11"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-2.5 w-2.5"
-                                            >
-                                                <path
-                                                    d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                                    stroke="currentColor"
-                                                    strokeLinecap="square"
-                                                />
-                                            </svg>
-                                        </a>
-                                    </span>
-                                </li>
-                                <li className="relative flex items-center gap-4 py-2 before:absolute before:top-0 before:bottom-1/2 before:left-[0.4rem] before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A]">
-                                    <span className="relative bg-white py-1 dark:bg-[#161615]">
-                                        <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[#e3e3e0] bg-[#FDFDFC] shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] dark:border-[#3E3E3A] dark:bg-[#161615]">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-[#dbdbd7] dark:bg-[#3E3E3A]" />
-                                        </span>
-                                    </span>
-                                    <span>
-                                        Watch video tutorials at
-                                        <a
-                                            href="https://laracasts.com"
-                                            target="_blank"
-                                            className="ml-1 inline-flex items-center space-x-1 font-medium text-[#f53003] underline underline-offset-4 dark:text-[#FF4433]"
-                                        >
-                                            <span>Laracasts</span>
-                                            <svg
-                                                width={10}
-                                                height={11}
-                                                viewBox="0 0 10 11"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-2.5 w-2.5"
-                                            >
-                                                <path
-                                                    d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                                    stroke="currentColor"
-                                                    strokeLinecap="square"
-                                                />
-                                            </svg>
-                                        </a>
-                                    </span>
-                                </li>
-                            </ul>
-                            <ul className="flex gap-3 text-sm leading-normal">
-                                <li>
-                                    <a
-                                        href="https://cloud.laravel.com"
-                                        target="_blank"
-                                        className="inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+
+                {/* ══════════════════════════════
+                    HERO
+                ══════════════════════════════ */}
+                <section className="relative overflow-hidden bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-6 py-16 lg:py-24">
+                    {/* Decorative blobs */}
+                    <div className="pointer-events-none absolute -top-32 -right-32 h-125 w-125 rounded-full bg-sna-teal/10 blur-3xl" />
+                    <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-sna-green/10 blur-2xl" />
+
+                    <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 lg:flex-row lg:gap-16">
+                        {/* ── Left: text ── */}
+                        <div className="flex flex-1 flex-col items-start gap-6">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-sna-teal/15 px-4 py-1.5 text-sm font-semibold tracking-wide text-sna-teal-dark uppercase">
+                                <StarIcon className="h-4 w-4 shrink-0" />
+                                Syndicat National des Aidants
+                            </span>
+
+                            <h1 className="text-4xl leading-tight font-bold text-gray-800 sm:text-5xl lg:text-6xl">
+                                Aux côtés des familles qui{' '}
+                                <span className="relative text-sna-teal">
+                                    accompagnent un enfant
+                                    {/* underline squiggle */}
+                                    <svg
+                                        className="absolute -bottom-2 left-0 w-full"
+                                        height="8"
+                                        viewBox="0 0 300 8"
+                                        preserveAspectRatio="none"
+                                        fill="none"
                                     >
-                                        Deploy now
-                                    </a>
-                                </li>
-                            </ul>
+                                        <path
+                                            d="M0 6 Q37.5 1 75 6 Q112.5 11 150 6 Q187.5 1 225 6 Q262.5 11 300 6"
+                                            stroke="#4abfbf"
+                                            strokeWidth="2.5"
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+                                </span>{' '}
+                                en situation de handicap
+                            </h1>
+
+                            <p className="max-w-xl text-lg leading-relaxed text-gray-500 sm:text-xl">
+                                Parce que l'amour que vous portez à votre enfant
+                                mérite reconnaissance, protection et soutien, le
+                                SNA agit chaque jour pour transformer votre
+                                quotidien.
+                            </p>
+
+                            {/* Trust badges */}
+                            <div className="flex flex-wrap gap-3">
+                                {[
+                                    {
+                                        icon: <ShieldIcon />,
+                                        label: 'Droits défendus',
+                                    },
+                                    {
+                                        icon: <UsersIcon />,
+                                        label: 'Familles réunies',
+                                    },
+                                    {
+                                        icon: <HandIcon />,
+                                        label: 'Soutien concret',
+                                    },
+                                ].map((b) => (
+                                    <span
+                                        key={b.label}
+                                        className="inline-flex items-center gap-1.5 rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm"
+                                    >
+                                        <span className="shrink-0 text-sna-teal">
+                                            {b.icon}
+                                        </span>
+                                        {b.label}
+                                    </span>
+                                ))}
+                            </div>
+
+                            <div className="flex flex-col gap-4 pt-2 sm:flex-row">
+                                <a
+                                    href="#actions"
+                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-sna-teal/30 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
+                                >
+                                    Nos actions <ArrowRightIcon />
+                                </a>
+                                <a
+                                    href="#moi-aussi"
+                                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-sna-teal px-8 py-3.5 text-base font-semibold text-sna-teal transition-colors hover:bg-sna-teal-light"
+                                >
+                                    « Moi aussi, j'ai vécu ça »
+                                </a>
+                            </div>
+
+                            {/* Key figures */}
+                            <div className="mt-2 grid w-full grid-cols-2 gap-5 rounded-2xl border border-gray-100 bg-white/90 px-6 py-5 shadow-md backdrop-blur sm:grid-cols-4">
+                                {[
+                                    {
+                                        value: '11 M',
+                                        label: 'Aidants en France',
+                                        icon: (
+                                            <svg
+                                                className="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={1.8}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+                                                />
+                                            </svg>
+                                        ),
+                                    },
+                                    {
+                                        value: '700 K',
+                                        label: 'Enfants handicapés',
+                                        icon: (
+                                            <svg
+                                                className="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={1.8}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                                />
+                                            </svg>
+                                        ),
+                                    },
+                                    {
+                                        value: '1/5',
+                                        label: 'Aidants épuisés',
+                                        icon: (
+                                            <svg
+                                                className="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={1.8}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                                />
+                                            </svg>
+                                        ),
+                                    },
+                                    {
+                                        value: '80%',
+                                        label: 'Femmes aidantes',
+                                        icon: (
+                                            <svg
+                                                className="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={1.8}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                                />
+                                            </svg>
+                                        ),
+                                    },
+                                ].map((stat) => (
+                                    <div
+                                        key={stat.label}
+                                        className="flex flex-col items-center gap-1.5 text-center"
+                                    >
+                                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sna-teal/10 text-sna-teal">
+                                            {stat.icon}
+                                        </span>
+                                        <span className="text-xl leading-none font-extrabold text-sna-teal sm:text-2xl">
+                                            {stat.value}
+                                        </span>
+                                        <span className="text-xs leading-tight text-gray-500">
+                                            {stat.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className="relative -mb-px aspect-[335/376] w-full shrink-0 overflow-hidden rounded-t-lg bg-[#fff2f2] lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px] lg:rounded-t-none lg:rounded-r-lg dark:bg-[#1D0002]">
-                            <svg
-                                className="w-full max-w-none translate-y-0 text-[#F53003] opacity-100 transition-all duration-750 dark:text-[#F61500] starting:translate-y-6 starting:opacity-0"
-                                viewBox="0 0 438 104"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M17.2036 -3H0V102.197H49.5189V86.7187H17.2036V-3Z"
-                                    fill="currentColor"
-                                />
-                                <path
-                                    d="M110.256 41.6337C108.061 38.1275 104.945 35.3731 100.905 33.3681C96.8667 31.3647 92.8016 30.3618 88.7131 30.3618C83.4247 30.3618 78.5885 31.3389 74.201 33.2923C69.8111 35.2456 66.0474 37.928 62.9059 41.3333C59.7643 44.7401 57.3198 48.6726 55.5754 53.1293C53.8287 57.589 52.9572 62.274 52.9572 67.1813C52.9572 72.1925 53.8287 76.8995 55.5754 81.3069C57.3191 85.7173 59.7636 89.6241 62.9059 93.0293C66.0474 96.4361 69.8119 99.1155 74.201 101.069C78.5885 103.022 83.4247 103.999 88.7131 103.999C92.8016 103.999 96.8667 102.997 100.905 100.994C104.945 98.9911 108.061 96.2359 110.256 92.7282V102.195H126.563V32.1642H110.256V41.6337ZM108.76 75.7472C107.762 78.4531 106.366 80.8078 104.572 82.8112C102.776 84.8161 100.606 86.4183 98.0637 87.6206C95.5202 88.823 92.7004 89.4238 89.6103 89.4238C86.5178 89.4238 83.7252 88.823 81.2324 87.6206C78.7388 86.4183 76.5949 84.8161 74.7998 82.8112C73.004 80.8078 71.6319 78.4531 70.6856 75.7472C69.7356 73.0421 69.2644 70.1868 69.2644 67.1821C69.2644 64.1758 69.7356 61.3205 70.6856 58.6154C71.6319 55.9102 73.004 53.5571 74.7998 51.5522C76.5949 49.5495 78.738 47.9451 81.2324 46.7427C83.7252 45.5404 86.5178 44.9396 89.6103 44.9396C92.7012 44.9396 95.5202 45.5404 98.0637 46.7427C100.606 47.9451 102.776 49.5487 104.572 51.5522C106.367 53.5571 107.762 55.9102 108.76 58.6154C109.756 61.3205 110.256 64.1758 110.256 67.1821C110.256 70.1868 109.756 73.0421 108.76 75.7472Z"
-                                    fill="currentColor"
-                                />
-                                <path
-                                    d="M242.805 41.6337C240.611 38.1275 237.494 35.3731 233.455 33.3681C229.416 31.3647 225.351 30.3618 221.262 30.3618C215.974 30.3618 211.138 31.3389 206.75 33.2923C202.36 35.2456 198.597 37.928 195.455 41.3333C192.314 44.7401 189.869 48.6726 188.125 53.1293C186.378 57.589 185.507 62.274 185.507 67.1813C185.507 72.1925 186.378 76.8995 188.125 81.3069C189.868 85.7173 192.313 89.6241 195.455 93.0293C198.597 96.4361 202.361 99.1155 206.75 101.069C211.138 103.022 215.974 103.999 221.262 103.999C225.351 103.999 229.416 102.997 233.455 100.994C237.494 98.9911 240.611 96.2359 242.805 92.7282V102.195H259.112V32.1642H242.805V41.6337ZM241.31 75.7472C240.312 78.4531 238.916 80.8078 237.122 82.8112C235.326 84.8161 233.156 86.4183 230.614 87.6206C228.07 88.823 225.251 89.4238 222.16 89.4238C219.068 89.4238 216.275 88.823 213.782 87.6206C211.289 86.4183 209.145 84.8161 207.35 82.8112C205.554 80.8078 204.182 78.4531 203.236 75.7472C202.286 73.0421 201.814 70.1868 201.814 67.1821C201.814 64.1758 202.286 61.3205 203.236 58.6154C204.182 55.9102 205.554 53.5571 207.35 51.5522C209.145 49.5495 211.288 47.9451 213.782 46.7427C216.275 45.5404 219.068 44.9396 222.16 44.9396C225.251 44.9396 228.07 45.5404 230.614 46.7427C233.156 47.9451 235.326 49.5487 237.122 51.5522C238.917 53.5571 240.312 55.9102 241.31 58.6154C242.306 61.3205 242.806 64.1758 242.806 67.1821C242.805 70.1868 242.305 73.0421 241.31 75.7472Z"
-                                    fill="currentColor"
-                                />
-                                <path
-                                    d="M438 -3H421.694V102.197H438V-3Z"
-                                    fill="currentColor"
-                                />
-                                <path
-                                    d="M139.43 102.197H155.735V48.2834H183.712V32.1665H139.43V102.197Z"
-                                    fill="currentColor"
-                                />
-                                <path
-                                    d="M324.49 32.1665L303.995 85.794L283.498 32.1665H266.983L293.748 102.197H314.242L341.006 32.1665H324.49Z"
-                                    fill="currentColor"
-                                />
-                                <path
-                                    d="M376.571 30.3656C356.603 30.3656 340.797 46.8497 340.797 67.1828C340.797 89.6597 356.094 104 378.661 104C391.29 104 399.354 99.1488 409.206 88.5848L398.189 80.0226C398.183 80.031 389.874 90.9895 377.468 90.9895C363.048 90.9895 356.977 79.3111 356.977 73.269H411.075C413.917 50.1328 398.775 30.3656 376.571 30.3656ZM357.02 61.0967C357.145 59.7487 359.023 43.3761 376.442 43.3761C393.861 43.3761 395.978 59.7464 396.099 61.0967H357.02Z"
-                                    fill="currentColor"
-                                />
-                            </svg>
-                            <svg
-                                className="relative -mt-[4.9rem] -ml-8 w-[448px] max-w-none lg:-mt-[6.6rem] lg:ml-0 dark:hidden"
-                                viewBox="0 0 440 376"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <g className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0">
-                                    <path
-                                        d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z"
-                                        fill="black"
-                                    />
-                                    <path
-                                        d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z"
-                                        fill="black"
-                                    />
-                                    <path
-                                        d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z"
-                                        fill="#F8B803"
-                                    />
-                                    <path
-                                        d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z"
-                                        fill="#F8B803"
-                                    />
-                                    <path
-                                        d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                                <g
-                                    style={{ mixBlendMode: 'hard-light' }}
-                                    className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0"
-                                >
-                                    <path
-                                        d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z"
-                                        fill="#F0ACB8"
-                                    />
-                                    <path
-                                        d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z"
-                                        fill="#F0ACB8"
-                                    />
-                                    <path
-                                        d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                                <g className="translate-y-0 opacity-100 mix-blend-plus-darker transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0">
-                                    <path
-                                        d="M230.951 281.792L231.282 281.793C238.128 274.907 248.453 265.823 262.256 254.539C275.617 243.256 285.666 234.267 292.402 227.573C299.027 220.688 303.554 213.421 305.983 205.771C308.412 198.12 307.253 190.183 302.504 181.959C297.203 172.778 289.749 165.415 280.142 159.868C270.645 154.13 260.596 151.26 249.995 151.26C239.615 151.26 232.823 154.033 229.621 159.579C226.309 164.934 227.413 172.393 232.935 181.956L168.335 181.954C159.058 165.888 155.082 151.543 156.407 138.92C157.953 126.298 164.247 116.544 175.289 109.659C186.442 102.583 201.294 99.045 219.846 99.0457C239.281 99.0464 258.551 102.585 277.655 109.663C296.649 116.549 313.986 126.303 329.667 138.927C345.349 151.551 357.827 165.895 367.104 181.961C375.718 196.88 379.528 209.981 378.535 221.265C377.762 232.549 374.063 242.399 367.438 250.814C361.033 259.229 351.095 269.557 337.624 281.796L419.782 281.8L448.605 331.719L259.774 331.712L230.951 281.792Z"
-                                        fill="#F3BEC7"
-                                    />
-                                    <path
-                                        d="M51.8063 152.402L28.9479 152.401L-0.0411453 102.195L85.7608 102.198L218.282 331.711L155.339 331.709L51.8063 152.402Z"
-                                        fill="#F3BEC7"
-                                    />
-                                    <path
-                                        d="M230.951 281.792L231.282 281.793C238.128 274.907 248.453 265.823 262.256 254.539C275.617 243.256 285.666 234.267 292.402 227.573C299.027 220.688 303.554 213.421 305.983 205.771C308.412 198.12 307.253 190.183 302.504 181.959C297.203 172.778 289.749 165.415 280.142 159.868C270.645 154.13 260.596 151.26 249.995 151.26C239.615 151.26 232.823 154.033 229.621 159.579C226.309 164.934 227.413 172.393 232.935 181.956L168.335 181.954C159.058 165.888 155.082 151.543 156.407 138.92C157.953 126.298 164.247 116.544 175.289 109.659C186.442 102.583 201.294 99.045 219.846 99.0457C239.281 99.0464 258.551 102.585 277.655 109.663C296.649 116.549 313.986 126.303 329.667 138.927C345.349 151.551 357.827 165.895 367.104 181.961C375.718 196.88 379.528 209.981 378.535 221.265C377.762 232.549 374.063 242.399 367.438 250.814C361.033 259.229 351.095 269.557 337.624 281.796L419.782 281.8L448.605 331.719L259.774 331.712L230.951 281.792Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M51.8063 152.402L28.9479 152.401L-0.0411453 102.195L85.7608 102.198L218.282 331.711L155.339 331.709L51.8063 152.402Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                                <g className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0">
-                                    <path
-                                        d="M188.467 355.363L188.798 355.363C195.644 348.478 205.969 339.393 219.772 328.11C233.133 316.826 243.181 307.837 249.917 301.144C253.696 297.217 256.792 293.166 259.205 288.991C261.024 285.845 262.455 282.628 263.499 279.341C265.928 271.691 264.768 263.753 260.02 255.529C254.719 246.349 247.265 238.985 237.657 233.438C228.16 227.7 218.111 224.831 207.51 224.83C197.13 224.83 190.339 227.603 187.137 233.149C183.824 238.504 184.929 245.963 190.45 255.527L125.851 255.524C116.574 239.458 112.598 225.114 113.923 212.491C114.615 206.836 116.261 201.756 118.859 197.253C122.061 191.704 126.709 187.03 132.805 183.229C143.958 176.153 158.81 172.615 177.362 172.616C196.797 172.617 216.067 176.156 235.171 183.233C254.164 190.119 271.502 199.874 287.183 212.497C302.864 225.121 315.343 239.466 324.62 255.532C333.233 270.45 337.044 283.551 336.05 294.835C335.46 303.459 333.16 311.245 329.151 318.194C327.915 320.337 326.515 322.4 324.953 324.384C318.549 332.799 308.611 343.127 295.139 355.367L377.297 355.37L406.121 405.289L217.29 405.282L188.467 355.363Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M9.32197 225.972L-13.5365 225.971L-42.5255 175.765L43.2765 175.768L175.798 405.282L112.854 405.279L9.32197 225.972Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M345.247 111.915C329.566 99.2919 312.229 89.5371 293.235 82.6512L235.167 183.228C254.161 190.114 271.498 199.869 287.179 212.492L345.247 111.915Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M382.686 154.964C373.41 138.898 360.931 124.553 345.25 111.93L287.182 212.506C302.863 225.13 315.342 239.475 324.618 255.541L382.686 154.964Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M293.243 82.6472C274.139 75.57 254.869 72.031 235.434 72.0303L177.366 172.607C196.801 172.608 216.071 176.147 235.175 183.224L293.243 82.6472Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M394.118 194.257C395.112 182.973 391.301 169.872 382.688 154.953L324.619 255.53C333.233 270.448 337.044 283.55 336.05 294.834L394.118 194.257Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M235.432 72.0311C216.88 72.0304 202.027 75.5681 190.875 82.6442L132.806 183.221C143.959 176.145 158.812 172.607 177.363 172.608L235.432 72.0311Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M265.59 124.25C276.191 124.251 286.24 127.12 295.737 132.858L237.669 233.435C228.172 227.697 218.123 224.828 207.522 224.827L265.59 124.25Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M295.719 132.859C305.326 138.406 312.78 145.77 318.081 154.95L260.013 255.527C254.712 246.347 247.258 238.983 237.651 233.436L295.719 132.859Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M387.218 217.608C391.227 210.66 393.527 202.874 394.117 194.25L336.049 294.827C335.459 303.451 333.159 311.237 329.15 318.185L387.218 217.608Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M245.211 132.577C248.413 127.03 255.204 124.257 265.584 124.258L207.516 224.835C197.136 224.834 190.345 227.607 187.143 233.154L245.211 132.577Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M318.094 154.945C322.842 163.17 324.002 171.107 321.573 178.757L263.505 279.334C265.934 271.684 264.774 263.746 260.026 255.522L318.094 154.945Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M176.925 96.6737C180.127 91.1249 184.776 86.4503 190.871 82.6499L132.803 183.227C126.708 187.027 122.059 191.702 118.857 197.25L176.925 96.6737Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M387.226 217.606C385.989 219.749 384.59 221.813 383.028 223.797L324.96 324.373C326.522 322.39 327.921 320.326 329.157 318.183L387.226 217.606Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M317.269 188.408C319.087 185.262 320.519 182.045 321.562 178.758L263.494 279.335C262.451 282.622 261.019 285.839 259.201 288.985L317.269 188.408Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M245.208 132.573C241.895 137.928 243 145.387 248.522 154.95L190.454 255.527C184.932 245.964 183.827 238.505 187.14 233.15L245.208 132.573Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M176.93 96.6719C174.331 101.175 172.686 106.255 171.993 111.91L113.925 212.487C114.618 206.831 116.263 201.752 118.862 197.249L176.93 96.6719Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M317.266 188.413C314.853 192.589 311.757 196.64 307.978 200.566L249.91 301.143C253.689 297.216 256.785 293.166 259.198 288.99L317.266 188.413Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M464.198 304.708L435.375 254.789L377.307 355.366L406.13 405.285L464.198 304.708Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M353.209 254.787C366.68 242.548 376.618 232.22 383.023 223.805L324.955 324.382C318.55 332.797 308.612 343.124 295.141 355.364L353.209 254.787Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M435.37 254.787L353.212 254.784L295.144 355.361L377.302 355.364L435.37 254.787Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M183.921 154.947L248.521 154.95L190.453 255.527L125.853 255.524L183.921 154.947Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M171.992 111.914C170.668 124.537 174.643 138.881 183.92 154.947L125.852 255.524C116.575 239.458 112.599 225.114 113.924 212.491L171.992 111.914Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M307.987 200.562C301.251 207.256 291.203 216.244 277.842 227.528L219.774 328.105C233.135 316.821 243.183 307.832 249.919 301.139L307.987 200.562Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M15.5469 75.1797L44.5359 125.386L-13.5321 225.963L-42.5212 175.756L15.5469 75.1797Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M277.836 227.536C264.033 238.82 253.708 247.904 246.862 254.789L188.794 355.366C195.64 348.481 205.965 339.397 219.768 328.113L277.836 227.536Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M275.358 304.706L464.189 304.713L406.12 405.29L217.29 405.283L275.358 304.706Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M44.5279 125.39L67.3864 125.39L9.31834 225.967L-13.5401 225.966L44.5279 125.39Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M101.341 75.1911L233.863 304.705L175.795 405.282L43.2733 175.768L101.341 75.1911ZM15.5431 75.19L-42.525 175.767L43.277 175.77L101.345 75.1932L15.5431 75.19Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M246.866 254.784L246.534 254.784L188.466 355.361L188.798 355.361L246.866 254.784Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M246.539 254.781L275.362 304.701L217.294 405.277L188.471 355.358L246.539 254.781Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M67.3906 125.391L170.923 304.698L112.855 405.275L9.32257 225.967L67.3906 125.391Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M170.921 304.699L233.865 304.701L175.797 405.278L112.853 405.276L170.921 304.699Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                </g>
-                                <g
-                                    style={{ mixBlendMode: 'hard-light' }}
-                                    className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0"
-                                >
-                                    <path
-                                        d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z"
-                                        fill="#F0ACB8"
-                                    />
-                                    <path
-                                        d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                        strokeLinejoin="round"
-                                    />
-                                </g>
-                                <g
-                                    style={{ mixBlendMode: 'hard-light' }}
-                                    className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0"
-                                >
-                                    <path
-                                        d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z"
-                                        fill="#F0ACB8"
-                                    />
-                                    <path
-                                        d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z"
-                                        stroke="#1B1B18"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                            </svg>
-                            <svg
-                                className="relative -mt-[4.9rem] -ml-8 hidden w-[448px] max-w-none lg:-mt-[6.6rem] lg:ml-0 dark:block"
-                                viewBox="0 0 440 376"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <g className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0">
-                                    <path
-                                        d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z"
-                                        fill="black"
-                                    />
-                                    <path
-                                        d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z"
-                                        fill="black"
-                                    />
-                                    <path
-                                        d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z"
-                                        fill="#391800"
-                                    />
-                                    <path
-                                        d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z"
-                                        fill="#391800"
-                                    />
-                                    <path
-                                        d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                                <g
-                                    className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0"
-                                    style={{ mixBlendMode: 'hard-light' }}
-                                >
-                                    <path
-                                        d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z"
-                                        fill="#733000"
-                                    />
-                                    <path
-                                        d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z"
-                                        fill="#733000"
-                                    />
-                                    <path
-                                        d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                                <g className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0">
-                                    <path
-                                        d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.726 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                    <path
-                                        d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                                <g className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0">
-                                    <path
-                                        d="M188.467 355.363L188.798 355.363C195.644 348.478 205.969 339.393 219.772 328.11C233.133 316.826 243.181 307.837 249.917 301.144C253.696 297.217 256.792 293.166 259.205 288.991C261.024 285.845 262.455 282.628 263.499 279.341C265.928 271.691 264.768 263.753 260.02 255.529C254.719 246.349 247.265 238.985 237.657 233.438C228.16 227.7 218.111 224.831 207.51 224.83C197.13 224.83 190.339 227.603 187.137 233.149C183.824 238.504 184.929 245.963 190.45 255.527L125.851 255.524C116.574 239.458 112.598 225.114 113.923 212.491C114.615 206.836 116.261 201.756 118.859 197.253C122.061 191.704 126.709 187.03 132.805 183.229C143.958 176.153 158.81 172.615 177.362 172.616C196.797 172.617 216.067 176.156 235.171 183.233C254.164 190.119 271.502 199.874 287.183 212.497C302.864 225.121 315.343 239.466 324.62 255.532C333.233 270.45 337.044 283.551 336.05 294.835C335.46 303.459 333.16 311.245 329.151 318.194C327.915 320.337 326.515 322.4 324.953 324.384C318.549 332.799 308.611 343.127 295.139 355.367L377.297 355.37L406.121 405.289L217.29 405.282L188.467 355.363Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M9.32197 225.972L-13.5365 225.971L-42.5255 175.765L43.2765 175.768L175.798 405.282L112.854 405.279L9.32197 225.972Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M345.247 111.915C329.566 99.2919 312.229 89.5371 293.235 82.6512L235.167 183.228C254.161 190.114 271.498 199.869 287.179 212.492L345.247 111.915Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M382.686 154.964C373.41 138.898 360.931 124.553 345.25 111.93L287.182 212.506C302.863 225.13 315.342 239.475 324.618 255.541L382.686 154.964Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M293.243 82.6472C274.139 75.57 254.869 72.031 235.434 72.0303L177.366 172.607C196.801 172.608 216.071 176.147 235.175 183.224L293.243 82.6472Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M394.118 194.257C395.112 182.973 391.301 169.872 382.688 154.953L324.619 255.53C333.233 270.448 337.044 283.55 336.05 294.834L394.118 194.257Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M235.432 72.0311C216.88 72.0304 202.027 75.5681 190.875 82.6442L132.806 183.221C143.959 176.145 158.812 172.607 177.363 172.608L235.432 72.0311Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M265.59 124.25C276.191 124.251 286.24 127.12 295.737 132.858L237.669 233.435C228.172 227.697 218.123 224.828 207.522 224.827L265.59 124.25Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M295.719 132.859C305.326 138.406 312.78 145.77 318.081 154.95L260.013 255.527C254.712 246.347 247.258 238.983 237.651 233.436L295.719 132.859Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M387.218 217.608C391.227 210.66 393.527 202.874 394.117 194.25L336.049 294.827C335.459 303.451 333.159 311.237 329.15 318.185L387.218 217.608Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M245.211 132.577C248.413 127.03 255.204 124.257 265.584 124.258L207.516 224.835C197.136 224.834 190.345 227.607 187.143 233.154L245.211 132.577Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M318.094 154.945C322.842 163.17 324.002 171.107 321.573 178.757L263.505 279.334C265.934 271.684 264.774 263.746 260.026 255.522L318.094 154.945Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M176.925 96.6737C180.127 91.1249 184.776 86.4503 190.871 82.6499L132.803 183.227C126.708 187.027 122.059 191.702 118.857 197.25L176.925 96.6737Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M387.226 217.606C385.989 219.749 384.59 221.813 383.028 223.797L324.96 324.373C326.522 322.39 327.921 320.326 329.157 318.183L387.226 217.606Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M317.269 188.408C319.087 185.262 320.519 182.045 321.562 178.758L263.494 279.335C262.451 282.622 261.019 285.839 259.201 288.985L317.269 188.408Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M245.208 132.573C241.895 137.928 243 145.387 248.522 154.95L190.454 255.527C184.932 245.964 183.827 238.505 187.14 233.15L245.208 132.573Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M176.93 96.6719C174.331 101.175 172.686 106.255 171.993 111.91L113.925 212.487C114.618 206.831 116.263 201.752 118.862 197.249L176.93 96.6719Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M317.266 188.413C314.853 192.589 311.757 196.64 307.978 200.566L249.91 301.143C253.689 297.216 256.785 293.166 259.198 288.99L317.266 188.413Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M464.198 304.708L435.375 254.789L377.307 355.366L406.13 405.285L464.198 304.708Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M353.209 254.787C366.68 242.548 376.618 232.22 383.023 223.805L324.955 324.382C318.55 332.797 308.612 343.124 295.141 355.364L353.209 254.787Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M435.37 254.787L353.212 254.784L295.144 355.361L377.302 355.364L435.37 254.787Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M183.921 154.947L248.521 154.95L190.453 255.527L125.853 255.524L183.921 154.947Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M171.992 111.914C170.668 124.537 174.643 138.881 183.92 154.947L125.852 255.524C116.575 239.458 112.599 225.114 113.924 212.491L171.992 111.914Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M307.987 200.562C301.251 207.256 291.203 216.244 277.842 227.528L219.774 328.105C233.135 316.821 243.183 307.832 249.919 301.139L307.987 200.562Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M15.5469 75.1797L44.5359 125.386L-13.5321 225.963L-42.5212 175.756L15.5469 75.1797Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M277.836 227.536C264.033 238.82 253.708 247.904 246.862 254.789L188.794 355.366C195.64 348.481 205.965 339.397 219.768 328.113L277.836 227.536Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M275.358 304.706L464.189 304.713L406.12 405.29L217.29 405.283L275.358 304.706Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M44.5279 125.39L67.3864 125.39L9.31834 225.967L-13.5401 225.966L44.5279 125.39Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M101.341 75.1911L233.863 304.705L175.795 405.282L43.2733 175.768L101.341 75.1911ZM15.5431 75.19L-42.525 175.767L43.277 175.77L101.345 75.1932L15.5431 75.19Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M246.866 254.784L246.534 254.784L188.466 355.361L188.798 355.361L246.866 254.784Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M246.539 254.781L275.362 304.701L217.294 405.277L188.471 355.358L246.539 254.781Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M67.3906 125.391L170.923 304.698L112.855 405.275L9.32257 225.967L67.3906 125.391Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                    <path
-                                        d="M170.921 304.699L233.865 304.701L175.797 405.278L112.853 405.276L170.921 304.699Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="bevel"
-                                    />
-                                </g>
-                                <g
-                                    className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0"
-                                    style={{ mixBlendMode: 'hard-light' }}
-                                >
-                                    <path
-                                        d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z"
-                                        fill="#4B0600"
-                                    />
-                                    <path
-                                        d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                        strokeLinejoin="round"
-                                    />
-                                </g>
-                                <g
-                                    className="translate-y-0 opacity-100 transition-all delay-300 duration-750 starting:translate-y-4 starting:opacity-0"
-                                    style={{ mixBlendMode: 'hard-light' }}
-                                >
-                                    <path
-                                        d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z"
-                                        fill="#4B0600"
-                                    />
-                                    <path
-                                        d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z"
-                                        stroke="#FF750F"
-                                        strokeWidth={1}
-                                    />
-                                </g>
-                            </svg>
-                            <div className="absolute inset-0 rounded-t-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-t-none lg:rounded-r-lg dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]" />
+
+                        {/* ── Right: illustration ── */}
+                        <div className="relative flex w-full flex-1 items-center justify-center lg:max-w-md">
+                            {/* Floating accent cards */}
+                            <div className="absolute -top-4 -left-4 z-10 flex items-center gap-2 rounded-2xl border border-gray-50 bg-white px-4 py-3 shadow-lg lg:-left-8">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-400">
+                                    <svg
+                                        className="h-4 w-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </span>
+                                <div>
+                                    <p className="text-xs leading-none font-bold text-gray-800">
+                                        11 M d'aidants
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-gray-400">
+                                        en France
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="absolute right-2 -bottom-4 z-10 flex items-center gap-2 rounded-2xl border border-gray-50 bg-white px-4 py-3 shadow-lg lg:-right-4">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sna-teal/10 text-sna-teal">
+                                    <svg
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                        />
+                                    </svg>
+                                </span>
+                                <div>
+                                    <p className="text-xs leading-none font-bold text-gray-800">
+                                        Vos droits
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-gray-400">
+                                        défendus
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="absolute top-1/2 -right-2 z-10 flex -translate-y-1/2 items-center gap-2 rounded-2xl bg-sna-teal px-4 py-3 shadow-lg lg:-right-6">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-white">
+                                    <svg
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
+                                        />
+                                    </svg>
+                                </span>
+                                <div>
+                                    <p className="text-xs leading-none font-bold text-white">
+                                        Solidarité
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-white/70">
+                                        active
+                                    </p>
+                                </div>
+                            </div>
+
+                            <HeroIllustration />
                         </div>
-                    </main>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    ALERT BANNER – Empathy
+                ══════════════════════════════ */}
+                <div className="bg-sna-teal px-6 py-4">
+                    <p className="mx-auto max-w-4xl text-center text-sm font-medium text-white sm:text-base">
+                        <span className="font-bold">
+                            Vous le vivez chaque jour :
+                        </span>{' '}
+                        la lourdeur administrative, l'épuisement, le sentiment
+                        d'être seul(e) face aux institutions.{' '}
+                        <a
+                            href="#moi-aussi"
+                            className="font-semibold underline underline-offset-2 hover:text-white/80"
+                        >
+                            Votre témoignage peut tout changer →
+                        </a>
+                    </p>
                 </div>
-                <div className="hidden h-14.5 lg:block"></div>
+
+                {/* ══════════════════════════════
+                    À PROPOS
+                ══════════════════════════════ */}
+                <section id="apropos" className="bg-white px-6 py-20">
+                    <div className="mx-auto flex max-w-6xl flex-col items-center gap-16 lg:flex-row">
+                        {/* Text */}
+                        <div className="flex-1 space-y-6">
+                            <span className="inline-block rounded-full bg-sna-green/15 px-4 py-1 text-xs font-bold tracking-widest text-[#6a8a20] uppercase">
+                                Qui sommes-nous
+                            </span>
+                            <h2 className="text-3xl leading-tight font-bold text-gray-800 sm:text-4xl">
+                                Une voix collective pour les familles invisibles
+                            </h2>
+                            <p className="leading-relaxed text-gray-500">
+                                Le{' '}
+                                <strong className="text-gray-700">
+                                    Syndicat National des Aidants (SNA)
+                                </strong>{' '}
+                                est né d'un constat simple : les familles qui
+                                accompagnent un enfant en situation de handicap
+                                portent une charge extraordinaire —
+                                émotionnelle, administrative, financière — dans
+                                un quasi-isolement.
+                            </p>
+                            <p className="leading-relaxed text-gray-500">
+                                Face à la complexité des démarches (MDPH, CAF,
+                                établissements spécialisés), au manque de
+                                places, aux politiques publiques déconnectées du
+                                terrain, le SNA fédère ces familles et porte
+                                leur voix auprès des décideurs, des médias et
+                                des partenaires institutionnels.
+                            </p>
+                            <ul className="space-y-2">
+                                {[
+                                    "Reconnaissance officielle du statut d'aidant familial",
+                                    'Simplification des démarches MDPH / CAF',
+                                    'Sécurité financière et protection juridique',
+                                    'Droit au répit réel et accompagnement',
+                                ].map((item) => (
+                                    <li
+                                        key={item}
+                                        className="flex items-center gap-2 text-sm text-gray-600"
+                                    >
+                                        <CheckIcon />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                            <a
+                                href="#actions"
+                                className="inline-flex items-center gap-2 font-semibold text-sna-teal transition-colors hover:text-sna-teal-dark"
+                            >
+                                Nos engagements <ArrowRightIcon />
+                            </a>
+                        </div>
+
+                        {/* Value cards */}
+                        <div className="grid flex-1 grid-cols-2 gap-4">
+                            {[
+                                {
+                                    emoji: '🤝',
+                                    bg: 'bg-sna-teal-light',
+                                    title: 'Solidarité',
+                                    desc: "Rompre l'isolement des aidants en créant une communauté soudée.",
+                                },
+                                {
+                                    emoji: '🛡️',
+                                    bg: 'bg-sna-green/10',
+                                    title: 'Protection',
+                                    desc: 'Défendre vos droits face aux administrations et aux institutions.',
+                                },
+                                {
+                                    emoji: '💬',
+                                    bg: 'bg-sna-teal-light',
+                                    title: 'Écoute',
+                                    desc: "Un espace d'expression sécurisé pour chaque famille.",
+                                },
+                                {
+                                    emoji: '📣',
+                                    bg: 'bg-sna-green/10',
+                                    title: 'Représentation',
+                                    desc: 'Porter la parole des familles au niveau national et législatif.',
+                                },
+                            ].map((item) => (
+                                <div
+                                    key={item.title}
+                                    className="group flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-5 transition-shadow hover:shadow-md"
+                                >
+                                    <div
+                                        className={`h-12 w-12 rounded-2xl ${item.bg} flex items-center justify-center text-2xl transition-transform group-hover:scale-110`}
+                                    >
+                                        {item.emoji}
+                                    </div>
+                                    <h3 className="font-bold text-gray-800">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-sm leading-relaxed text-gray-500">
+                                        {item.desc}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    CE QUE VOUS VIVEZ
+                    (Empathy section)
+                ══════════════════════════════ */}
+                <section className="bg-gray-50 px-6 py-20">
+                    <div className="mx-auto max-w-6xl space-y-12">
+                        <SectionHeader
+                            badge="Ce que vous vivez"
+                            title="Vous n'êtes pas seul(e)"
+                            subtitle="Des milliers de familles partagent les mêmes difficultés au quotidien. Le SNA transforme ces épreuves individuelles en force collective."
+                        />
+
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {[
+                                {
+                                    emoji: '🏛️',
+                                    quote: '"Il n\'y a pas de budget."',
+                                    context:
+                                        'Ce que vous entendez dans les institutions',
+                                    pain: 'Lourdeur administrative (MDPH, CAF)',
+                                    color: 'border-l-sna-teal',
+                                },
+                                {
+                                    emoji: '⏳',
+                                    quote: '"Il faut patienter."',
+                                    context: "Ce que l'on vous répond",
+                                    pain: 'Manque de places en structure spécialisée',
+                                    color: 'border-l-sna-green',
+                                },
+                                {
+                                    emoji: '😔',
+                                    quote: '"Vous avez déjà de la chance."',
+                                    context:
+                                        'Ce que vous ressentez face à ce message',
+                                    pain: "Épuisement moral et sentiment d'injustice",
+                                    color: 'border-l-sna-teal',
+                                },
+                                {
+                                    emoji: '😰',
+                                    quote: '"Après moi, qui s\'en occupera ?"',
+                                    context:
+                                        "La peur de l'avenir qui ne vous quitte pas",
+                                    pain: 'Absence de perspective à long terme',
+                                    color: 'border-l-sna-green',
+                                },
+                                {
+                                    emoji: '💔',
+                                    quote: '"Je n\'ai plus le droit de m\'épuiser."',
+                                    context:
+                                        'La culpabilité de ne pas en faire assez',
+                                    pain: 'Charge mentale permanente et isolement',
+                                    color: 'border-l-sna-teal',
+                                },
+                                {
+                                    emoji: '✊',
+                                    quote: '"Je me bats seul(e) contre tout."',
+                                    context:
+                                        'Face aux refus et aux dossiers incomplets',
+                                    pain: 'Précarisation professionnelle et sociale',
+                                    color: 'border-l-sna-green',
+                                },
+                            ].map((item) => (
+                                <div
+                                    key={item.quote}
+                                    className={`rounded-2xl border border-l-4 border-gray-100 bg-white ${item.color} flex flex-col gap-3 p-6 shadow-sm transition-shadow hover:shadow-md`}
+                                >
+                                    <span className="text-3xl">
+                                        {item.emoji}
+                                    </span>
+                                    <p className="text-base font-semibold text-gray-700 italic">
+                                        {item.quote}
+                                    </p>
+                                    <p className="text-xs tracking-wide text-gray-400 uppercase">
+                                        {item.context}
+                                    </p>
+                                    <div className="mt-auto border-t border-gray-50 pt-3">
+                                        <p className="text-xs font-medium text-sna-teal">
+                                            ⚠️ {item.pain}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="text-center">
+                            <a
+                                href="#moi-aussi"
+                                className="inline-flex items-center gap-2 rounded-full bg-sna-teal px-8 py-3.5 font-semibold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
+                            >
+                                Partagez votre témoignage <ArrowRightIcon />
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    NOS ACTIONS (3 forms)
+                ══════════════════════════════ */}
+                <section id="actions" className="bg-white px-6 py-20">
+                    <div className="mx-auto max-w-6xl space-y-12">
+                        <SectionHeader
+                            badge="Nos actions"
+                            title="Comment agir avec nous ?"
+                            subtitle="Trois façons concrètes de rejoindre le mouvement et de faire entendre la voix des familles."
+                        />
+
+                        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                            {/* ── Card 1: Soutien / Donateur ── */}
+                            <div className="flex flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-linear-to-b from-[#f0fafa] to-white p-8 shadow-sm transition-shadow hover:shadow-lg">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg shadow-sna-teal/30">
+                                    <HeartIcon className="h-7 w-7 text-white" />
+                                </div>
+                                <div>
+                                    <span className="mb-2 inline-block text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
+                                        Soutien
+                                    </span>
+                                    <h3 className="text-xl leading-snug font-bold text-gray-800">
+                                        Devenez membre soutien
+                                    </h3>
+                                </div>
+                                <p className="flex-1 text-sm leading-relaxed text-gray-500">
+                                    Que votre soutien soit moral, technique ou
+                                    financier, votre engagement est essentiel.
+                                    Personnes physiques ou morales, rejoignez le
+                                    SNA et contribuez à nos projets en faveur
+                                    des aidants familiaux.
+                                </p>
+                                <ul className="space-y-1.5">
+                                    {[
+                                        'Restez informé(e) de nos événements',
+                                        'Participez aux projets du syndicat',
+                                        'Recevez nos publications',
+                                    ].map((b) => (
+                                        <li
+                                            key={b}
+                                            className="flex items-center gap-2 text-xs text-gray-600"
+                                        >
+                                            <CheckIcon /> {b}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <a
+                                    href="#formulaire-soutien"
+                                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
+                                >
+                                    Je soutiens le SNA <ArrowRightIcon />
+                                </a>
+                            </div>
+
+                            {/* ── Card 2: Partenaires institutionnels ── */}
+                            <div className="flex flex-col gap-6 rounded-3xl border border-sna-green/30 bg-linear-to-b from-[#f5faea] to-white p-8 shadow-sm transition-shadow hover:shadow-lg">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-green shadow-lg shadow-sna-green/30">
+                                    <UsersIcon className="h-7 w-7 text-white" />
+                                </div>
+                                <div>
+                                    <span className="mb-2 inline-block text-xs font-bold tracking-widest text-[#6a8a20] uppercase">
+                                        Partenariat
+                                    </span>
+                                    <h3 className="text-xl leading-snug font-bold text-gray-800">
+                                        Partenaires institutionnels
+                                    </h3>
+                                </div>
+                                <p className="flex-1 text-sm leading-relaxed text-gray-500">
+                                    Collectivités, associations, entreprises,
+                                    services de l'État — associez-vous au SNA
+                                    pour construire ensemble des solutions
+                                    durables en faveur des familles d'enfants
+                                    handicapés.
+                                </p>
+                                <ul className="space-y-1.5">
+                                    {[
+                                        'Soutien moral ou promotionnel',
+                                        "Apport d'expertise ou de services",
+                                        'Participation aux projets et événements',
+                                    ].map((b) => (
+                                        <li
+                                            key={b}
+                                            className="flex items-center gap-2 text-xs text-gray-600"
+                                        >
+                                            <span className="shrink-0 text-sna-green">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-4 w-4"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    strokeWidth={2.5}
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M5 13l4 4L19 7"
+                                                    />
+                                                </svg>
+                                            </span>
+                                            {b}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <a
+                                    href="#formulaire-partenaire"
+                                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-green px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-green-dark"
+                                >
+                                    Devenir partenaire <ArrowRightIcon />
+                                </a>
+                            </div>
+
+                            {/* ── Card 3: Moi aussi ── */}
+                            <div className="flex flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-linear-to-b from-[#f0fafa] to-white p-8 shadow-sm transition-shadow hover:shadow-lg">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg shadow-sna-teal/30">
+                                    <MegaphoneIcon className="h-7 w-7 text-white" />
+                                </div>
+                                <div>
+                                    <span className="mb-2 inline-block text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
+                                        Campagne
+                                    </span>
+                                    <h3 className="text-xl leading-snug font-bold text-gray-800">
+                                        « Moi aussi, j'ai vécu ça »
+                                    </h3>
+                                </div>
+                                <p className="flex-1 text-sm leading-relaxed text-gray-500">
+                                    Votre difficulté n'est pas isolée. Chaque
+                                    témoignage renforce l'action collective.
+                                    Ensemble, nous transformons des épreuves
+                                    individuelles en avancées pour toutes les
+                                    familles.
+                                </p>
+                                <blockquote className="border-l-2 border-sna-teal pl-3 text-xs text-gray-400 italic">
+                                    "Chaque témoignage compte. C'est ainsi que
+                                    nous transformons des difficultés
+                                    individuelles en avancées collectives."
+                                </blockquote>
+                                <a
+                                    href="#moi-aussi"
+                                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
+                                >
+                                    Je témoigne <ArrowRightIcon />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    FORMULAIRE SOUTIEN
+                ══════════════════════════════ */}
+                <section
+                    id="formulaire-soutien"
+                    className="bg-gray-50 px-6 py-20"
+                >
+                    <div className="mx-auto max-w-3xl space-y-8">
+                        <SectionHeader
+                            badge="Formulaire"
+                            title="Devenir membre soutien"
+                            subtitle="Merci de votre engagement en faveur des aidants. Formalisez votre soutien moral, technique ou financier."
+                        />
+
+                        <form className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Nom et prénom *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                        placeholder="Marie Dupont"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Nom de l'organisation (si personne
+                                        morale)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                        placeholder="Association XYZ"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Statut *
+                                </label>
+                                <div className="flex gap-6">
+                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+                                        <input
+                                            type="radio"
+                                            name="statut"
+                                            value="physique"
+                                            className="accent-sna-teal"
+                                        />
+                                        Personne physique
+                                    </label>
+                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+                                        <input
+                                            type="radio"
+                                            name="statut"
+                                            value="morale"
+                                            className="accent-sna-teal"
+                                        />
+                                        Personne morale
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Email *
+                                    </label>
+                                    <input
+                                        type="email"
+                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                        placeholder="marie@exemple.fr"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Téléphone
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                        placeholder="+33 6 00 00 00 00"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Engagements souhaités
+                                </label>
+                                <div className="space-y-2">
+                                    {[
+                                        'Souhaitez-vous être partenaire ?',
+                                        'Souhaitez-vous être informé(e) des événements ou projets ?',
+                                        'Souhaitez-vous participer aux événements ou projets ?',
+                                    ].map((item) => (
+                                        <label
+                                            key={item}
+                                            className="flex cursor-pointer items-center gap-3 text-sm text-gray-600"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 rounded accent-sna-teal"
+                                            />
+                                            {item}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                    Message libre (facultatif)
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                    placeholder="Partagez vos motivations ou questions…"
+                                />
+                            </div>
+
+                            <div className="space-y-2 border-t border-gray-50 pt-2">
+                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
+                                    />
+                                    J'autorise la réception d'informations par
+                                    email
+                                </label>
+                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
+                                    />
+                                    Je consens au traitement de mes données
+                                    personnelles conformément au RGPD
+                                </label>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
+                            >
+                                Envoyer ma demande de soutien
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    FORMULAIRE PARTENAIRE
+                ══════════════════════════════ */}
+                <section
+                    id="formulaire-partenaire"
+                    className="bg-white px-6 py-20"
+                >
+                    <div className="mx-auto max-w-3xl space-y-8">
+                        <SectionHeader
+                            badge="Partenariat institutionnel"
+                            title="Établissons un partenariat"
+                            subtitle="Le SNA souhaite développer des partenariats avec des entités publiques et privées pour soutenir ses projets."
+                        />
+
+                        <form className="space-y-6 rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Nom de l'organisation *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                                        placeholder="Mairie de Paris"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Statut juridique *
+                                    </label>
+                                    <select className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none">
+                                        <option value="">Sélectionner…</option>
+                                        <option>
+                                            Collectivité territoriale
+                                        </option>
+                                        <option>Association</option>
+                                        <option>Entreprise</option>
+                                        <option>Service de l'État</option>
+                                        <option>Autre organisme public</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Email *
+                                    </label>
+                                    <input
+                                        type="email"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                                        placeholder="contact@organisation.fr"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                        Nom et fonction du contact *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                                        placeholder="Jean Martin, Directeur"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Type de partenariat souhaité *
+                                </label>
+                                <div className="space-y-2">
+                                    {[
+                                        'Soutien moral ou promotionnel (visibilité, communication)',
+                                        'Soutien technique ou expertise (conseil, appui sur projets)',
+                                        'Soutien financier',
+                                    ].map((item) => (
+                                        <label
+                                            key={item}
+                                            className="flex cursor-pointer items-center gap-3 text-sm text-gray-600"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 rounded"
+                                                style={{
+                                                    accentColor:
+                                                        'var(--color-sna-green)',
+                                                }}
+                                            />
+                                            {item}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                    Objectifs et motivations du partenariat *
+                                </label>
+                                <textarea
+                                    rows={4}
+                                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
+                                    placeholder="Précisez l'objet de votre partenariat et les objectifs que vous souhaitez atteindre avec le SNA…"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Engagements envisagés
+                                </label>
+                                <div className="grid gap-3 sm:grid-cols-3">
+                                    {[
+                                        {
+                                            label: 'Participation aux projets et événements',
+                                            id: 'part',
+                                        },
+                                        {
+                                            label: 'Communication et promotion des actions',
+                                            id: 'comm',
+                                        },
+                                        {
+                                            label: "Apport d'expertise ou de services",
+                                            id: 'exp',
+                                        },
+                                    ].map((item) => (
+                                        <label
+                                            key={item.id}
+                                            className="flex cursor-pointer items-start gap-2 rounded-xl border border-gray-100 bg-white p-3 text-xs text-gray-600 transition hover:border-sna-green/50"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="mt-0.5 h-4 w-4"
+                                                style={{
+                                                    accentColor:
+                                                        'var(--color-sna-green)',
+                                                }}
+                                            />
+                                            {item.label}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 border-t border-gray-100 pt-2">
+                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
+                                        style={{
+                                            accentColor:
+                                                'var(--color-sna-green)',
+                                        }}
+                                    />
+                                    J'autorise la réception d'informations par
+                                    email
+                                </label>
+                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
+                                        style={{
+                                            accentColor:
+                                                'var(--color-sna-green)',
+                                        }}
+                                    />
+                                    Je consens au traitement des données
+                                    personnelles conformément au RGPD
+                                </label>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full rounded-full py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:opacity-90"
+                                style={{
+                                    background: '#a8c84a',
+                                    boxShadow:
+                                        '0 8px 20px rgba(168,200,74,0.25)',
+                                }}
+                            >
+                                Soumettre notre demande de partenariat
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    FORMULAIRE MOI AUSSI
+                ══════════════════════════════ */}
+                <section
+                    id="moi-aussi"
+                    className="bg-linear-to-br from-[#e8f8f8] to-[#f0f9e8] px-6 py-20"
+                >
+                    <div className="mx-auto max-w-3xl space-y-8">
+                        <SectionHeader
+                            badge="Témoignage"
+                            title="« Moi aussi, j\u2019ai vécu ça »"
+                            subtitle="Cette difficulté ne concerne pas qu'une seule famille. Votre témoignage renforce l'action collective et peut changer les choses."
+                        />
+
+                        <div className="rounded-3xl border border-sna-teal/20 bg-white/80 p-3 backdrop-blur">
+                            <blockquote className="px-6 py-3 text-center text-sm text-gray-500 italic">
+                                "Chaque témoignage compte. C'est ainsi que nous
+                                transformons des difficultés individuelles en
+                                avancées collectives."
+                            </blockquote>
+                        </div>
+
+                        <form className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Avez-vous été confronté(e) à cette
+                                    problématique ? *
+                                </label>
+                                <div className="flex flex-wrap gap-3">
+                                    {[
+                                        'Oui',
+                                        'En cours',
+                                        'Résolu mais difficile',
+                                    ].map((val) => (
+                                        <label
+                                            key={val}
+                                            className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-600 transition hover:border-sna-teal"
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="situation"
+                                                value={val}
+                                                className="accent-sna-teal"
+                                            />
+                                            {val}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                    Racontez-nous ce que vous avez vécu *
+                                </label>
+                                <textarea
+                                    rows={5}
+                                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                    placeholder="Décrivez librement votre expérience. Chaque détail compte pour renforcer notre action collective…"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Quelles ont été les conséquences pour vous ?
+                                </label>
+                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                    {[
+                                        'Perte financière',
+                                        'Impact professionnel',
+                                        'Impact sur la santé / sécurité',
+                                        'Démarches administratives lourdes',
+                                        'Isolement',
+                                        'Autre',
+                                    ].map((item) => (
+                                        <label
+                                            key={item}
+                                            className="flex cursor-pointer items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-600 transition hover:border-sna-teal/50"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 rounded accent-sna-teal"
+                                            />
+                                            {item}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Avez-vous saisi une institution ?
+                                </label>
+                                <div className="mb-3 flex gap-4">
+                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+                                        <input
+                                            type="radio"
+                                            name="institution"
+                                            value="oui"
+                                            className="accent-sna-teal"
+                                        />{' '}
+                                        Oui
+                                    </label>
+                                    <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+                                        <input
+                                            type="radio"
+                                            name="institution"
+                                            value="non"
+                                            className="accent-sna-teal"
+                                        />{' '}
+                                        Non
+                                    </label>
+                                </div>
+                                <input
+                                    type="text"
+                                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                    placeholder="Si oui, laquelle ? (CAF, MDPH, employeur, assurance…)"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                    Acceptez-vous que votre témoignage soit
+                                    utilisé *
+                                </label>
+                                <div className="space-y-2">
+                                    {[
+                                        'De manière anonymisée',
+                                        'Dans une action collective',
+                                        'Pour appuyer une proposition de loi',
+                                        'Je souhaite rester totalement confidentiel(le)',
+                                    ].map((item) => (
+                                        <label
+                                            key={item}
+                                            className="flex cursor-pointer items-center gap-3 text-sm text-gray-600"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 rounded accent-sna-teal"
+                                            />
+                                            {item}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 border-t border-gray-50 pt-2 sm:grid-cols-3">
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-gray-600">
+                                        Nom (facultatif)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-gray-600">
+                                        Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-gray-600">
+                                        Téléphone
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <p className="rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-400">
+                                🔒 Les informations recueillies sont strictement
+                                confidentielles et utilisées uniquement dans le
+                                cadre des actions collectives du SNA. Aucun
+                                témoignage ne sera publié sans votre accord
+                                explicite.
+                            </p>
+
+                            <button
+                                type="submit"
+                                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
+                            >
+                                Envoyer mon témoignage
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    FAQ
+                ══════════════════════════════ */}
+                <section className="bg-white px-6 py-20">
+                    <div className="mx-auto max-w-3xl space-y-8">
+                        <SectionHeader
+                            badge="FAQ"
+                            title="Questions fréquentes"
+                        />
+                        <div className="space-y-3">
+                            {[
+                                {
+                                    question: "À qui s'adresse le SNA ?",
+                                    answer: "Le SNA s'adresse à toutes les familles qui accompagnent au quotidien un enfant en situation de handicap : parents, fratries, proches aidants. Nous accueillons également les associations, collectivités et entreprises souhaitant agir à nos côtés.",
+                                },
+                                {
+                                    question:
+                                        'Mes informations personnelles sont-elles protégées ?',
+                                    answer: "Oui. Le SNA s'engage à traiter toutes les données personnelles dans le strict respect du RGPD. Vos témoignages sont confidentiels et ne seront jamais publiés ou utilisés sans votre accord explicite.",
+                                },
+                                {
+                                    question:
+                                        'Comment le SNA utilise-t-il les témoignages ?',
+                                    answer: 'Les témoignages (avec votre accord) servent à constituer des dossiers de plaidoyer, à appuyer des propositions de loi, à interpeller les médias et les décideurs politiques. Ils peuvent être anonymisés ou utilisés de manière collective selon vos préférences.',
+                                },
+                                {
+                                    question:
+                                        "Qu'est-ce qu'un partenariat institutionnel ?",
+                                    answer: "Un partenariat institutionnel permet à une organisation (collectivité, association, entreprise, service de l'État) de s'associer au SNA par un soutien moral, technique ou financier pour co-construire des solutions en faveur des familles d'enfants handicapés.",
+                                },
+                                {
+                                    question:
+                                        'Comment puis-je être tenu(e) informé(e) des actions du SNA ?',
+                                    answer: 'En remplissant le formulaire de soutien, vous pouvez choisir de recevoir nos actualités, événements et publications par email. Vous pouvez également vous inscrire à notre newsletter.',
+                                },
+                            ].map((item) => (
+                                <FaqItem
+                                    key={item.question}
+                                    question={item.question}
+                                    answer={item.answer}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    CTA BANNER
+                ══════════════════════════════ */}
+                <section className="relative overflow-hidden bg-linear-to-r from-sna-teal to-sna-teal-dark px-6 py-20">
+                    <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
+                    <div className="relative mx-auto max-w-3xl space-y-6 text-center">
+                        <h2 className="text-3xl leading-tight font-bold text-white sm:text-4xl">
+                            Prêt(e) à rejoindre le mouvement ?
+                        </h2>
+                        <p className="mx-auto max-w-xl text-lg text-white/80">
+                            Ensemble, construisons un avenir où chaque famille
+                            accompagnant un enfant handicapé est reconnue,
+                            soutenue et protégée.
+                        </p>
+                        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                            {canRegister && !auth.user && (
+                                <Link
+                                    href={register()}
+                                    className="rounded-full bg-white px-8 py-3.5 text-base font-bold text-sna-teal shadow-lg transition-colors hover:bg-gray-50"
+                                >
+                                    Créer mon espace membre
+                                </Link>
+                            )}
+                            <a
+                                href="#formulaire-soutien"
+                                className="rounded-full border-2 border-white px-8 py-3.5 text-base font-semibold text-white transition-colors hover:bg-white/10"
+                            >
+                                Je soutiens le SNA
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    CONTACT
+                ══════════════════════════════ */}
+                <section id="contact" className="bg-gray-50 px-6 py-20">
+                    <div className="mx-auto max-w-4xl space-y-10">
+                        <SectionHeader
+                            badge="Contact"
+                            title="Nous contacter"
+                            subtitle="Une question, une demande d'information ? Notre équipe est à votre écoute."
+                        />
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                            {[
+                                {
+                                    icon: '📧',
+                                    label: 'E-mail',
+                                    value: 'contact@sna-aidants.fr',
+                                    href: 'mailto:contact@sna-aidants.fr',
+                                },
+                                {
+                                    icon: '📞',
+                                    label: 'Téléphone',
+                                    value: '+33 (0)1 00 00 00 00',
+                                    href: 'tel:+33100000000',
+                                },
+                                {
+                                    icon: '📍',
+                                    label: 'Adresse',
+                                    value: 'Paris, France',
+                                    href: '#',
+                                },
+                            ].map((item) => (
+                                <a
+                                    key={item.label}
+                                    href={item.href}
+                                    className="flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                                >
+                                    <span className="text-3xl">
+                                        {item.icon}
+                                    </span>
+                                    <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                                        {item.label}
+                                    </span>
+                                    <span className="text-center text-sm font-semibold text-gray-700">
+                                        {item.value}
+                                    </span>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    FOOTER
+                ══════════════════════════════ */}
+                <footer className="bg-gray-900 px-6 py-14 text-gray-300">
+                    <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-10 md:flex-row">
+                        <div className="flex max-w-xs flex-col gap-4">
+                            <img
+                                src="/images/logo.png"
+                                alt="Syndicat National des Aidants"
+                                className="h-12 w-auto brightness-0 invert"
+                            />
+                            <p className="text-sm leading-relaxed text-gray-400">
+                                Le SNA défend les droits et améliore la vie des
+                                familles qui accompagnent un enfant en situation
+                                de handicap en France.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col gap-12 sm:flex-row">
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-bold tracking-widest text-white uppercase">
+                                    Navigation
+                                </h4>
+                                {[
+                                    { label: 'À propos', href: '#apropos' },
+                                    { label: 'Nos actions', href: '#actions' },
+                                    {
+                                        label: 'Devenir soutien',
+                                        href: '#formulaire-soutien',
+                                    },
+                                    {
+                                        label: 'Partenariats',
+                                        href: '#formulaire-partenaire',
+                                    },
+                                    { label: 'Témoigner', href: '#moi-aussi' },
+                                    { label: 'Contact', href: '#contact' },
+                                ].map((link) => (
+                                    <a
+                                        key={link.label}
+                                        href={link.href}
+                                        className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-bold tracking-widest text-white uppercase">
+                                    Espace membre
+                                </h4>
+                                {auth.user ? (
+                                    <Link
+                                        href={dashboard()}
+                                        className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                    >
+                                        Mon espace
+                                    </Link>
+                                ) : (
+                                    <>
+                                        <Link
+                                            href={login()}
+                                            className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                        >
+                                            Se connecter
+                                        </Link>
+                                        {canRegister && (
+                                            <Link
+                                                href={register()}
+                                                className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                            >
+                                                S'inscrire
+                                            </Link>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mx-auto mt-10 flex max-w-6xl flex-col items-center justify-between gap-3 border-t border-gray-800 pt-6 text-xs text-gray-500 sm:flex-row">
+                        <span>
+                            © {new Date().getFullYear()} Syndicat National des
+                            Aidants. Tous droits réservés.
+                        </span>
+                        <div className="flex gap-4">
+                            <a
+                                href="#"
+                                className="transition-colors hover:text-gray-300"
+                            >
+                                Mentions légales
+                            </a>
+                            <a
+                                href="#"
+                                className="transition-colors hover:text-gray-300"
+                            >
+                                Politique de confidentialité
+                            </a>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </>
     );

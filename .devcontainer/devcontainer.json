@@ -1,29 +1,80 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/php-mariadb
+// https://aka.ms/devcontainer.json
 {
-	"name": "PHP & MariaDB",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// For use with PHP or Apache (e.g.php -S localhost:8080 or apache2ctl start)
-	"forwardPorts": [
-		8080,
-		3306
-	],
-	"features": {
-		"ghcr.io/devcontainers/features/git:1": {}
-	}
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html"
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+  "name": "SNA",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "laravel.test",
+  "workspaceFolder": "/var/www/html",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/mikaello/devcontainer-features/modern-shell-utils:2": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {}
+  },
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "mikestead.dotenv",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "ryannaddy.laravel-artisan",
+        "onecentlin.laravel5-snippets",
+        "onecentlin.laravel-blade",
+        "neilbrayfield.php-docblocker",
+        "MehediDracula.php-namespace-resolver",
+        "moppitz.vscode-extension-auto-import",
+        "bradlc.vscode-tailwindcss",
+        "zobo.php-intellisense",
+        "xdebug.php-debug",
+        "eamodio.gitlens",
+        "bmewburn.vscode-intelephense-client",
+        "EditorConfig.EditorConfig",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "Porifa.laravel-intelephense",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "formulahendry.auto-rename-tag",
+        "heybourn.headwind",
+        "muath-ye.composer-Intelephense",
+        "nhedger.inertia",
+        "open-southeners.laravel-pint",
+        "pgl.laravel-jump-controller",
+        "rexshi.phpdoc-comment-vscode-plugin",
+        "wmaurer.change-case",
+        "st-pham.php-refactor-tool"
+      ],
+      "terminal.integrated.defaultProfile.linux": "zsh",
+      "terminal.integrated.profiles.linux": {
+        "bash": {
+          "path": "bash",
+          "icon": "terminal-bash"
+        },
+        "zsh": {
+          "path": "zsh"
+        },
+        "fish": {
+          "path": "fish"
+        },
+        "tmux": {
+          "path": "tmux",
+          "icon": "terminal-tmux"
+        },
+        "pwsh": {
+          "path": "pwsh",
+          "icon": "terminal-powershell"
+        }
+      }
+    }
+  },
+  "remoteUser": "sail",
+  "postCreateCommand": "chown -R 1000:1000 /var/www/html",
+  "forwardPorts": [9003]
+  // "runServices": [],
+  // "shutdownAction": "none",
 }

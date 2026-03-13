@@ -59,6 +59,12 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    --color-sna-teal: #4abfbf;
+    --color-sna-teal-dark: #37a3a3;
+    --color-sna-teal-light: #e6f7f7;
+    --color-sna-green: #a8c84a;
+    --color-sna-green-dark: #8daa35;
 }
 
 :root {
