@@ -1,5 +1,4 @@
 import { Link } from '@inertiajs/react';
-import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
 
@@ -9,29 +8,44 @@ export default function AuthSimpleLayout({
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-            <div className="w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    <div className="flex flex-col items-center gap-4">
-                        <Link
-                            href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
-                        >
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
-                            </div>
-                            <span className="sr-only">{title}</span>
-                        </Link>
+        <div className="relative flex min-h-svh flex-col items-center justify-center bg-gray-50 px-6 py-12">
+            {/* Decorative teal blobs matching the home page hero */}
+            <div className="pointer-events-none absolute -top-20 -left-20 h-72 w-72 rounded-full bg-sna-teal/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-sna-green/10 blur-3xl" />
 
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-medium">{title}</h1>
-                            <p className="text-center text-sm text-muted-foreground">
-                                {description}
-                            </p>
-                        </div>
+            <div className="relative w-full max-w-sm">
+                {/* Logo */}
+                <div className="mb-8 flex flex-col items-center gap-3">
+                    <Link href={home()}>
+                        <img
+                            src="/images/logo.png"
+                            alt="Syndicat National des Aidants"
+                            className="h-14 w-auto"
+                        />
+                    </Link>
+                </div>
+
+                {/* Card */}
+                <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
+                    <div className="mb-6 space-y-1 text-center">
+                        <h1 className="text-xl font-bold text-gray-800">
+                            {title}
+                        </h1>
+                        <p className="text-sm text-gray-500">{description}</p>
                     </div>
+
                     {children}
                 </div>
+
+                {/* Footer link back to home */}
+                <p className="mt-6 text-center text-xs text-gray-400">
+                    <Link
+                        href={home()}
+                        className="transition-colors hover:text-sna-teal"
+                    >
+                        ← Retour au site
+                    </Link>
+                </p>
             </div>
         </div>
     );

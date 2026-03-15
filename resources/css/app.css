@@ -147,3 +147,77 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* ── Donate button animations ────────────────────────────── */
+@keyframes donate-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes donate-ring-1 {
+    0% {
+        transform: scale(1);
+        opacity: 0.55;
+    }
+
+    100% {
+        transform: scale(1.9);
+        opacity: 0;
+    }
+}
+
+@keyframes donate-ring-2 {
+    0% {
+        transform: scale(1);
+        opacity: 0.35;
+    }
+
+    100% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
+}
+
+@keyframes donate-heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    14% {
+        transform: scale(1.25);
+    }
+
+    28% {
+        transform: scale(1);
+    }
+
+    42% {
+        transform: scale(1.18);
+    }
+
+    56% {
+        transform: scale(1);
+    }
+}
+
+@keyframes donate-shimmer {
+    0% {
+        transform: translateX(-150%) skewX(-20deg);
+    }
+
+    60%,
+    100% {
+        transform: translateX(300%) skewX(-20deg);
+    }
+}

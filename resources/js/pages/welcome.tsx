@@ -114,6 +114,38 @@ const ChevronDownIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
 );
+const MenuIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+        />
+    </svg>
+);
+const XIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+        />
+    </svg>
+);
 const HandIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -1231,6 +1263,7 @@ export default function Welcome({
     canRegister?: boolean;
 }) {
     const { auth } = usePage().props;
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <>
@@ -1250,8 +1283,8 @@ export default function Welcome({
                 {/* ══════════════════════════════
                     HEADER
                 ══════════════════════════════ */}
-                <header className="sticky top-0 z-50 bg-white/95 shadow-sm backdrop-blur">
-                    <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+                <header className="sticky top-0 z-50 border-b border-white/60 bg-white/90 shadow-[0_2px_20px_rgba(74,191,191,0.08)] backdrop-blur-md">
+                    <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-3">
                             <img
@@ -1261,60 +1294,172 @@ export default function Welcome({
                             />
                         </Link>
 
-                        {/* Nav links */}
-                        <nav className="hidden items-center gap-8 text-sm font-medium text-gray-600 md:flex">
-                            <a
-                                href="#apropos"
-                                className="transition-colors hover:text-sna-teal"
-                            >
-                                À propos
-                            </a>
-                            <a
-                                href="#mission"
-                                className="transition-colors hover:text-sna-teal"
-                            >
-                                Notre mission
-                            </a>
-                            <a
-                                href="#actions"
-                                className="transition-colors hover:text-sna-teal"
-                            >
-                                Nos actions
-                            </a>
-                            <a
-                                href="#contact"
-                                className="transition-colors hover:text-sna-teal"
-                            >
-                                Contact
-                            </a>
+                        {/* Nav links – desktop only */}
+                        <nav className="hidden items-center gap-1 md:flex">
+                            {[
+                                { href: '#apropos', label: 'À propos' },
+                                { href: '#actions', label: 'Nos actions' },
+                                { href: '#contact', label: 'Contact' },
+                            ].map(({ href, label }) => (
+                                <a
+                                    key={href}
+                                    href={href}
+                                    className="group relative px-4 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
+                                >
+                                    {label}
+                                    <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover:w-4/5" />
+                                </a>
+                            ))}
                         </nav>
 
-                        {/* Auth buttons */}
+                        {/* Right side */}
                         <div className="flex items-center gap-3">
                             {auth.user ? (
                                 <Link
                                     href={dashboard()}
-                                    className="rounded-full bg-sna-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-sna-teal-dark"
+                                    className="rounded-full bg-sna-teal px-5 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-sna-teal-dark hover:shadow-lg hover:shadow-sna-teal/30"
                                 >
                                     Mon espace
                                 </Link>
                             ) : (
-                                <>
-                                    <Link
-                                        href={login()}
-                                        className="text-sm font-medium text-gray-600 transition-colors hover:text-sna-teal"
+                                /* ── Fancy "Faire un don" button ── */
+                                <a
+                                    href="#contact"
+                                    className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
+                                    style={{
+                                        background:
+                                            'linear-gradient(135deg, #4abfbf, #37a3a3, #a8c84a, #4abfbf)',
+                                        backgroundSize: '300% 300%',
+                                        boxShadow:
+                                            '0 4px 20px rgba(74,191,191,0.45), 0 1px 3px rgba(0,0,0,0.1)',
+                                        animation:
+                                            'donate-gradient 4s ease infinite',
+                                    }}
+                                >
+                                    {/* dual pulse rings */}
+                                    <span
+                                        className="pointer-events-none absolute inset-0 rounded-full"
+                                        style={{
+                                            boxShadow: '0 0 0 2px #4abfbf',
+                                            animation:
+                                                'donate-ring-1 2s ease-out infinite',
+                                        }}
+                                        aria-hidden="true"
+                                    />
+                                    <span
+                                        className="pointer-events-none absolute inset-0 rounded-full"
+                                        style={{
+                                            boxShadow: '0 0 0 2px #a8c84a',
+                                            animation:
+                                                'donate-ring-2 2s ease-out infinite 0.5s',
+                                        }}
+                                        aria-hidden="true"
+                                    />
+                                    {/* shimmer loop */}
+                                    <span
+                                        className="pointer-events-none absolute inset-0 w-1/3 skew-x-[-20deg] bg-white/25 blur-sm"
+                                        style={{
+                                            animation:
+                                                'donate-shimmer 3s ease-in-out infinite 1s',
+                                        }}
+                                        aria-hidden="true"
+                                    />
+                                    <span
+                                        className="relative"
+                                        style={{
+                                            animation:
+                                                'donate-heartbeat 2s ease-in-out infinite',
+                                        }}
                                     >
-                                        Se connecter
-                                    </Link>
-                                    {canRegister && (
-                                        <Link
-                                            href={register()}
-                                            className="rounded-full bg-sna-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-sna-teal-dark"
-                                        >
-                                            S'inscrire
-                                        </Link>
-                                    )}
-                                </>
+                                        <HeartIcon className="h-4 w-4" />
+                                    </span>
+                                    <span className="relative tracking-wide">
+                                        Faire un don
+                                    </span>
+                                    <ArrowRightIcon className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                                </a>
+                            )}
+
+                            {/* Hamburger – mobile only */}
+                            <button
+                                onClick={() =>
+                                    setMobileMenuOpen(!mobileMenuOpen)
+                                }
+                                className="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-600 transition-all duration-200 hover:bg-sna-teal/10 hover:text-sna-teal md:hidden"
+                                aria-label={
+                                    mobileMenuOpen
+                                        ? 'Fermer le menu'
+                                        : 'Ouvrir le menu'
+                                }
+                            >
+                                <span
+                                    className={`absolute transition-all duration-200 ${mobileMenuOpen ? 'rotate-90 opacity-100' : 'rotate-0 opacity-0'}`}
+                                >
+                                    <XIcon className="h-5 w-5" />
+                                </span>
+                                <span
+                                    className={`absolute transition-all duration-200 ${mobileMenuOpen ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`}
+                                >
+                                    <MenuIcon className="h-5 w-5" />
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile drawer */}
+                    <div
+                        className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                    >
+                        <div className="border-t border-sna-teal/10 bg-linear-to-b from-white to-[#f8fefe] px-5 pt-3 pb-6">
+                            {/* Nav links */}
+                            <nav className="mb-4 flex flex-col">
+                                {[
+                                    { href: '#apropos', label: 'À propos' },
+                                    { href: '#actions', label: 'Nos actions' },
+                                    { href: '#contact', label: 'Contact' },
+                                ].map(({ href, label }, i) => (
+                                    <a
+                                        key={href}
+                                        href={href}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
+                                        style={{
+                                            transitionDelay: mobileMenuOpen
+                                                ? `${i * 40}ms`
+                                                : '0ms',
+                                        }}
+                                    >
+                                        {label}
+                                        <ArrowRightIcon className="h-3.5 w-3.5 text-sna-teal/50" />
+                                    </a>
+                                ))}
+                            </nav>
+
+                            {/* Divider */}
+                            <div className="mb-4 h-px bg-linear-to-r from-transparent via-sna-teal/20 to-transparent" />
+
+                            {/* Donate CTA */}
+                            {!auth.user && (
+                                <a
+                                    href="#contact"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl py-3.5 text-sm font-bold text-white transition-all duration-300 active:scale-95"
+                                    style={{
+                                        background:
+                                            'linear-gradient(135deg, #4abfbf 0%, #37a3a3 50%, #a8c84a 100%)',
+                                        boxShadow:
+                                            '0 6px 24px rgba(74,191,191,0.35)',
+                                    }}
+                                >
+                                    <span
+                                        className="pointer-events-none absolute inset-0 -translate-x-full skew-x-[-20deg] bg-white/20 transition-transform duration-700 group-active:translate-x-[200%]"
+                                        aria-hidden="true"
+                                    />
+                                    <HeartIcon className="h-4 w-4" />
+                                    <span className="tracking-wide">
+                                        Faire un don
+                                    </span>
+                                </a>
                             )}
                         </div>
                     </div>

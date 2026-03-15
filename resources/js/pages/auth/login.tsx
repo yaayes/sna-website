@@ -2,7 +2,6 @@ import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,10 +24,10 @@ export default function Login({
 }: Props) {
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title="Connexion à votre espace"
+            description="Saisissez votre adresse e-mail et votre mot de passe pour accéder à votre espace"
         >
-            <Head title="Log in" />
+            <Head title="Connexion" />
 
             <Form
                 {...store.form()}
@@ -39,7 +38,7 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Adresse e-mail</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -48,21 +47,24 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="votre@email.fr"
+                                    className="rounded-xl focus:border-sna-teal focus:ring-sna-teal/40"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">
+                                        Mot de passe
+                                    </Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-sm text-sna-teal hover:text-sna-teal-dark"
                                             tabIndex={5}
                                         >
-                                            Forgot password?
+                                            Mot de passe oublié ?
                                         </TextLink>
                                     )}
                                 </div>
@@ -72,7 +74,8 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="Mot de passe"
+                                    className="rounded-xl focus:border-sna-teal focus:ring-sna-teal/40"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -83,26 +86,38 @@ export default function Login({
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">
+                                    Se souvenir de moi
+                                </Label>
                             </div>
 
-                            <Button
+                            <button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-2 w-full rounded-full bg-sna-teal py-3 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark disabled:opacity-60"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
                             >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
+                                {processing ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <Spinner />
+                                        Connexion…
+                                    </span>
+                                ) : (
+                                    'Se connecter'
+                                )}
+                            </button>
                         </div>
 
                         {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
+                            <div className="text-center text-sm text-gray-500">
+                                Pas encore de compte ?{' '}
+                                <TextLink
+                                    href={register()}
+                                    tabIndex={5}
+                                    className="font-semibold text-sna-teal hover:text-sna-teal-dark"
+                                >
+                                    S'inscrire
                                 </TextLink>
                             </div>
                         )}
@@ -111,7 +126,7 @@ export default function Login({
             </Form>
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mb-4 text-center text-sm font-medium text-sna-teal">
                     {status}
                 </div>
             )}
