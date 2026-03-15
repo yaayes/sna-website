@@ -89,11 +89,17 @@ Edit `ansible/inventory.ini` and replace the placeholder IPs:
 
 ```ini
 [staging]
-staging ansible_host=178.104.51.228 ansible_user=forge
+staging-host ansible_host=178.104.51.228 ansible_user=forge
 
 [prod]
-prod ansible_host=YOUR_PROD_IP ansible_user=forge
+prod-host ansible_host=YOUR_PROD_IP ansible_user=ubuntu
+
+[all:vars]
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_python_interpreter=/usr/bin/python3
 ```
+
+> ⚠️ Do **not** give a host the same name as its group (e.g. `staging` inside `[staging]`). Ansible will warn about the conflict and may behave unexpectedly. Use `staging-server` / `prod-server` or any name that differs from the group.
 
 ### Step 3 — Configure variables
 
@@ -125,6 +131,48 @@ redis_password: ""             # ← set if Redis auth is required
 > ansible-vault encrypt_string 'your_password' --name 'db_password'
 > ```
 
+### Step 3a — Provide the Vault password for `secrets.yml`
+
+`ansible/secrets.yml` is encrypted with Ansible Vault and holds sensitive values (`db_password`, `app_key`, `redis_password`). You must supply the vault password every time you run the playbook.
+
+**Option A — prompt at runtime (simplest):**
+
+```bash
+ansible-playbook playbook.yml -i inventory.ini -l staging --ask-vault-pass
+```
+
+**Option B — password file (recommended for automation):**
+
+```bash
+# Create the file (keep it out of the repo)
+echo 'your-vault-password' > ~/.ansible_vault_pass
+chmod 600 ~/.ansible_vault_pass
+
+# Then pass it to every playbook run
+ansible-playbook playbook.yml -i inventory.ini -l staging --vault-password-file ~/.ansible_vault_pass
+```
+
+You can also set the path permanently so you never need to pass the flag:
+
+```bash
+# ~/.ansible.cfg  (or ansible/ansible.cfg)
+[defaults]
+vault_password_file = ~/.ansible_vault_pass
+```
+
+To **view or edit** the encrypted file:
+
+```bash
+ansible-vault view ansible/secrets.yml --vault-password-file ~/.ansible_vault_pass
+ansible-vault edit ansible/secrets.yml --vault-password-file ~/.ansible_vault_pass
+```
+
+To **re-encrypt** it with a new password:
+
+```bash
+ansible-vault rekey ansible/secrets.yml
+```
+
 ### Step 4 — Ensure SSH access
 
 The playbook connects as `forge` using your local SSH key. Make sure `~/.ssh/id_rsa` (or the key configured in `inventory.ini`) is authorised on the target server.
@@ -137,30 +185,32 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub forge@YOUR_SERVER_IP
 
 ### Step 5 — Run the playbook
 
+> ⚠️ The playbook uses `hosts: "{{ target | default('staging') }}"`. You must pass the target group via `-e target=<group>`. The `-l` (limit) flag alone will **not** work.
+
 **Target staging:**
 
 ```bash
 cd ansible
-ansible-playbook playbook.yml -i inventory.ini -l staging
+ansible-playbook playbook.yml -i inventory.ini -e target=staging --ask-vault-pass
 ```
 
 **Target prod:**
 
 ```bash
 cd ansible
-ansible-playbook playbook.yml -i inventory.ini -l prod
+ansible-playbook playbook.yml -i inventory.ini -e target=prod --ask-vault-pass
 ```
 
 **Dry-run (check mode — no changes applied):**
 
 ```bash
-ansible-playbook playbook.yml -i inventory.ini -l staging --check
+ansible-playbook playbook.yml -i inventory.ini -e target=staging --check --ask-vault-pass
 ```
 
 **Run only specific tags** (once the playbook is fully tagged — future improvement):
 
 ```bash
-ansible-playbook playbook.yml -i inventory.ini -l staging --tags nginx
+ansible-playbook playbook.yml -i inventory.ini -e target=staging --tags nginx --ask-vault-pass
 ```
 
 ### What the playbook installs

@@ -48,9 +48,23 @@
     policy: deny
 
 # ─── PHP ─────────────────────────────────────────────────────────────────────
-- name: Add Ondrej PHP PPA
+- name: Create /etc/apt/keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Ondrej PHP PPA signing key
+  get_url:
+    url: 'https://packages.sury.org/php/apt.gpg'
+    dest: /etc/apt/keyrings/ondrej-php.gpg
+    mode: '0644'
+    force: false
+
+- name: Add Ondrej PHP PPA repository
   apt_repository:
-    repo: 'ppa:ondrej/php'
+    repo: "deb [signed-by=/etc/apt/keyrings/ondrej-php.gpg] https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
+    filename: ondrej-php
     state: present
     update_cache: true
 
@@ -356,6 +370,22 @@
     create: true
     mode: '0440'
     validate: 'visudo -cf %s'
+
+# ─── Laravel .env ────────────────────────────────────────────────────────────
+- name: Deploy Laravel .env
+  template:
+    src: env.j2
+    dest: '{{ app_path }}/.env'
+    owner: '{{ app_user }}'
+    group: '{{ app_user }}'
+    mode: '0600'
+
+- name: Generate APP_KEY if not set
+  command: php artisan key:generate --force
+  args:
+    chdir: '{{ app_path }}'
+  become_user: '{{ app_user }}'
+  when: app_key == ''
 
 # ─── Laravel log directory permissions ───────────────────────────────────────
 - name: Ensure storage & bootstrap/cache are writable

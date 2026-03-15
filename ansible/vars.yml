@@ -1,26 +1,16 @@
-# Server provisioning variables — copy to host_vars/<hostname>/vars.yml and fill in
+# Shared defaults — override per-host in host_vars/<hostname>/vars.yml
 php_version: '8.4'
 node_version: '22'
 postgresql_version: '16'
 
-# Application
+# Application (shared)
 app_name: 'sna'
-app_domain: 'sna.inmindweb.fr'
 app_user: 'forge'
 app_path: '/home/forge/{{ app_domain }}'
 repo_url: 'git@github.com:yaayes/sna-website.git'
-repo_branch: 'main'
 
-# SSL / Let's Encrypt
-certbot_email: 'notification@inmindweb.fr'
-
-# PostgreSQL
-db_name: 'sna_db'
+# PostgreSQL (shared)
 db_user: 'forge'
-db_password: 'CHANGE_ME'
-
-# Redis
-redis_password: ''
 
 # PHP-FPM socket
 php_fpm_socket: '/var/run/php/php{{ php_version }}-fpm.sock'

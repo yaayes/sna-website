@@ -4,5 +4,6 @@
   become: true
   vars_files:
     - vars.yml
+    - secrets.yml
   roles:
     - server

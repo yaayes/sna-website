@@ -7,6 +7,7 @@
 ansible/roles/server/files/deploy_key
 ansible/roles/server/files/deploy_key.pub
 ansible/host_vars/
+ansible/secrets.yml
 /public/hot
 /public/storage
 /storage/*.key
