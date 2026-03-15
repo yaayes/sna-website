@@ -32,9 +32,29 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        {{-- Favicon --}}
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="SNA" />
+        <link rel="manifest" href="/site.webmanifest" />
+
+        {{-- Open Graph / Social Media --}}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="{{ url()->current() }}" />
+        <meta property="og:title" content="{{ config('app.name') }}" />
+        <meta property="og:description" content="Syndicat national de l'audiovisuel — défendre les droits et les intérêts des professionnels de l'audiovisuel." />
+        <meta property="og:image" content="{{ asset('images/og-image.png') }}" />
+        <meta property="og:site_name" content="{{ config('app.name') }}" />
+        <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
+
+        {{-- Twitter / X Card --}}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="{{ url()->current() }}" />
+        <meta name="twitter:title" content="{{ config('app.name') }}" />
+        <meta name="twitter:description" content="Syndicat national de l'audiovisuel — défendre les droits et les intérêts des professionnels de l'audiovisuel." />
+        <meta name="twitter:image" content="{{ asset('images/og-image.png') }}" />
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

@@ -1,6 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login } from '@/routes';
 import forms from '@/routes/forms';
 
 /* ─────────────────────────────────────────────
@@ -1257,11 +1257,7 @@ function MoiAussiForm() {
     );
 }
 
-export default function Welcome({
-    canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
+export default function Welcome() {
     const { auth } = usePage().props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -2220,14 +2216,6 @@ export default function Welcome({
                             soutenue et protégée.
                         </p>
                         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                            {canRegister && !auth.user && (
-                                <Link
-                                    href={register()}
-                                    className="rounded-full bg-white px-8 py-3.5 text-base font-bold text-sna-teal shadow-lg transition-colors hover:bg-gray-50"
-                                >
-                                    Créer mon espace membre
-                                </Link>
-                            )}
                             <a
                                 href="#formulaire-soutien"
                                 className="rounded-full border-2 border-white px-8 py-3.5 text-base font-semibold text-white transition-colors hover:bg-white/10"
@@ -2347,22 +2335,12 @@ export default function Welcome({
                                         Mon espace
                                     </Link>
                                 ) : (
-                                    <>
-                                        <Link
-                                            href={login()}
-                                            className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
-                                        >
-                                            Se connecter
-                                        </Link>
-                                        {canRegister && (
-                                            <Link
-                                                href={register()}
-                                                className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
-                                            >
-                                                S'inscrire
-                                            </Link>
-                                        )}
-                                    </>
+                                    <Link
+                                        href={login()}
+                                        className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                    >
+                                        Se connecter
+                                    </Link>
                                 )}
                             </div>
                         </div>

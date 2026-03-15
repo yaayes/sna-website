@@ -9,11 +9,8 @@ use App\Http\Controllers\Forms\MoiAussiFormController;
 use App\Http\Controllers\Forms\PartenaireFormController;
 use App\Http\Controllers\Forms\SoutienFormController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
 
-Route::inertia('/', 'welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+Route::inertia('/', 'welcome')->name('home');
 
 // Form submissions (no auth required)
 Route::post('/formulaire/soutien', [SoutienFormController::class, 'store'])->name('forms.soutien.store');
@@ -26,7 +23,13 @@ Route::post('/mes-formulaires', [FormAccessController::class, 'sendAccessLink'])
 Route::get('/mes-formulaires/{token}', [FormAccessController::class, 'show'])->name('forms.access.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', function () {
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return inertia('dashboard');
+    })->name('dashboard');
 });
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->group(function () {
