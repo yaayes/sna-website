@@ -1,7 +1,6 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler, useState } from 'react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { dashboard, login } from '@/routes';
-import forms from '@/routes/forms';
 
 /* ─────────────────────────────────────────────
    Inline SVG icons (no extra dep needed)
@@ -19,6 +18,23 @@ const HeartIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
             strokeLinecap="round"
             strokeLinejoin="round"
             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
+    </svg>
+);
+const HandshakeIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.75}
+    >
+        {/* Heroicons 24/outline — hand-raised (solidarity / joining hands) */}
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 0 1 3.15 0V15M6.9 7.575a1.575 1.575 0 1 0-3.15 0v8.175a6.75 6.75 0 0 0 6.75 6.75h2.018a5.25 5.25 0 0 0 3.712-1.538l1.732-1.732a5.25 5.25 0 0 0 1.538-3.712l.003-2.024a.668.668 0 0 1 .198-.471 1.575 1.575 0 1 0-2.228-2.228 3.818 3.818 0 0 0-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0 1 16.35 15m0 0a4.49 4.49 0 0 1 1.18-2.316l.342-.342a4.49 4.49 0 0 1 3.58-1.28"
         />
     </svg>
 );
@@ -170,38 +186,6 @@ const StarIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
         fill="currentColor"
     >
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-);
-const ScaleIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-    >
-        <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
-        />
-    </svg>
-);
-const SunIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-    >
-        <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 3v1m0 16v1m8.66-9H21M3 12H2m15.07-6.93l-.71.71M7.64 17.36l-.71.71M18.36 17.36l-.71-.71M6.34 6.34l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-        />
     </svg>
 );
 
@@ -405,6 +389,7 @@ function SectionHeader({
 ───────────────────────────────────────────── */
 function FaqItem({ question, answer }: { question: string; answer: string }) {
     const [open, setOpen] = useState(false);
+
     return (
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
             <button
@@ -426,834 +411,6 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
                 </div>
             )}
         </div>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   FORMULAIRE SOUTIEN
-───────────────────────────────────────────── */
-function SoutienForm() {
-    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
-        useForm({
-            name: '',
-            organisation: '',
-            statut: 'physique',
-            email: '',
-            phone: '',
-            wants_partnership: false,
-            wants_events: false,
-            wants_participation: false,
-            message: '',
-            consents_email: false,
-            consents_rgpd: false,
-        });
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        submit(forms.soutien.store(), { onSuccess: () => reset() });
-    };
-
-    if (wasSuccessful) {
-        return (
-            <div className="space-y-3 rounded-3xl border border-teal-100 bg-teal-50 p-10 text-center shadow-sm">
-                <span className="text-4xl">✅</span>
-                <p className="font-bold text-teal-800">Demande envoyée !</p>
-                <p className="text-sm text-teal-700">
-                    Votre demande de soutien a bien été enregistrée. Merci pour
-                    votre engagement.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <form
-            onSubmit={handleSubmit}
-            className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm"
-        >
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Nom et prénom *
-                    </label>
-                    <input
-                        type="text"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                        placeholder="Marie Dupont"
-                    />
-                    {errors.name && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.name}
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Nom de l'organisation (si personne morale)
-                    </label>
-                    <input
-                        type="text"
-                        value={data.organisation}
-                        onChange={(e) =>
-                            setData('organisation', e.target.value)
-                        }
-                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                        placeholder="Association XYZ"
-                    />
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Statut *
-                </label>
-                <div className="flex gap-6">
-                    {[
-                        { value: 'physique', label: 'Personne physique' },
-                        { value: 'morale', label: 'Personne morale' },
-                    ].map((opt) => (
-                        <label
-                            key={opt.value}
-                            className="flex cursor-pointer items-center gap-2 text-sm text-gray-600"
-                        >
-                            <input
-                                type="radio"
-                                name="statut"
-                                value={opt.value}
-                                checked={data.statut === opt.value}
-                                onChange={() => setData('statut', opt.value)}
-                                className="accent-sna-teal"
-                            />
-                            {opt.label}
-                        </label>
-                    ))}
-                </div>
-                {errors.statut && (
-                    <p className="mt-1 text-xs text-red-500">{errors.statut}</p>
-                )}
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Email *
-                    </label>
-                    <input
-                        type="email"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                        placeholder="marie@exemple.fr"
-                    />
-                    {errors.email && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.email}
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Téléphone
-                    </label>
-                    <input
-                        type="tel"
-                        value={data.phone}
-                        onChange={(e) => setData('phone', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                        placeholder="+33 6 00 00 00 00"
-                    />
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Engagements souhaités
-                </label>
-                <div className="space-y-2">
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.wants_partnership}
-                            onChange={(e) =>
-                                setData('wants_partnership', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        Souhaitez-vous être partenaire ?
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.wants_events}
-                            onChange={(e) =>
-                                setData('wants_events', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        Souhaitez-vous être informé(e) des événements ou projets
-                        ?
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.wants_participation}
-                            onChange={(e) =>
-                                setData('wants_participation', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        Souhaitez-vous participer aux événements ou projets ?
-                    </label>
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                    Message libre (facultatif)
-                </label>
-                <textarea
-                    rows={3}
-                    value={data.message}
-                    onChange={(e) => setData('message', e.target.value)}
-                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                    placeholder="Partagez vos motivations ou questions…"
-                />
-            </div>
-
-            <div className="space-y-2 border-t border-gray-50 pt-2">
-                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                    <input
-                        type="checkbox"
-                        checked={data.consents_email}
-                        onChange={(e) =>
-                            setData('consents_email', e.target.checked)
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
-                    />
-                    J'autorise la réception d'informations par email
-                </label>
-                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                    <input
-                        type="checkbox"
-                        checked={data.consents_rgpd}
-                        onChange={(e) =>
-                            setData('consents_rgpd', e.target.checked)
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
-                    />
-                    Je consens au traitement de mes données personnelles
-                    conformément au RGPD *
-                </label>
-                {errors.consents_rgpd && (
-                    <p className="text-xs text-red-500">
-                        {errors.consents_rgpd}
-                    </p>
-                )}
-            </div>
-
-            <button
-                type="submit"
-                disabled={processing}
-                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark disabled:opacity-60"
-            >
-                {processing
-                    ? 'Envoi en cours…'
-                    : 'Envoyer ma demande de soutien'}
-            </button>
-        </form>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   FORMULAIRE PARTENAIRE
-───────────────────────────────────────────── */
-function PartenaireForm() {
-    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
-        useForm({
-            organisation_name: '',
-            legal_status: '',
-            email: '',
-            contact_name: '',
-            partnership_moral: false,
-            partnership_technical: false,
-            partnership_financial: false,
-            objectives: '',
-            commitment_projects: false,
-            commitment_communication: false,
-            commitment_expertise: false,
-            consents_email: false,
-            consents_rgpd: false,
-        });
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        submit(forms.partenaire.store(), { onSuccess: () => reset() });
-    };
-
-    if (wasSuccessful) {
-        return (
-            <div className="space-y-3 rounded-3xl border border-green-100 bg-green-50 p-10 text-center shadow-sm">
-                <span className="text-4xl">✅</span>
-                <p className="font-bold text-green-800">Demande envoyée !</p>
-                <p className="text-sm text-green-700">
-                    Votre demande de partenariat a bien été enregistrée. Nous
-                    vous contacterons prochainement.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <form
-            onSubmit={handleSubmit}
-            className="space-y-6 rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm"
-        >
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Nom de l'organisation *
-                    </label>
-                    <input
-                        type="text"
-                        value={data.organisation_name}
-                        onChange={(e) =>
-                            setData('organisation_name', e.target.value)
-                        }
-                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                        placeholder="Mairie de Paris"
-                    />
-                    {errors.organisation_name && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.organisation_name}
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Statut juridique *
-                    </label>
-                    <select
-                        value={data.legal_status}
-                        onChange={(e) =>
-                            setData('legal_status', e.target.value)
-                        }
-                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                    >
-                        <option value="">Sélectionner…</option>
-                        <option value="Collectivité territoriale">
-                            Collectivité territoriale
-                        </option>
-                        <option value="Association">Association</option>
-                        <option value="Entreprise">Entreprise</option>
-                        <option value="Service de l'État">
-                            Service de l'État
-                        </option>
-                        <option value="Autre organisme public">
-                            Autre organisme public
-                        </option>
-                    </select>
-                    {errors.legal_status && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.legal_status}
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Email *
-                    </label>
-                    <input
-                        type="email"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                        placeholder="contact@organisation.fr"
-                    />
-                    {errors.email && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.email}
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                        Nom et fonction du contact *
-                    </label>
-                    <input
-                        type="text"
-                        value={data.contact_name}
-                        onChange={(e) =>
-                            setData('contact_name', e.target.value)
-                        }
-                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                        placeholder="Jean Martin, Directeur"
-                    />
-                    {errors.contact_name && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.contact_name}
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Type de partenariat souhaité *
-                </label>
-                <div className="space-y-2">
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.partnership_moral}
-                            onChange={(e) =>
-                                setData('partnership_moral', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded"
-                            style={{ accentColor: 'var(--color-sna-green)' }}
-                        />
-                        Soutien moral ou promotionnel (visibilité,
-                        communication)
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.partnership_technical}
-                            onChange={(e) =>
-                                setData(
-                                    'partnership_technical',
-                                    e.target.checked,
-                                )
-                            }
-                            className="h-4 w-4 rounded"
-                            style={{ accentColor: 'var(--color-sna-green)' }}
-                        />
-                        Soutien technique ou expertise (conseil, appui sur
-                        projets)
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.partnership_financial}
-                            onChange={(e) =>
-                                setData(
-                                    'partnership_financial',
-                                    e.target.checked,
-                                )
-                            }
-                            className="h-4 w-4 rounded"
-                            style={{ accentColor: 'var(--color-sna-green)' }}
-                        />
-                        Soutien financier
-                    </label>
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                    Objectifs et motivations du partenariat *
-                </label>
-                <textarea
-                    rows={4}
-                    value={data.objectives}
-                    onChange={(e) => setData('objectives', e.target.value)}
-                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/50 focus:outline-none"
-                    placeholder="Précisez l'objet de votre partenariat et les objectifs que vous souhaitez atteindre avec le SNA…"
-                />
-                {errors.objectives && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.objectives}
-                    </p>
-                )}
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Engagements envisagés
-                </label>
-                <div className="grid gap-3 sm:grid-cols-3">
-                    {[
-                        {
-                            key: 'commitment_projects' as const,
-                            label: 'Participation aux projets et événements',
-                        },
-                        {
-                            key: 'commitment_communication' as const,
-                            label: 'Communication et promotion des actions',
-                        },
-                        {
-                            key: 'commitment_expertise' as const,
-                            label: "Apport d'expertise ou de services",
-                        },
-                    ].map((item) => (
-                        <label
-                            key={item.key}
-                            className="flex cursor-pointer items-start gap-2 rounded-xl border border-gray-100 bg-white p-3 text-xs text-gray-600 transition hover:border-sna-green/50"
-                        >
-                            <input
-                                type="checkbox"
-                                checked={data[item.key]}
-                                onChange={(e) =>
-                                    setData(item.key, e.target.checked)
-                                }
-                                className="mt-0.5 h-4 w-4"
-                                style={{
-                                    accentColor: 'var(--color-sna-green)',
-                                }}
-                            />
-                            {item.label}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            <div className="space-y-2 border-t border-gray-100 pt-2">
-                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                    <input
-                        type="checkbox"
-                        checked={data.consents_email}
-                        onChange={(e) =>
-                            setData('consents_email', e.target.checked)
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
-                        style={{ accentColor: 'var(--color-sna-green)' }}
-                    />
-                    J'autorise la réception d'informations par email
-                </label>
-                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
-                    <input
-                        type="checkbox"
-                        checked={data.consents_rgpd}
-                        onChange={(e) =>
-                            setData('consents_rgpd', e.target.checked)
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded"
-                        style={{ accentColor: 'var(--color-sna-green)' }}
-                    />
-                    Je consens au traitement des données personnelles
-                    conformément au RGPD *
-                </label>
-                {errors.consents_rgpd && (
-                    <p className="text-xs text-red-500">
-                        {errors.consents_rgpd}
-                    </p>
-                )}
-            </div>
-
-            <button
-                type="submit"
-                disabled={processing}
-                className="w-full rounded-full py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:opacity-90 disabled:opacity-60"
-                style={{
-                    background: '#a8c84a',
-                    boxShadow: '0 8px 20px rgba(168,200,74,0.25)',
-                }}
-            >
-                {processing
-                    ? 'Envoi en cours…'
-                    : 'Soumettre notre demande de partenariat'}
-            </button>
-        </form>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   FORMULAIRE MOI AUSSI
-───────────────────────────────────────────── */
-function MoiAussiForm() {
-    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
-        useForm<{
-            situation: string;
-            testimony: string;
-            consequences: string[];
-            contacted_institution: string;
-            institution_name: string;
-            usage_anonymised: boolean;
-            usage_collective: boolean;
-            usage_legislation: boolean;
-            usage_confidential: boolean;
-            name: string;
-            email: string;
-            phone: string;
-        }>({
-            situation: '',
-            testimony: '',
-            consequences: [],
-            contacted_institution: '',
-            institution_name: '',
-            usage_anonymised: false,
-            usage_collective: false,
-            usage_legislation: false,
-            usage_confidential: false,
-            name: '',
-            email: '',
-            phone: '',
-        });
-
-    const toggleConsequence = (item: string) => {
-        setData(
-            'consequences',
-            data.consequences.includes(item)
-                ? data.consequences.filter((c) => c !== item)
-                : [...data.consequences, item],
-        );
-    };
-
-    const handleSubmit: FormEventHandler = (e) => {
-        e.preventDefault();
-        submit(forms.moiAussi.store(), { onSuccess: () => reset() });
-    };
-
-    if (wasSuccessful) {
-        return (
-            <div className="space-y-3 rounded-3xl border border-teal-100 bg-teal-50 p-10 text-center shadow-sm">
-                <span className="text-4xl">💙</span>
-                <p className="font-bold text-teal-800">Témoignage envoyé !</p>
-                <p className="text-sm text-teal-700">
-                    Merci de votre confiance. Votre témoignage contribue à notre
-                    action collective.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <form
-            onSubmit={handleSubmit}
-            className="space-y-6 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm"
-        >
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Avez-vous été confronté(e) à cette problématique ? *
-                </label>
-                <div className="flex flex-wrap gap-3">
-                    {[
-                        { value: 'oui', label: 'Oui' },
-                        { value: 'en_cours', label: 'En cours' },
-                        { value: 'resolu', label: 'Résolu mais difficile' },
-                    ].map((opt) => (
-                        <label
-                            key={opt.value}
-                            className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-600 transition hover:border-sna-teal"
-                        >
-                            <input
-                                type="radio"
-                                name="situation"
-                                value={opt.value}
-                                checked={data.situation === opt.value}
-                                onChange={() => setData('situation', opt.value)}
-                                className="accent-sna-teal"
-                            />
-                            {opt.label}
-                        </label>
-                    ))}
-                </div>
-                {errors.situation && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.situation}
-                    </p>
-                )}
-            </div>
-
-            <div>
-                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-                    Racontez-nous ce que vous avez vécu *
-                </label>
-                <textarea
-                    rows={5}
-                    value={data.testimony}
-                    onChange={(e) => setData('testimony', e.target.value)}
-                    className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                    placeholder="Décrivez librement votre expérience. Chaque détail compte pour renforcer notre action collective…"
-                />
-                {errors.testimony && (
-                    <p className="mt-1 text-xs text-red-500">
-                        {errors.testimony}
-                    </p>
-                )}
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Quelles ont été les conséquences pour vous ?
-                </label>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {[
-                        'Perte financière',
-                        'Impact professionnel',
-                        'Impact sur la santé / sécurité',
-                        'Démarches administratives lourdes',
-                        'Isolement',
-                        'Autre',
-                    ].map((item) => (
-                        <label
-                            key={item}
-                            className="flex cursor-pointer items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-600 transition hover:border-sna-teal/50"
-                        >
-                            <input
-                                type="checkbox"
-                                checked={data.consequences.includes(item)}
-                                onChange={() => toggleConsequence(item)}
-                                className="h-4 w-4 rounded accent-sna-teal"
-                            />
-                            {item}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Avez-vous saisi une institution ?
-                </label>
-                <div className="mb-3 flex gap-4">
-                    {[
-                        { value: 'oui', label: 'Oui' },
-                        { value: 'non', label: 'Non' },
-                    ].map((opt) => (
-                        <label
-                            key={opt.value}
-                            className="flex cursor-pointer items-center gap-2 text-sm text-gray-600"
-                        >
-                            <input
-                                type="radio"
-                                name="institution"
-                                value={opt.value}
-                                checked={
-                                    data.contacted_institution === opt.value
-                                }
-                                onChange={() =>
-                                    setData('contacted_institution', opt.value)
-                                }
-                                className="accent-sna-teal"
-                            />
-                            {opt.label}
-                        </label>
-                    ))}
-                </div>
-                <input
-                    type="text"
-                    value={data.institution_name}
-                    onChange={(e) =>
-                        setData('institution_name', e.target.value)
-                    }
-                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                    placeholder="Si oui, laquelle ? (CAF, MDPH, employeur, assurance…)"
-                />
-            </div>
-
-            <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Acceptez-vous que votre témoignage soit utilisé *
-                </label>
-                <div className="space-y-2">
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.usage_anonymised}
-                            onChange={(e) =>
-                                setData('usage_anonymised', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        De manière anonymisée
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.usage_collective}
-                            onChange={(e) =>
-                                setData('usage_collective', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        Dans une action collective
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.usage_legislation}
-                            onChange={(e) =>
-                                setData('usage_legislation', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        Pour appuyer une proposition de loi
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={data.usage_confidential}
-                            onChange={(e) =>
-                                setData('usage_confidential', e.target.checked)
-                            }
-                            className="h-4 w-4 rounded accent-sna-teal"
-                        />
-                        Je souhaite rester totalement confidentiel(le)
-                    </label>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 border-t border-gray-50 pt-2 sm:grid-cols-3">
-                <div>
-                    <label className="mb-1 block text-xs font-semibold text-gray-600">
-                        Nom (facultatif)
-                    </label>
-                    <input
-                        type="text"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                    />
-                </div>
-                <div>
-                    <label className="mb-1 block text-xs font-semibold text-gray-600">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                    />
-                    {errors.email && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.email}
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="mb-1 block text-xs font-semibold text-gray-600">
-                        Téléphone
-                    </label>
-                    <input
-                        type="tel"
-                        value={data.phone}
-                        onChange={(e) => setData('phone', e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/50 focus:outline-none"
-                    />
-                </div>
-            </div>
-
-            <p className="rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-400">
-                🔒 Les informations recueillies sont strictement confidentielles
-                et utilisées uniquement dans le cadre des actions collectives du
-                SNA. Aucun témoignage ne sera publié sans votre accord
-                explicite.
-            </p>
-
-            <button
-                type="submit"
-                disabled={processing}
-                className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark disabled:opacity-60"
-            >
-                {processing ? 'Envoi en cours…' : 'Envoyer mon témoignage'}
-            </button>
-        </form>
     );
 }
 
@@ -1536,18 +693,19 @@ export default function Welcome() {
                             </div>
 
                             <div className="flex flex-col gap-4 pt-2 sm:flex-row">
-                                <a
-                                    href="#actions"
+                                <Link
+                                    href="/formulaire/adhesion"
                                     className="inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-sna-teal/30 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
                                 >
-                                    Nos actions <ArrowRightIcon />
-                                </a>
-                                <a
-                                    href="#moi-aussi"
+                                    <HandshakeIcon className="h-5 w-5" />{' '}
+                                    Adhérer au SNA <ArrowRightIcon />
+                                </Link>
+                                <Link
+                                    href="/formulaire/moi-aussi"
                                     className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-sna-teal px-8 py-3.5 text-base font-semibold text-sna-teal transition-colors hover:bg-sna-teal-light"
                                 >
                                     « Moi aussi, j'ai vécu ça »
-                                </a>
+                                </Link>
                             </div>
 
                             {/* Key figures */}
@@ -1736,12 +894,12 @@ export default function Welcome() {
                         </span>{' '}
                         la lourdeur administrative, l'épuisement, le sentiment
                         d'être seul(e) face aux institutions.{' '}
-                        <a
-                            href="#moi-aussi"
+                        <Link
+                            href="/formulaire/adhesion"
                             className="font-semibold underline underline-offset-2 hover:text-white/80"
                         >
-                            Votre témoignage peut tout changer →
-                        </a>
+                            Rejoignez le SNA maintenant →
+                        </Link>
                     </p>
                 </div>
 
@@ -1935,12 +1093,12 @@ export default function Welcome() {
                         </div>
 
                         <div className="text-center">
-                            <a
-                                href="#moi-aussi"
+                            <Link
+                                href="/formulaire/moi-aussi"
                                 className="inline-flex items-center gap-2 rounded-full bg-sna-teal px-8 py-3.5 font-semibold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
                             >
                                 Partagez votre témoignage <ArrowRightIcon />
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -1953,8 +1111,36 @@ export default function Welcome() {
                         <SectionHeader
                             badge="Nos actions"
                             title="Comment agir avec nous ?"
-                            subtitle="Trois façons concrètes de rejoindre le mouvement et de faire entendre la voix des familles."
+                            subtitle="Adhérez en tant qu'aidant, soutenez le mouvement ou témoignez — chaque geste compte."
                         />
+
+                        {/* ── Featured adhesion banner ── */}
+                        <Link
+                            href="/formulaire/adhesion"
+                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-sna-teal to-sna-teal-dark p-8 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1 sm:flex-row"
+                        >
+                            <div className="flex items-center gap-5">
+                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+                                    <HandshakeIcon className="h-9 w-9 text-white" />
+                                </span>
+                                <div className="text-left">
+                                    <p className="text-xs font-bold tracking-widest text-white/70 uppercase">
+                                        Formulaire principal — Aidants
+                                    </p>
+                                    <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+                                        Formulaire d'adhésion des aidants
+                                    </h3>
+                                    <p className="mt-1 text-sm text-white/80">
+                                        Quantifiez et qualifiez votre réalité
+                                        d'aidant(e) pour construire une force
+                                        collective face aux institutions.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform group-hover:translate-x-1">
+                                Adhérer <ArrowRightIcon />
+                            </span>
+                        </Link>
 
                         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                             {/* ── Card 1: Soutien / Donateur ── */}
@@ -1991,12 +1177,12 @@ export default function Welcome() {
                                         </li>
                                     ))}
                                 </ul>
-                                <a
-                                    href="#formulaire-soutien"
+                                <Link
+                                    href="/formulaire/soutien"
                                     className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
                                 >
                                     Je soutiens le SNA <ArrowRightIcon />
-                                </a>
+                                </Link>
                             </div>
 
                             {/* ── Card 2: Partenaires institutionnels ── */}
@@ -2049,12 +1235,12 @@ export default function Welcome() {
                                         </li>
                                     ))}
                                 </ul>
-                                <a
-                                    href="#formulaire-partenaire"
+                                <Link
+                                    href="/formulaire/partenaire"
                                     className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-green px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-green-dark"
                                 >
                                     Devenir partenaire <ArrowRightIcon />
-                                </a>
+                                </Link>
                             </div>
 
                             {/* ── Card 3: Moi aussi ── */}
@@ -2082,19 +1268,76 @@ export default function Welcome() {
                                     nous transformons des difficultés
                                     individuelles en avancées collectives."
                                 </blockquote>
-                                <a
-                                    href="#moi-aussi"
+                                <Link
+                                    href="/formulaire/moi-aussi"
                                     className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
                                 >
                                     Je témoigne <ArrowRightIcon />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 {/* ══════════════════════════════
-                    FORMULAIRE SOUTIEN
+                    FORMULAIRE ADHÉSION — CTA
+                ══════════════════════════════ */}
+                <section
+                    id="formulaire-adhesion"
+                    className="relative overflow-hidden bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-6 py-20"
+                >
+                    <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-sna-teal/10 blur-3xl" />
+                    <div className="mx-auto max-w-3xl space-y-8">
+                        <div className="text-center">
+                            <span className="inline-block rounded-full bg-sna-teal/15 px-4 py-1 text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
+                                Formulaire principal
+                            </span>
+                            <h2 className="mt-4 text-3xl leading-tight font-bold text-gray-800 sm:text-4xl">
+                                Formulaire d'adhésion des aidants
+                            </h2>
+                            <p className="mt-3 leading-relaxed text-gray-500">
+                                Les aidants sont nombreux, mais dispersés et
+                                invisibilisés. Ce formulaire permet de{' '}
+                                <strong className="text-gray-700">
+                                    quantifier et qualifier
+                                </strong>{' '}
+                                votre réalité pour objectiver les impacts
+                                sociaux, économiques et humains, et transformer
+                                des vécus isolés en force collective lisible
+                                pour les institutions et les médias.
+                            </p>
+                        </div>
+
+                        <Link
+                            href="/formulaire/adhesion"
+                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-sna-teal to-sna-teal-dark p-10 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1 sm:flex-row"
+                        >
+                            <div className="flex items-center gap-5">
+                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+                                    <HandshakeIcon className="h-9 w-9 text-white" />
+                                </span>
+                                <div className="text-left">
+                                    <p className="text-xs font-bold tracking-widest text-white/70 uppercase">
+                                        6 étapes — Environ 5 minutes
+                                    </p>
+                                    <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+                                        Remplir le formulaire d'adhésion
+                                    </h3>
+                                    <p className="mt-1 text-sm text-white/80">
+                                        Un parcours guidé pour qualifier votre
+                                        situation et rejoindre le SNA.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform group-hover:translate-x-1">
+                                Commencer <ArrowRightIcon />
+                            </span>
+                        </Link>
+                    </div>
+                </section>
+
+                {/* ══════════════════════════════
+                    FORMULAIRE SOUTIEN — CTA
                 ══════════════════════════════ */}
                 <section
                     id="formulaire-soutien"
@@ -2107,12 +1350,36 @@ export default function Welcome() {
                             subtitle="Merci de votre engagement en faveur des aidants. Formalisez votre soutien moral, technique ou financier."
                         />
 
-                        <SoutienForm />
+                        <Link
+                            href="/formulaire/soutien"
+                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl border border-sna-teal/30 bg-white p-10 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:flex-row"
+                        >
+                            <div className="flex items-center gap-5">
+                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-sna-teal/10 text-3xl">
+                                    🤝
+                                </span>
+                                <div className="text-left">
+                                    <p className="text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
+                                        Personnes physiques &amp; morales
+                                    </p>
+                                    <h3 className="mt-1 text-xl font-bold text-gray-800 sm:text-2xl">
+                                        Rejoindre en tant que soutien
+                                    </h3>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        Soutien moral, technique ou financier —
+                                        chaque engagement compte.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-sna-teal px-7 py-3 text-sm font-bold text-white shadow-lg transition-transform group-hover:translate-x-1">
+                                Accéder au formulaire <ArrowRightIcon />
+                            </span>
+                        </Link>
                     </div>
                 </section>
 
                 {/* ══════════════════════════════
-                    FORMULAIRE PARTENAIRE
+                    FORMULAIRE PARTENAIRE — CTA
                 ══════════════════════════════ */}
                 <section
                     id="formulaire-partenaire"
@@ -2125,12 +1392,36 @@ export default function Welcome() {
                             subtitle="Le SNA souhaite développer des partenariats avec des entités publiques et privées pour soutenir ses projets."
                         />
 
-                        <PartenaireForm />
+                        <Link
+                            href="/formulaire/partenaire"
+                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl border border-sna-green/30 bg-linear-to-b from-[#f5faea] to-white p-10 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:flex-row"
+                        >
+                            <div className="flex items-center gap-5">
+                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-sna-green/10 text-3xl">
+                                    🏛️
+                                </span>
+                                <div className="text-left">
+                                    <p className="text-xs font-bold tracking-widest text-[#6a8a20] uppercase">
+                                        Collectivités, associations, entreprises
+                                    </p>
+                                    <h3 className="mt-1 text-xl font-bold text-gray-800 sm:text-2xl">
+                                        Proposer un partenariat
+                                    </h3>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        Construisons ensemble des solutions
+                                        durables pour les familles.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-sna-green px-7 py-3 text-sm font-bold text-white shadow-lg transition-transform group-hover:translate-x-1">
+                                Accéder au formulaire <ArrowRightIcon />
+                            </span>
+                        </Link>
                     </div>
                 </section>
 
                 {/* ══════════════════════════════
-                    FORMULAIRE MOI AUSSI
+                    FORMULAIRE MOI AUSSI — CTA
                 ══════════════════════════════ */}
                 <section
                     id="moi-aussi"
@@ -2151,7 +1442,31 @@ export default function Welcome() {
                             </blockquote>
                         </div>
 
-                        <MoiAussiForm />
+                        <Link
+                            href="/formulaire/moi-aussi"
+                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-sna-teal to-sna-teal-dark p-10 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1 sm:flex-row"
+                        >
+                            <div className="flex items-center gap-5">
+                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">
+                                    📣
+                                </span>
+                                <div className="text-left">
+                                    <p className="text-xs font-bold tracking-widest text-white/70 uppercase">
+                                        Campagne nationale
+                                    </p>
+                                    <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">
+                                        Partager mon témoignage
+                                    </h3>
+                                    <p className="mt-1 text-sm text-white/80">
+                                        Votre voix compte. Aidez-nous à faire
+                                        changer les choses.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform group-hover:translate-x-1">
+                                Témoigner <ArrowRightIcon />
+                            </span>
+                        </Link>
                     </div>
                 </section>
 
@@ -2216,12 +1531,19 @@ export default function Welcome() {
                             soutenue et protégée.
                         </p>
                         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                            <a
-                                href="#formulaire-soutien"
+                            <Link
+                                href="/formulaire/adhesion"
+                                className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-base font-bold text-sna-teal shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
+                            >
+                                <HandshakeIcon className="h-5 w-5" /> Adhérer au
+                                SNA
+                            </Link>
+                            <Link
+                                href="/formulaire/soutien"
                                 className="rounded-full border-2 border-white px-8 py-3.5 text-base font-semibold text-white transition-colors hover:bg-white/10"
                             >
                                 Je soutiens le SNA
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -2304,14 +1626,21 @@ export default function Welcome() {
                                     { label: 'À propos', href: '#apropos' },
                                     { label: 'Nos actions', href: '#actions' },
                                     {
+                                        label: 'Adhérer au SNA',
+                                        href: '/formulaire/adhesion',
+                                    },
+                                    {
                                         label: 'Devenir soutien',
-                                        href: '#formulaire-soutien',
+                                        href: '/formulaire/soutien',
                                     },
                                     {
                                         label: 'Partenariats',
-                                        href: '#formulaire-partenaire',
+                                        href: '/formulaire/partenaire',
                                     },
-                                    { label: 'Témoigner', href: '#moi-aussi' },
+                                    {
+                                        label: 'Témoigner',
+                                        href: '/formulaire/moi-aussi',
+                                    },
                                     { label: 'Contact', href: '#contact' },
                                 ].map((link) => (
                                     <a

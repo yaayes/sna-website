@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MoiAussiFormController as AdminMoiAussiFormController;
 use App\Http\Controllers\Admin\PartenaireFormController as AdminPartenaireFormController;
 use App\Http\Controllers\Admin\SoutienFormController as AdminSoutienFormController;
+use App\Http\Controllers\Forms\AidantAdhesionFormController;
 use App\Http\Controllers\Forms\FormAccessController;
 use App\Http\Controllers\Forms\MoiAussiFormController;
 use App\Http\Controllers\Forms\PartenaireFormController;
@@ -12,7 +13,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
 
+// Dedicated form pages
+Route::inertia('/formulaire/adhesion', 'forms/adhesion')->name('forms.adhesion.page');
+Route::inertia('/formulaire/soutien', 'forms/soutien')->name('forms.soutien.page');
+Route::inertia('/formulaire/partenaire', 'forms/partenaire')->name('forms.partenaire.page');
+Route::inertia('/formulaire/moi-aussi', 'forms/moi-aussi')->name('forms.moi-aussi.page');
+
 // Form submissions (no auth required)
+Route::post('/formulaire/adhesion', [AidantAdhesionFormController::class, 'store'])->name('forms.adhesion.store');
 Route::post('/formulaire/soutien', [SoutienFormController::class, 'store'])->name('forms.soutien.store');
 Route::post('/formulaire/partenaire', [PartenaireFormController::class, 'store'])->name('forms.partenaire.store');
 Route::post('/formulaire/moi-aussi', [MoiAussiFormController::class, 'store'])->name('forms.moi-aussi.store');
