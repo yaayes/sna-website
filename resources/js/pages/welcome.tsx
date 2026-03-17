@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { dashboard, login } from '@/routes';
 
 /* ─────────────────────────────────────────────
@@ -38,22 +38,6 @@ const HandshakeIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
         />
     </svg>
 );
-const ShieldIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-    >
-        <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-        />
-    </svg>
-);
 const UsersIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -67,22 +51,6 @@ const UsersIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
             strokeLinecap="round"
             strokeLinejoin="round"
             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-        />
-    </svg>
-);
-const MegaphoneIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-    >
-        <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
         />
     </svg>
 );
@@ -118,18 +86,6 @@ const CheckIcon = ({
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
 );
-const ChevronDownIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-    </svg>
-);
 const MenuIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -162,7 +118,18 @@ const XIcon = ({ className = 'h-6 w-6' }: { className?: string }) => (
         />
     </svg>
 );
-const HandIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+const StarIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+    >
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+);
+
+const ShieldIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         className={className}
@@ -174,18 +141,24 @@ const HandIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
         <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
+            d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
         />
     </svg>
 );
-const StarIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+const HandRaisedIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         className={className}
+        fill="none"
         viewBox="0 0 24 24"
-        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth={2}
     >
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 013.15 0V15M6.9 7.575a1.575 1.575 0 10-3.15 0v8.175a6.75 6.75 0 006.75 6.75h2.018a5.25 5.25 0 003.712-1.538l1.732-1.732a5.25 5.25 0 001.538-3.712l.003-2.024a.668.668 0 01.198-.471 1.575 1.575 0 10-2.228-2.228 3.818 3.818 0 00-1.12 2.687"
+        />
     </svg>
 );
 
@@ -384,39 +357,27 @@ function SectionHeader({
     );
 }
 
-/* ─────────────────────────────────────────────
-   FAQ Accordion Item
-───────────────────────────────────────────── */
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
-            <button
-                onClick={() => setOpen(!open)}
-                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-gray-50"
-            >
-                <span className="text-sm font-semibold text-gray-800 sm:text-base">
-                    {question}
-                </span>
-                <span
-                    className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-                >
-                    <ChevronDownIcon />
-                </span>
-            </button>
-            {open && (
-                <div className="border-t border-gray-50 px-6 pb-5 text-sm leading-relaxed text-gray-500">
-                    <p className="pt-4">{answer}</p>
-                </div>
-            )}
-        </div>
-    );
-}
-
 export default function Welcome() {
     const { auth } = usePage().props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [actionsOpen, setActionsOpen] = useState(false);
+    const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
+    const actionsRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (
+                actionsRef.current &&
+                !actionsRef.current.contains(e.target as Node)
+            ) {
+                setActionsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
         <>
@@ -450,9 +411,16 @@ export default function Welcome() {
                         {/* Nav links – desktop only */}
                         <nav className="hidden items-center gap-1 md:flex">
                             {[
-                                { href: '#apropos', label: 'À propos' },
-                                { href: '#actions', label: 'Nos actions' },
-                                { href: '#contact', label: 'Contact' },
+                                { href: '#apropos', label: 'Qui sommes nous' },
+                                {
+                                    href: '#comprendre',
+                                    label: "Comprendre l'aidance",
+                                },
+                                {
+                                    href: '#representants',
+                                    label: 'Nos représentants',
+                                },
+                                { href: '#presse', label: 'Revue de presse' },
                             ].map(({ href, label }) => (
                                 <a
                                     key={href}
@@ -463,6 +431,141 @@ export default function Welcome() {
                                     <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover:w-4/5" />
                                 </a>
                             ))}
+
+                            {/* ── Nos Actions dropdown ── */}
+                            <div ref={actionsRef} className="relative">
+                                <button
+                                    onClick={() => setActionsOpen((o) => !o)}
+                                    className={`group relative flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                                        actionsOpen
+                                            ? 'text-sna-teal'
+                                            : 'text-gray-600 hover:text-sna-teal'
+                                    }`}
+                                >
+                                    Nos Actions
+                                    <svg
+                                        className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                                            actionsOpen ? 'rotate-180' : ''
+                                        }`}
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2.5}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                    <span
+                                        className={`absolute bottom-0 left-1/2 h-0.5 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 ${
+                                            actionsOpen
+                                                ? 'w-4/5'
+                                                : 'w-0 group-hover:w-4/5'
+                                        }`}
+                                    />
+                                </button>
+
+                                {/* Dropdown panel */}
+                                {actionsOpen && (
+                                    <div className="absolute top-full left-1/2 z-50 mt-2 w-64 -translate-x-1/2 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl shadow-sna-teal/10">
+                                        <div className="px-2 py-2">
+                                            <p className="px-3 py-1.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                                                Rejoindre le mouvement
+                                            </p>
+                                            {[
+                                                {
+                                                    href: '/formulaire/adhesion',
+                                                    label: 'Adhérer au SNA',
+                                                    desc: 'Je suis aidant',
+                                                    icon: (
+                                                        <HandshakeIcon className="h-4 w-4" />
+                                                    ),
+                                                    color: 'text-sna-teal',
+                                                    bg: 'bg-sna-teal/10',
+                                                },
+                                                {
+                                                    href: '/formulaire/soutien',
+                                                    label: 'Devenir membre soutien',
+                                                    desc: 'Je soutiens la cause',
+                                                    icon: (
+                                                        <HeartIcon className="h-4 w-4" />
+                                                    ),
+                                                    color: 'text-sna-teal',
+                                                    bg: 'bg-sna-teal/10',
+                                                },
+                                                {
+                                                    href: '/formulaire/moi-aussi',
+                                                    label: "« Moi aussi, j'ai vécu ça »",
+                                                    desc: 'Témoigner',
+                                                    icon: (
+                                                        <HandRaisedIcon className="h-4 w-4" />
+                                                    ),
+                                                    color: 'text-sna-teal',
+                                                    bg: 'bg-sna-teal/10',
+                                                },
+                                                {
+                                                    href: '/formulaire/partenaire',
+                                                    label: 'Proposer un partenariat',
+                                                    desc: 'Partenaire institutionnel',
+                                                    icon: (
+                                                        <UsersIcon className="h-4 w-4" />
+                                                    ),
+                                                    color: 'text-sna-green',
+                                                    bg: 'bg-sna-green/10',
+                                                },
+                                            ].map(
+                                                ({
+                                                    href,
+                                                    label,
+                                                    desc,
+                                                    icon,
+                                                    color,
+                                                    bg,
+                                                }) => (
+                                                    <Link
+                                                        key={href}
+                                                        href={href}
+                                                        onClick={() =>
+                                                            setActionsOpen(
+                                                                false,
+                                                            )
+                                                        }
+                                                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors duration-150 hover:bg-gray-50"
+                                                    >
+                                                        <span
+                                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${bg} ${color}`}
+                                                        >
+                                                            {icon}
+                                                        </span>
+                                                        <div>
+                                                            <p className="text-sm font-semibold text-gray-800">
+                                                                {label}
+                                                            </p>
+                                                            <p className="text-xs text-gray-400">
+                                                                {desc}
+                                                            </p>
+                                                        </div>
+                                                    </Link>
+                                                ),
+                                            )}
+                                        </div>
+                                        <div className="border-t border-gray-100 px-2 py-2">
+                                            <a
+                                                href="#actions"
+                                                onClick={() =>
+                                                    setActionsOpen(false)
+                                                }
+                                                className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-sna-teal"
+                                            >
+                                                Voir toutes nos actions
+                                                <ArrowRightIcon className="h-3 w-3" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </nav>
 
                         {/* Right side */}
@@ -567,9 +670,22 @@ export default function Welcome() {
                             {/* Nav links */}
                             <nav className="mb-4 flex flex-col">
                                 {[
-                                    { href: '#apropos', label: 'À propos' },
-                                    { href: '#actions', label: 'Nos actions' },
-                                    { href: '#contact', label: 'Contact' },
+                                    {
+                                        href: '#apropos',
+                                        label: 'Qui sommes nous',
+                                    },
+                                    {
+                                        href: '#comprendre',
+                                        label: "Comprendre l'aidance",
+                                    },
+                                    {
+                                        href: '#representants',
+                                        label: 'Nos représentants',
+                                    },
+                                    {
+                                        href: '#presse',
+                                        label: 'Revue de presse',
+                                    },
                                 ].map(({ href, label }, i) => (
                                     <a
                                         key={href}
@@ -586,6 +702,99 @@ export default function Welcome() {
                                         <ArrowRightIcon className="h-3.5 w-3.5 text-sna-teal/50" />
                                     </a>
                                 ))}
+
+                                {/* ── Nos Actions collapsible ── */}
+                                <button
+                                    onClick={() =>
+                                        setMobileActionsOpen((o) => !o)
+                                    }
+                                    className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:text-sna-teal"
+                                >
+                                    <span
+                                        className={
+                                            mobileActionsOpen
+                                                ? 'font-semibold text-sna-teal'
+                                                : ''
+                                        }
+                                    >
+                                        Nos Actions
+                                    </span>
+                                    <svg
+                                        className={`h-3.5 w-3.5 text-sna-teal/70 transition-transform duration-200 ${
+                                            mobileActionsOpen
+                                                ? 'rotate-180'
+                                                : ''
+                                        }`}
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2.5}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+                                </button>
+
+                                {/* Sub-items */}
+                                <div
+                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                        mobileActionsOpen
+                                            ? 'max-h-72 opacity-100'
+                                            : 'max-h-0 opacity-0'
+                                    }`}
+                                >
+                                    <div className="ml-3 flex flex-col gap-1 border-l-2 border-sna-teal/20 pb-1 pl-3">
+                                        {[
+                                            {
+                                                href: '/formulaire/adhesion',
+                                                label: 'Adhérer au SNA',
+                                                desc: 'Je suis aidant',
+                                            },
+                                            {
+                                                href: '/formulaire/soutien',
+                                                label: 'Devenir membre soutien',
+                                                desc: 'Je soutiens la cause',
+                                            },
+                                            {
+                                                href: '/formulaire/moi-aussi',
+                                                label: "« Moi aussi, j'ai vécu ça »",
+                                                desc: 'Témoigner',
+                                            },
+                                            {
+                                                href: '/formulaire/partenaire',
+                                                label: 'Proposer un partenariat',
+                                                desc: 'Partenaire institutionnel',
+                                            },
+                                            {
+                                                href: '#actions',
+                                                label: 'Voir toutes nos actions',
+                                                desc: '',
+                                            },
+                                        ].map(({ href, label, desc }) => (
+                                            <a
+                                                key={href}
+                                                href={href}
+                                                onClick={() => {
+                                                    setMobileMenuOpen(false);
+                                                    setMobileActionsOpen(false);
+                                                }}
+                                                className="flex flex-col rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-sna-teal/10"
+                                            >
+                                                <span className="text-sm font-medium text-gray-800">
+                                                    {label}
+                                                </span>
+                                                {desc && (
+                                                    <span className="text-xs text-gray-400">
+                                                        {desc}
+                                                    </span>
+                                                )}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
                             </nav>
 
                             {/* Divider */}
@@ -621,7 +830,7 @@ export default function Welcome() {
                 {/* ══════════════════════════════
                     HERO
                 ══════════════════════════════ */}
-                <section className="relative overflow-hidden bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-6 py-16 lg:py-24">
+                <section className="relative overflow-hidden bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-6 py-16">
                     {/* Decorative blobs */}
                     <div className="pointer-events-none absolute -top-32 -right-32 h-125 w-125 rounded-full bg-sna-teal/10 blur-3xl" />
                     <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-sna-green/10 blur-2xl" />
@@ -635,9 +844,9 @@ export default function Welcome() {
                             </span>
 
                             <h1 className="text-4xl leading-tight font-bold text-gray-800 sm:text-5xl lg:text-6xl">
-                                Aux côtés des familles qui{' '}
+                                12 millions de Français aident un proche.{' '}
                                 <span className="relative text-sna-teal">
-                                    accompagnent un enfant
+                                    Mais qui porte leur voix{' '}?
                                     {/* underline squiggle */}
                                     <svg
                                         className="absolute -bottom-2 left-0 w-full"
@@ -653,41 +862,58 @@ export default function Welcome() {
                                             strokeLinecap="round"
                                         />
                                     </svg>
-                                </span>{' '}
-                                en situation de handicap
+                                </span>
                             </h1>
 
                             <p className="max-w-xl text-lg leading-relaxed text-gray-500 sm:text-xl">
-                                Parce que l'amour que vous portez à votre enfant
-                                mérite reconnaissance, protection et soutien, le
-                                SNA agit chaque jour pour transformer votre
-                                quotidien.
+                                Le{' '}
+                                <strong className="text-gray-700">
+                                    Syndicat National des Aidants (SNA)
+                                </strong>{' '}
+                                est la première organisation syndicale 100{' '}%
+                                dédiée aux aidants familiaux en France. Une
+                                force militante nationale créée pour{' '}:
                             </p>
 
-                            {/* Trust badges */}
-                            <div className="flex flex-wrap gap-3">
-                                {[
-                                    {
-                                        icon: <ShieldIcon />,
-                                        label: 'Droits défendus',
-                                    },
-                                    {
-                                        icon: <UsersIcon />,
-                                        label: 'Familles réunies',
-                                    },
-                                    {
-                                        icon: <HandIcon />,
-                                        label: 'Soutien concret',
-                                    },
-                                ].map((b) => (
+                            {/* Bullet point badges */}
+                            <div className="flex flex-col items-start gap-3">
+                                {(
+                                    [
+                                        {
+                                            icon: (
+                                                <ShieldIcon className="h-4 w-4 shrink-0 text-sna-teal" />
+                                            ),
+                                            label: 'Défendre les droits et les intérêts des aidants',
+                                        },
+                                        {
+                                            icon: (
+                                                <UsersIcon className="h-4 w-4 shrink-0 text-sna-teal" />
+                                            ),
+                                            label: 'Porter leur représentation collective',
+                                        },
+                                        {
+                                            icon: (
+                                                <HeartIcon className="h-4 w-4 shrink-0 text-sna-teal" />
+                                            ),
+                                            label: "Valoriser l'expertise du vécu",
+                                        },
+                                        {
+                                            icon: (
+                                                <HandRaisedIcon className="h-4 w-4 shrink-0 text-sna-teal" />
+                                            ),
+                                            label: 'Faire évoluer les politiques publiques',
+                                        },
+                                    ] as {
+                                        icon: React.ReactNode;
+                                        label: string;
+                                    }[]
+                                ).map(({ icon, label }) => (
                                     <span
-                                        key={b.label}
-                                        className="inline-flex items-center gap-1.5 rounded-full border border-gray-100 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm"
+                                        key={label}
+                                        className="inline-flex items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm"
                                     >
-                                        <span className="shrink-0 text-sna-teal">
-                                            {b.icon}
-                                        </span>
-                                        {b.label}
+                                        {icon}
+                                        {label}
                                     </span>
                                 ))}
                             </div>
@@ -709,92 +935,57 @@ export default function Welcome() {
                             </div>
 
                             {/* Key figures */}
-                            <div className="mt-2 grid w-full grid-cols-2 gap-5 rounded-2xl border border-gray-100 bg-white/90 px-6 py-5 shadow-md backdrop-blur sm:grid-cols-4">
-                                {[
-                                    {
-                                        value: '11 M',
-                                        label: 'Aidants en France',
-                                        icon: (
-                                            <svg
-                                                className="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={1.8}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                                                />
-                                            </svg>
-                                        ),
-                                    },
-                                    {
-                                        value: '700 K',
-                                        label: 'Enfants handicapés',
-                                        icon: (
-                                            <svg
-                                                className="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={1.8}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                                                />
-                                            </svg>
-                                        ),
-                                    },
-                                    {
-                                        value: '1/5',
-                                        label: 'Aidants épuisés',
-                                        icon: (
-                                            <svg
-                                                className="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={1.8}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                                                />
-                                            </svg>
-                                        ),
-                                    },
-                                    {
-                                        value: '80%',
-                                        label: 'Femmes aidantes',
-                                        icon: (
-                                            <svg
-                                                className="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                strokeWidth={1.8}
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                                />
-                                            </svg>
-                                        ),
-                                    },
-                                ].map((stat) => (
+                            <div className="mt-2 grid w-full grid-cols-2 gap-0 overflow-hidden rounded-2xl border border-gray-100 bg-white/90 shadow-md backdrop-blur sm:grid-cols-4">
+                                {/* Hero stat — spans 2 cols × 2 rows */}
+                                <div className="col-span-1 row-span-2 flex cursor-default flex-col items-center justify-center gap-1 border-r border-gray-100 bg-sna-teal px-5 py-6 text-center transition-all duration-200 hover:brightness-110">
+                                    <span className="text-4xl leading-none font-extrabold text-white sm:text-5xl">
+                                        12 M
+                                    </span>
+                                    <span className="mt-1 text-sm leading-tight text-white/80">
+                                        Aidants en France
+                                    </span>
+                                </div>
+                                {/* Remaining 6 stats — 3 per row on the right */}
+                                {(
+                                    [
+                                        {
+                                            value: '1/5',
+                                            label: '1 Français sur 5 est aidant',
+                                        },
+                                        {
+                                            value: '57 %',
+                                            label: 'Sont des femmes',
+                                        },
+                                        {
+                                            value: '50 %',
+                                            label: 'Exercent une activité pro',
+                                        },
+                                        {
+                                            value: '30 %',
+                                            label: "Impact négatif sur l'emploi",
+                                        },
+                                        {
+                                            value: '40 %',
+                                            label: 'Santé dégradée',
+                                        },
+                                        {
+                                            value: '1/2',
+                                            label: 'Ne connaît pas ses droits',
+                                        },
+                                    ] as { value: string; label: string }[]
+                                ).map((stat, i) => (
                                     <div
                                         key={stat.label}
-                                        className="flex flex-col items-center gap-1.5 text-center"
+                                        className={[
+                                            'flex cursor-default flex-col items-center gap-1 px-3 py-4 text-center transition-colors duration-200 hover:bg-sna-teal/5',
+                                            i < 3
+                                                ? 'border-b border-gray-100'
+                                                : '',
+                                            i % 3 !== 2
+                                                ? 'border-r border-gray-100'
+                                                : '',
+                                        ].join(' ')}
                                     >
-                                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sna-teal/10 text-sna-teal">
-                                            {stat.icon}
-                                        </span>
                                         <span className="text-xl leading-none font-extrabold text-sna-teal sm:text-2xl">
                                             {stat.value}
                                         </span>
@@ -821,7 +1012,7 @@ export default function Welcome() {
                                 </span>
                                 <div>
                                     <p className="text-xs leading-none font-bold text-gray-800">
-                                        11 M d'aidants
+                                        12 M d'aidants
                                     </p>
                                     <p className="mt-0.5 text-xs text-gray-400">
                                         en France
@@ -885,116 +1076,98 @@ export default function Welcome() {
                 </section>
 
                 {/* ══════════════════════════════
-                    ALERT BANNER – Empathy
-                ══════════════════════════════ */}
-                <div className="bg-sna-teal px-6 py-4">
-                    <p className="mx-auto max-w-4xl text-center text-sm font-medium text-white sm:text-base">
-                        <span className="font-bold">
-                            Vous le vivez chaque jour :
-                        </span>{' '}
-                        la lourdeur administrative, l'épuisement, le sentiment
-                        d'être seul(e) face aux institutions.{' '}
-                        <Link
-                            href="/formulaire/adhesion"
-                            className="font-semibold underline underline-offset-2 hover:text-white/80"
-                        >
-                            Rejoignez le SNA maintenant →
-                        </Link>
-                    </p>
-                </div>
-
-                {/* ══════════════════════════════
-                    À PROPOS
+                    QUI SOMMES-NOUS
                 ══════════════════════════════ */}
                 <section id="apropos" className="bg-white px-6 py-20">
-                    <div className="mx-auto flex max-w-6xl flex-col items-center gap-16 lg:flex-row">
-                        {/* Text */}
-                        <div className="flex-1 space-y-6">
+                    <div className="mx-auto max-w-6xl space-y-14">
+                        <div className="mx-auto max-w-3xl space-y-6">
                             <span className="inline-block rounded-full bg-sna-green/15 px-4 py-1 text-xs font-bold tracking-widest text-[#6a8a20] uppercase">
-                                Qui sommes-nous
+                                Qui sommes nous
                             </span>
                             <h2 className="text-3xl leading-tight font-bold text-gray-800 sm:text-4xl">
-                                Une voix collective pour les familles invisibles
+                                Les combats du Syndicat National des Aidants
                             </h2>
                             <p className="leading-relaxed text-gray-500">
-                                Le{' '}
+                                Les aidants soutiennent chaque jour des millions
+                                de personnes en France. Pourtant, leurs droits
+                                restent insuffisamment reconnus. Le{' '}
                                 <strong className="text-gray-700">
-                                    Syndicat National des Aidants (SNA)
+                                    Syndicat National des Aidants
                                 </strong>{' '}
-                                est né d'un constat simple : les familles qui
-                                accompagnent un enfant en situation de handicap
-                                portent une charge extraordinaire —
-                                émotionnelle, administrative, financière — dans
-                                un quasi-isolement.
+                                agit pour faire évoluer les politiques publiques
+                                et améliorer concrètement la vie des aidants.
                             </p>
                             <p className="leading-relaxed text-gray-500">
-                                Face à la complexité des démarches (MDPH, CAF,
-                                établissements spécialisés), au manque de
-                                places, aux politiques publiques déconnectées du
-                                terrain, le SNA fédère ces familles et porte
-                                leur voix auprès des décideurs, des médias et
-                                des partenaires institutionnels.
+                                L'aide apportée par les aidants ne relève pas
+                                uniquement de la sphère privée. Elle constitue
+                                un travail social d'intérêt général, exercé sans
+                                statut, sans droits opposables et sans
+                                protection équivalente à l'utilité collective
+                                produite. C'est dans ce contexte que le SNA
+                                s'est constitué pour franchir une étape
+                                supplémentaire :
                             </p>
                             <ul className="space-y-2">
                                 {[
-                                    "Reconnaissance officielle du statut d'aidant familial",
-                                    'Simplification des démarches MDPH / CAF',
-                                    'Sécurité financière et protection juridique',
-                                    'Droit au répit réel et accompagnement',
+                                    'Structurer une représentation nationale des aidants',
+                                    'Porter une réflexion juridique ambitieuse',
+                                    'Défendre les droits des aidants face aux discriminations indirectes',
+                                    'Engager des actions stratégiques, y compris contentieuses',
+                                    'Construire un dialogue exigeant mais constructif avec les institutions',
                                 ].map((item) => (
                                     <li
                                         key={item}
-                                        className="flex items-center gap-2 text-sm text-gray-600"
+                                        className="flex items-start gap-2 text-sm text-gray-600"
                                     >
-                                        <CheckIcon />
+                                        <span className="mt-0.5 shrink-0 text-sna-teal">
+                                            <CheckIcon />
+                                        </span>
                                         {item}
                                     </li>
                                 ))}
                             </ul>
-                            <a
-                                href="#actions"
-                                className="inline-flex items-center gap-2 font-semibold text-sna-teal transition-colors hover:text-sna-teal-dark"
-                            >
-                                Nos engagements <ArrowRightIcon />
-                            </a>
                         </div>
 
-                        {/* Value cards */}
-                        <div className="grid flex-1 grid-cols-2 gap-4">
+                        {/* Action cards */}
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {[
                                 {
-                                    emoji: '🤝',
+                                    number: '1',
                                     bg: 'bg-sna-teal-light',
-                                    title: 'Solidarité',
-                                    desc: "Rompre l'isolement des aidants en créant une communauté soudée.",
+                                    accent: 'text-sna-teal-dark',
+                                    title: 'Représenter les aidants',
+                                    desc: 'Donner aux aidants une représentation nationale.',
                                 },
                                 {
-                                    emoji: '🛡️',
+                                    number: '2',
                                     bg: 'bg-sna-green/10',
-                                    title: 'Protection',
-                                    desc: 'Défendre vos droits face aux administrations et aux institutions.',
+                                    accent: 'text-[#6a8a20]',
+                                    title: 'Défendre et faire évoluer les droits',
+                                    desc: 'Faire entrer les aidants dans le droit.',
                                 },
                                 {
-                                    emoji: '💬',
+                                    number: '3',
                                     bg: 'bg-sna-teal-light',
-                                    title: 'Écoute',
-                                    desc: "Un espace d'expression sécurisé pour chaque famille.",
+                                    accent: 'text-sna-teal-dark',
+                                    title: 'Améliorer concrètement la vie des familles',
+                                    desc: 'Transformer les difficultés quotidiennes en solutions publiques.',
                                 },
                                 {
-                                    emoji: '📣',
+                                    number: '4',
                                     bg: 'bg-sna-green/10',
-                                    title: 'Représentation',
-                                    desc: 'Porter la parole des familles au niveau national et législatif.',
+                                    accent: 'text-[#6a8a20]',
+                                    title: 'Produire des données pour orienter les politiques publiques',
+                                    desc: "Transformer l'expérience des aidants en force d'influence.",
                                 },
                             ].map((item) => (
                                 <div
-                                    key={item.title}
-                                    className="group flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-5 transition-shadow hover:shadow-md"
+                                    key={item.number}
+                                    className="group flex flex-col gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-6 transition-shadow hover:shadow-md"
                                 >
                                     <div
-                                        className={`h-12 w-12 rounded-2xl ${item.bg} flex items-center justify-center text-2xl transition-transform group-hover:scale-110`}
+                                        className={`flex h-12 w-12 items-center justify-center rounded-2xl ${item.bg} text-xl font-extrabold ${item.accent} transition-transform group-hover:scale-110`}
                                     >
-                                        {item.emoji}
+                                        {item.number}
                                     </div>
                                     <h3 className="font-bold text-gray-800">
                                         {item.title}
@@ -1009,96 +1182,146 @@ export default function Welcome() {
                 </section>
 
                 {/* ══════════════════════════════
-                    CE QUE VOUS VIVEZ
-                    (Empathy section)
+                    6 AXES D'ACTION
                 ══════════════════════════════ */}
-                <section className="bg-gray-50 px-6 py-20">
-                    <div className="mx-auto max-w-6xl space-y-12">
-                        <SectionHeader
-                            badge="Ce que vous vivez"
-                            title="Vous n'êtes pas seul(e)"
-                            subtitle="Des milliers de familles partagent les mêmes difficultés au quotidien. Le SNA transforme ces épreuves individuelles en force collective."
-                        />
-
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {[
-                                {
-                                    emoji: '🏛️',
-                                    quote: '"Il n\'y a pas de budget."',
-                                    context:
-                                        'Ce que vous entendez dans les institutions',
-                                    pain: 'Lourdeur administrative (MDPH, CAF)',
-                                    color: 'border-l-sna-teal',
-                                },
-                                {
-                                    emoji: '⏳',
-                                    quote: '"Il faut patienter."',
-                                    context: "Ce que l'on vous répond",
-                                    pain: 'Manque de places en structure spécialisée',
-                                    color: 'border-l-sna-green',
-                                },
-                                {
-                                    emoji: '😔',
-                                    quote: '"Vous avez déjà de la chance."',
-                                    context:
-                                        'Ce que vous ressentez face à ce message',
-                                    pain: "Épuisement moral et sentiment d'injustice",
-                                    color: 'border-l-sna-teal',
-                                },
-                                {
-                                    emoji: '😰',
-                                    quote: '"Après moi, qui s\'en occupera ?"',
-                                    context:
-                                        "La peur de l'avenir qui ne vous quitte pas",
-                                    pain: 'Absence de perspective à long terme',
-                                    color: 'border-l-sna-green',
-                                },
-                                {
-                                    emoji: '💔',
-                                    quote: '"Je n\'ai plus le droit de m\'épuiser."',
-                                    context:
-                                        'La culpabilité de ne pas en faire assez',
-                                    pain: 'Charge mentale permanente et isolement',
-                                    color: 'border-l-sna-teal',
-                                },
-                                {
-                                    emoji: '✊',
-                                    quote: '"Je me bats seul(e) contre tout."',
-                                    context:
-                                        'Face aux refus et aux dossiers incomplets',
-                                    pain: 'Précarisation professionnelle et sociale',
-                                    color: 'border-l-sna-green',
-                                },
-                            ].map((item) => (
-                                <div
-                                    key={item.quote}
-                                    className={`rounded-2xl border border-l-4 border-gray-100 bg-white ${item.color} flex flex-col gap-3 p-6 shadow-sm transition-shadow hover:shadow-md`}
-                                >
-                                    <span className="text-3xl">
-                                        {item.emoji}
-                                    </span>
-                                    <p className="text-base font-semibold text-gray-700 italic">
-                                        {item.quote}
-                                    </p>
-                                    <p className="text-xs tracking-wide text-gray-400 uppercase">
-                                        {item.context}
-                                    </p>
-                                    <div className="mt-auto border-t border-gray-50 pt-3">
-                                        <p className="text-xs font-medium text-sna-teal">
-                                            ⚠️ {item.pain}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                <section id="comprendre" className="bg-gray-50 px-6 py-20">
+                    <div className="mx-auto max-w-6xl space-y-14">
+                        <div className="mx-auto max-w-3xl space-y-5">
+                            <SectionHeader
+                                badge="Nos axes d'action"
+                                title="Les 6 axes d'action du Syndicat National des Aidants"
+                            />
+                            <p className="leading-relaxed text-gray-500">
+                                Le Syndicat National des Aidants a pour vocation
+                                de transformer des difficultés individuelles en
+                                leviers d'action collective. Chaque situation
+                                remontée du terrain n'est pas considérée comme
+                                un cas isolé, mais comme le symptôme possible
+                                d'un dysfonctionnement plus large appelant une
+                                réponse structurée.
+                            </p>
+                            <p className="leading-relaxed text-gray-500">
+                                Notre méthode consiste à partir du vécu, à en
+                                analyser les mécanismes, puis à formuler des
+                                solutions concrètes, juridiquement et
+                                socialement soutenables.
+                            </p>
                         </div>
 
-                        <div className="text-center">
-                            <Link
-                                href="/formulaire/moi-aussi"
-                                className="inline-flex items-center gap-2 rounded-full bg-sna-teal px-8 py-3.5 font-semibold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
-                            >
-                                Partagez votre témoignage <ArrowRightIcon />
-                            </Link>
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                            {[
+                                {
+                                    number: '1',
+                                    accent: 'border-sna-teal',
+                                    title: 'Représentation nationale des aidants',
+                                    desc: 'Le SNA porte la voix des aidants dans le débat public et auprès des institutions afin que leur expérience soit reconnue et intégrée dans les décisions publiques.',
+                                    objectif:
+                                        'Donner aux aidants une représentation collective et structurée dans les politiques publiques.',
+                                    actions: [],
+                                },
+                                {
+                                    number: '2',
+                                    accent: 'border-sna-green',
+                                    title: 'Droits fondamentaux et protection des aidants',
+                                    desc: "Le SNA agit pour garantir les droits fondamentaux des aidants et des personnes accompagnées, et prévenir les situations d'injustice ou de vulnérabilité juridique.",
+                                    objectif: null,
+                                    actions: [
+                                        'Devoir de parentalité',
+                                        'Établissement : droits garantis',
+                                        "Aidant essentiel à l'hôpital",
+                                        'Reconnaissance du traumatisme des aidants',
+                                        'Séparation conjugale et handicap évolutif',
+                                    ],
+                                },
+                                {
+                                    number: '3',
+                                    accent: 'border-sna-teal',
+                                    title: 'Justice sociale et équité du quotidien',
+                                    desc: 'Le syndicat défend des mesures concrètes pour corriger les inégalités vécues par les familles confrontées au handicap, à la dépendance ou à la maladie.',
+                                    objectif: null,
+                                    actions: [
+                                        'Transport sécurisé en taxi',
+                                        'Gratuité des parkings hospitaliers',
+                                        'Levée gratuite des déchets médicaux',
+                                        'Pension nationale pour service rendu',
+                                        'Prêt bancaire aidant',
+                                    ],
+                                },
+                                {
+                                    number: '4',
+                                    accent: 'border-sna-green',
+                                    title: 'Statut et reconnaissance professionnelle des aidants',
+                                    desc: "L'aidance a des conséquences majeures sur la vie professionnelle. Le SNA agit pour sécuriser les parcours d'emploi et valoriser les compétences développées dans l'aidance.",
+                                    objectif: null,
+                                    actions: [
+                                        'Statut du salarié aidant',
+                                        'Programme national Employeurs & Aidants',
+                                        'Label Entreprise engagée',
+                                    ],
+                                },
+                                {
+                                    number: '5',
+                                    accent: 'border-sna-teal',
+                                    title: 'Régulation et amélioration des décisions publiques',
+                                    desc: "Le SNA agit pour renforcer la qualité, la transparence et l'équité des décisions administratives qui structurent la vie des personnes handicapées et de leurs familles.",
+                                    objectif: null,
+                                    actions: [
+                                        'Formation nationale des membres CDAPH',
+                                    ],
+                                },
+                                {
+                                    number: '6',
+                                    accent: 'border-sna-green',
+                                    title: 'Connaissance, données et transformation des politiques publiques',
+                                    desc: "Pour améliorer durablement les politiques publiques, le SNA développe des outils d'analyse et d'observation permettant d'objectiver la réalité de l'aidance.",
+                                    objectif: null,
+                                    actions: [
+                                        'Observatoire national des aidants',
+                                    ],
+                                },
+                            ].map((axe) => (
+                                <div
+                                    key={axe.number}
+                                    className={`flex flex-col gap-4 rounded-2xl border border-l-4 border-gray-100 bg-white p-6 shadow-sm ${axe.accent}`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sna-teal/10 text-sm font-extrabold text-sna-teal">
+                                            {axe.number}
+                                        </span>
+                                        <h3 className="font-bold text-gray-800">
+                                            {axe.title}
+                                        </h3>
+                                    </div>
+                                    <p className="text-sm leading-relaxed text-gray-500">
+                                        {axe.desc}
+                                    </p>
+                                    {axe.objectif && (
+                                        <p className="text-sm font-medium text-gray-600">
+                                            <span className="font-bold">
+                                                Objectif :{' '}
+                                            </span>
+                                            {axe.objectif}
+                                        </p>
+                                    )}
+                                    {axe.actions.length > 0 && (
+                                        <div>
+                                            <p className="mb-2 text-xs font-bold tracking-widest text-gray-400 uppercase">
+                                                Actions associées
+                                            </p>
+                                            <ul className="flex flex-wrap gap-2">
+                                                {axe.actions.map((action) => (
+                                                    <li
+                                                        key={action}
+                                                        className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600"
+                                                    >
+                                                        {action}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
@@ -1108,171 +1331,98 @@ export default function Welcome() {
                 ══════════════════════════════ */}
                 <section id="actions" className="bg-white px-6 py-20">
                     <div className="mx-auto max-w-6xl space-y-12">
-                        <SectionHeader
-                            badge="Nos actions"
-                            title="Comment agir avec nous ?"
-                            subtitle="Adhérez en tant qu'aidant, soutenez le mouvement ou témoignez — chaque geste compte."
-                        />
-
-                        {/* ── Featured adhesion banner ── */}
-                        <Link
-                            href="/formulaire/adhesion"
-                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-sna-teal to-sna-teal-dark p-8 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1 sm:flex-row"
-                        >
-                            <div className="flex items-center gap-5">
-                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20">
-                                    <HandshakeIcon className="h-9 w-9 text-white" />
-                                </span>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold tracking-widest text-white/70 uppercase">
-                                        Formulaire principal — Aidants
-                                    </p>
-                                    <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">
-                                        Formulaire d'adhésion des aidants
-                                    </h3>
-                                    <p className="mt-1 text-sm text-white/80">
-                                        Quantifiez et qualifiez votre réalité
-                                        d'aidant(e) pour construire une force
-                                        collective face aux institutions.
-                                    </p>
-                                </div>
-                            </div>
-                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform group-hover:translate-x-1">
-                                Adhérer <ArrowRightIcon />
-                            </span>
-                        </Link>
+                        <div className="mx-auto max-w-3xl space-y-6 text-center">
+                            <SectionHeader
+                                badge="Nos actions"
+                                title="Ce projet ne deviendra réalité qu'avec vous."
+                                subtitle="Si les propositions du Syndicat National des Aidants vous parlent, c'est que vous connaissez la réalité de l'aidance. Mais aucune avancée ne sera possible sans une mobilisation massive."
+                            />
+                            <p className="text-gray-500">
+                                Nous devons rendre visibles les millions
+                                d'aidants qui soutiennent chaque jour leurs
+                                proches, et rassembler tous ceux qui refusent
+                                que cette réalité reste ignorée.{' '}
+                                <strong className="text-gray-700">
+                                    Plus nous serons nombreux, plus notre voix
+                                    comptera.
+                                </strong>
+                            </p>
+                        </div>
 
                         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-                            {/* ── Card 1: Soutien / Donateur ── */}
+                            {/* ── Je suis aidant : Adhésion ── */}
+                            <div className="flex flex-col gap-6 rounded-3xl bg-linear-to-b from-sna-teal to-sna-teal-dark p-8 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20">
+                                    <HandshakeIcon className="h-7 w-7 text-white" />
+                                </div>
+                                <div>
+                                    <span className="mb-2 inline-block text-xs font-bold tracking-widest text-white/70 uppercase">
+                                        Je suis aidant
+                                    </span>
+                                    <h3 className="text-xl leading-snug font-bold text-white">
+                                        J'adhère au Syndicat National des
+                                        Aidants
+                                    </h3>
+                                </div>
+                                <p className="flex-1 text-sm leading-relaxed text-white/80">
+                                    Pour faire reconnaître la réalité de
+                                    l'aidance.
+                                </p>
+                                <Link
+                                    href="/formulaire/adhesion"
+                                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform hover:translate-x-0.5"
+                                >
+                                    Adhérer au SNA <ArrowRightIcon />
+                                </Link>
+                            </div>
+
+                            {/* ── Je ne suis pas aidant : Soutien ── */}
                             <div className="flex flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-linear-to-b from-[#f0fafa] to-white p-8 shadow-sm transition-shadow hover:shadow-lg">
                                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg shadow-sna-teal/30">
                                     <HeartIcon className="h-7 w-7 text-white" />
                                 </div>
                                 <div>
                                     <span className="mb-2 inline-block text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
-                                        Soutien
+                                        Je ne suis pas (encore ou plus) aidant
                                     </span>
                                     <h3 className="text-xl leading-snug font-bold text-gray-800">
-                                        Devenez membre soutien
+                                        Je soutiens la cause des aidants
                                     </h3>
                                 </div>
                                 <p className="flex-1 text-sm leading-relaxed text-gray-500">
-                                    Que votre soutien soit moral, technique ou
-                                    financier, votre engagement est essentiel.
-                                    Personnes physiques ou morales, rejoignez le
-                                    SNA et contribuez à nos projets en faveur
-                                    des aidants familiaux.
+                                    Parce que chacun peut être concerné un jour.
                                 </p>
-                                <ul className="space-y-1.5">
-                                    {[
-                                        'Restez informé(e) de nos événements',
-                                        'Participez aux projets du syndicat',
-                                        'Recevez nos publications',
-                                    ].map((b) => (
-                                        <li
-                                            key={b}
-                                            className="flex items-center gap-2 text-xs text-gray-600"
-                                        >
-                                            <CheckIcon /> {b}
-                                        </li>
-                                    ))}
-                                </ul>
                                 <Link
                                     href="/formulaire/soutien"
                                     className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
                                 >
-                                    Je soutiens le SNA <ArrowRightIcon />
+                                    Devenir membre soutien <ArrowRightIcon />
                                 </Link>
                             </div>
 
-                            {/* ── Card 2: Partenaires institutionnels ── */}
+                            {/* ── Partenaire institutionnel ── */}
                             <div className="flex flex-col gap-6 rounded-3xl border border-sna-green/30 bg-linear-to-b from-[#f5faea] to-white p-8 shadow-sm transition-shadow hover:shadow-lg">
                                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-green shadow-lg shadow-sna-green/30">
                                     <UsersIcon className="h-7 w-7 text-white" />
                                 </div>
                                 <div>
                                     <span className="mb-2 inline-block text-xs font-bold tracking-widest text-[#6a8a20] uppercase">
-                                        Partenariat
+                                        Partenaire / mécène / relais
                                     </span>
                                     <h3 className="text-xl leading-snug font-bold text-gray-800">
-                                        Partenaires institutionnels
+                                        Devenir partenaire, mécène ou relais du
+                                        SNA
                                     </h3>
                                 </div>
                                 <p className="flex-1 text-sm leading-relaxed text-gray-500">
-                                    Collectivités, associations, entreprises,
-                                    services de l'État — associez-vous au SNA
-                                    pour construire ensemble des solutions
-                                    durables en faveur des familles d'enfants
-                                    handicapés.
+                                    Pour contribuer concrètement aux avancées à
+                                    venir.
                                 </p>
-                                <ul className="space-y-1.5">
-                                    {[
-                                        'Soutien moral ou promotionnel',
-                                        "Apport d'expertise ou de services",
-                                        'Participation aux projets et événements',
-                                    ].map((b) => (
-                                        <li
-                                            key={b}
-                                            className="flex items-center gap-2 text-xs text-gray-600"
-                                        >
-                                            <span className="shrink-0 text-sna-green">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-4 w-4"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2.5}
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M5 13l4 4L19 7"
-                                                    />
-                                                </svg>
-                                            </span>
-                                            {b}
-                                        </li>
-                                    ))}
-                                </ul>
                                 <Link
                                     href="/formulaire/partenaire"
                                     className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-green px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-green-dark"
                                 >
-                                    Devenir partenaire <ArrowRightIcon />
-                                </Link>
-                            </div>
-
-                            {/* ── Card 3: Moi aussi ── */}
-                            <div className="flex flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-linear-to-b from-[#f0fafa] to-white p-8 shadow-sm transition-shadow hover:shadow-lg">
-                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg shadow-sna-teal/30">
-                                    <MegaphoneIcon className="h-7 w-7 text-white" />
-                                </div>
-                                <div>
-                                    <span className="mb-2 inline-block text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
-                                        Campagne
-                                    </span>
-                                    <h3 className="text-xl leading-snug font-bold text-gray-800">
-                                        « Moi aussi, j'ai vécu ça »
-                                    </h3>
-                                </div>
-                                <p className="flex-1 text-sm leading-relaxed text-gray-500">
-                                    Votre difficulté n'est pas isolée. Chaque
-                                    témoignage renforce l'action collective.
-                                    Ensemble, nous transformons des épreuves
-                                    individuelles en avancées pour toutes les
-                                    familles.
-                                </p>
-                                <blockquote className="border-l-2 border-sna-teal pl-3 text-xs text-gray-400 italic">
-                                    "Chaque témoignage compte. C'est ainsi que
-                                    nous transformons des difficultés
-                                    individuelles en avancées collectives."
-                                </blockquote>
-                                <Link
-                                    href="/formulaire/moi-aussi"
-                                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
-                                >
-                                    Je témoigne <ArrowRightIcon />
+                                    Proposer un partenariat <ArrowRightIcon />
                                 </Link>
                             </div>
                         </div>
@@ -1280,325 +1430,7 @@ export default function Welcome() {
                 </section>
 
                 {/* ══════════════════════════════
-                    FORMULAIRE ADHÉSION — CTA
-                ══════════════════════════════ */}
-                <section
-                    id="formulaire-adhesion"
-                    className="relative overflow-hidden bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-6 py-20"
-                >
-                    <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-sna-teal/10 blur-3xl" />
-                    <div className="mx-auto max-w-3xl space-y-8">
-                        <div className="text-center">
-                            <span className="inline-block rounded-full bg-sna-teal/15 px-4 py-1 text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
-                                Formulaire principal
-                            </span>
-                            <h2 className="mt-4 text-3xl leading-tight font-bold text-gray-800 sm:text-4xl">
-                                Formulaire d'adhésion des aidants
-                            </h2>
-                            <p className="mt-3 leading-relaxed text-gray-500">
-                                Les aidants sont nombreux, mais dispersés et
-                                invisibilisés. Ce formulaire permet de{' '}
-                                <strong className="text-gray-700">
-                                    quantifier et qualifier
-                                </strong>{' '}
-                                votre réalité pour objectiver les impacts
-                                sociaux, économiques et humains, et transformer
-                                des vécus isolés en force collective lisible
-                                pour les institutions et les médias.
-                            </p>
-                        </div>
-
-                        <Link
-                            href="/formulaire/adhesion"
-                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-sna-teal to-sna-teal-dark p-10 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1 sm:flex-row"
-                        >
-                            <div className="flex items-center gap-5">
-                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20">
-                                    <HandshakeIcon className="h-9 w-9 text-white" />
-                                </span>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold tracking-widest text-white/70 uppercase">
-                                        6 étapes — Environ 5 minutes
-                                    </p>
-                                    <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">
-                                        Remplir le formulaire d'adhésion
-                                    </h3>
-                                    <p className="mt-1 text-sm text-white/80">
-                                        Un parcours guidé pour qualifier votre
-                                        situation et rejoindre le SNA.
-                                    </p>
-                                </div>
-                            </div>
-                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform group-hover:translate-x-1">
-                                Commencer <ArrowRightIcon />
-                            </span>
-                        </Link>
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════
-                    FORMULAIRE SOUTIEN — CTA
-                ══════════════════════════════ */}
-                <section
-                    id="formulaire-soutien"
-                    className="bg-gray-50 px-6 py-20"
-                >
-                    <div className="mx-auto max-w-3xl space-y-8">
-                        <SectionHeader
-                            badge="Formulaire"
-                            title="Devenir membre soutien"
-                            subtitle="Merci de votre engagement en faveur des aidants. Formalisez votre soutien moral, technique ou financier."
-                        />
-
-                        <Link
-                            href="/formulaire/soutien"
-                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl border border-sna-teal/30 bg-white p-10 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:flex-row"
-                        >
-                            <div className="flex items-center gap-5">
-                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-sna-teal/10 text-3xl">
-                                    🤝
-                                </span>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
-                                        Personnes physiques &amp; morales
-                                    </p>
-                                    <h3 className="mt-1 text-xl font-bold text-gray-800 sm:text-2xl">
-                                        Rejoindre en tant que soutien
-                                    </h3>
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        Soutien moral, technique ou financier —
-                                        chaque engagement compte.
-                                    </p>
-                                </div>
-                            </div>
-                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-sna-teal px-7 py-3 text-sm font-bold text-white shadow-lg transition-transform group-hover:translate-x-1">
-                                Accéder au formulaire <ArrowRightIcon />
-                            </span>
-                        </Link>
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════
-                    FORMULAIRE PARTENAIRE — CTA
-                ══════════════════════════════ */}
-                <section
-                    id="formulaire-partenaire"
-                    className="bg-white px-6 py-20"
-                >
-                    <div className="mx-auto max-w-3xl space-y-8">
-                        <SectionHeader
-                            badge="Partenariat institutionnel"
-                            title="Établissons un partenariat"
-                            subtitle="Le SNA souhaite développer des partenariats avec des entités publiques et privées pour soutenir ses projets."
-                        />
-
-                        <Link
-                            href="/formulaire/partenaire"
-                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl border border-sna-green/30 bg-linear-to-b from-[#f5faea] to-white p-10 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:flex-row"
-                        >
-                            <div className="flex items-center gap-5">
-                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-sna-green/10 text-3xl">
-                                    🏛️
-                                </span>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold tracking-widest text-[#6a8a20] uppercase">
-                                        Collectivités, associations, entreprises
-                                    </p>
-                                    <h3 className="mt-1 text-xl font-bold text-gray-800 sm:text-2xl">
-                                        Proposer un partenariat
-                                    </h3>
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        Construisons ensemble des solutions
-                                        durables pour les familles.
-                                    </p>
-                                </div>
-                            </div>
-                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-sna-green px-7 py-3 text-sm font-bold text-white shadow-lg transition-transform group-hover:translate-x-1">
-                                Accéder au formulaire <ArrowRightIcon />
-                            </span>
-                        </Link>
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════
-                    FORMULAIRE MOI AUSSI — CTA
-                ══════════════════════════════ */}
-                <section
-                    id="moi-aussi"
-                    className="bg-linear-to-br from-[#e8f8f8] to-[#f0f9e8] px-6 py-20"
-                >
-                    <div className="mx-auto max-w-3xl space-y-8">
-                        <SectionHeader
-                            badge="Témoignage"
-                            title="« Moi aussi, j'ai vécu ça »"
-                            subtitle="Cette difficulté ne concerne pas qu'une seule famille. Votre témoignage renforce l'action collective et peut changer les choses."
-                        />
-
-                        <div className="rounded-3xl border border-sna-teal/20 bg-white/80 p-3 backdrop-blur">
-                            <blockquote className="px-6 py-3 text-center text-sm text-gray-500 italic">
-                                "Chaque témoignage compte. C'est ainsi que nous
-                                transformons des difficultés individuelles en
-                                avancées collectives."
-                            </blockquote>
-                        </div>
-
-                        <Link
-                            href="/formulaire/moi-aussi"
-                            className="group flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-sna-teal to-sna-teal-dark p-10 shadow-xl shadow-sna-teal/25 transition-transform hover:-translate-y-1 sm:flex-row"
-                        >
-                            <div className="flex items-center gap-5">
-                                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">
-                                    📣
-                                </span>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold tracking-widest text-white/70 uppercase">
-                                        Campagne nationale
-                                    </p>
-                                    <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl">
-                                        Partager mon témoignage
-                                    </h3>
-                                    <p className="mt-1 text-sm text-white/80">
-                                        Votre voix compte. Aidez-nous à faire
-                                        changer les choses.
-                                    </p>
-                                </div>
-                            </div>
-                            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold text-sna-teal shadow-lg transition-transform group-hover:translate-x-1">
-                                Témoigner <ArrowRightIcon />
-                            </span>
-                        </Link>
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════
-                    FAQ
-                ══════════════════════════════ */}
-                <section className="bg-white px-6 py-20">
-                    <div className="mx-auto max-w-3xl space-y-8">
-                        <SectionHeader
-                            badge="FAQ"
-                            title="Questions fréquentes"
-                        />
-                        <div className="space-y-3">
-                            {[
-                                {
-                                    question: "À qui s'adresse le SNA ?",
-                                    answer: "Le SNA s'adresse à toutes les familles qui accompagnent au quotidien un enfant en situation de handicap : parents, fratries, proches aidants. Nous accueillons également les associations, collectivités et entreprises souhaitant agir à nos côtés.",
-                                },
-                                {
-                                    question:
-                                        'Mes informations personnelles sont-elles protégées ?',
-                                    answer: "Oui. Le SNA s'engage à traiter toutes les données personnelles dans le strict respect du RGPD. Vos témoignages sont confidentiels et ne seront jamais publiés ou utilisés sans votre accord explicite.",
-                                },
-                                {
-                                    question:
-                                        'Comment le SNA utilise-t-il les témoignages ?',
-                                    answer: 'Les témoignages (avec votre accord) servent à constituer des dossiers de plaidoyer, à appuyer des propositions de loi, à interpeller les médias et les décideurs politiques. Ils peuvent être anonymisés ou utilisés de manière collective selon vos préférences.',
-                                },
-                                {
-                                    question:
-                                        "Qu'est-ce qu'un partenariat institutionnel ?",
-                                    answer: "Un partenariat institutionnel permet à une organisation (collectivité, association, entreprise, service de l'État) de s'associer au SNA par un soutien moral, technique ou financier pour co-construire des solutions en faveur des familles d'enfants handicapés.",
-                                },
-                                {
-                                    question:
-                                        'Comment puis-je être tenu(e) informé(e) des actions du SNA ?',
-                                    answer: 'En remplissant le formulaire de soutien, vous pouvez choisir de recevoir nos actualités, événements et publications par email. Vous pouvez également vous inscrire à notre newsletter.',
-                                },
-                            ].map((item) => (
-                                <FaqItem
-                                    key={item.question}
-                                    question={item.question}
-                                    answer={item.answer}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════
-                    CTA BANNER
-                ══════════════════════════════ */}
-                <section className="relative overflow-hidden bg-linear-to-r from-sna-teal to-sna-teal-dark px-6 py-20">
-                    <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
-                    <div className="relative mx-auto max-w-3xl space-y-6 text-center">
-                        <h2 className="text-3xl leading-tight font-bold text-white sm:text-4xl">
-                            Prêt(e) à rejoindre le mouvement ?
-                        </h2>
-                        <p className="mx-auto max-w-xl text-lg text-white/80">
-                            Ensemble, construisons un avenir où chaque famille
-                            accompagnant un enfant handicapé est reconnue,
-                            soutenue et protégée.
-                        </p>
-                        <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                            <Link
-                                href="/formulaire/adhesion"
-                                className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-base font-bold text-sna-teal shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
-                            >
-                                <HandshakeIcon className="h-5 w-5" /> Adhérer au
-                                SNA
-                            </Link>
-                            <Link
-                                href="/formulaire/soutien"
-                                className="rounded-full border-2 border-white px-8 py-3.5 text-base font-semibold text-white transition-colors hover:bg-white/10"
-                            >
-                                Je soutiens le SNA
-                            </Link>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════
-                    CONTACT
-                ══════════════════════════════ */}
-                <section id="contact" className="bg-gray-50 px-6 py-20">
-                    <div className="mx-auto max-w-4xl space-y-10">
-                        <SectionHeader
-                            badge="Contact"
-                            title="Nous contacter"
-                            subtitle="Une question, une demande d'information ? Notre équipe est à votre écoute."
-                        />
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                            {[
-                                {
-                                    icon: '📧',
-                                    label: 'E-mail',
-                                    value: 'contact@sna-aidants.fr',
-                                    href: 'mailto:contact@sna-aidants.fr',
-                                },
-                                {
-                                    icon: '📞',
-                                    label: 'Téléphone',
-                                    value: '+33 (0)1 00 00 00 00',
-                                    href: 'tel:+33100000000',
-                                },
-                                {
-                                    icon: '📍',
-                                    label: 'Adresse',
-                                    value: 'Paris, France',
-                                    href: '#',
-                                },
-                            ].map((item) => (
-                                <a
-                                    key={item.label}
-                                    href={item.href}
-                                    className="flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-                                >
-                                    <span className="text-3xl">
-                                        {item.icon}
-                                    </span>
-                                    <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                                        {item.label}
-                                    </span>
-                                    <span className="text-center text-sm font-semibold text-gray-700">
-                                        {item.value}
-                                    </span>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
+                    FOOTER
                 {/* ══════════════════════════════
                     FOOTER
                 ══════════════════════════════ */}
@@ -1623,8 +1455,14 @@ export default function Welcome() {
                                     Navigation
                                 </h4>
                                 {[
-                                    { label: 'À propos', href: '#apropos' },
-                                    { label: 'Nos actions', href: '#actions' },
+                                    {
+                                        label: 'Qui sommes nous',
+                                        href: '#apropos',
+                                    },
+                                    {
+                                        label: "Nos axes d'action",
+                                        href: '#comprendre',
+                                    },
                                     {
                                         label: 'Adhérer au SNA',
                                         href: '/formulaire/adhesion',
@@ -1637,11 +1475,7 @@ export default function Welcome() {
                                         label: 'Partenariats',
                                         href: '/formulaire/partenaire',
                                     },
-                                    {
-                                        label: 'Témoigner',
-                                        href: '/formulaire/moi-aussi',
-                                    },
-                                    { label: 'Contact', href: '#contact' },
+                                    { label: 'Nos actions', href: '#actions' },
                                 ].map((link) => (
                                     <a
                                         key={link.label}
