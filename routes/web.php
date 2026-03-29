@@ -18,12 +18,14 @@ Route::inertia('/formulaire/adhesion', 'forms/adhesion')->name('forms.adhesion.p
 Route::inertia('/formulaire/soutien', 'forms/soutien')->name('forms.soutien.page');
 Route::inertia('/formulaire/partenaire', 'forms/partenaire')->name('forms.partenaire.page');
 Route::inertia('/formulaire/moi-aussi', 'forms/moi-aussi')->name('forms.moi-aussi.page');
+Route::inertia('/formulaire/contact', 'forms/contact')->name('forms.contact.page');
 
 // Form submissions (no auth required)
 Route::post('/formulaire/adhesion', [AidantAdhesionFormController::class, 'store'])->name('forms.adhesion.store');
 Route::post('/formulaire/soutien', [SoutienFormController::class, 'store'])->name('forms.soutien.store');
 Route::post('/formulaire/partenaire', [PartenaireFormController::class, 'store'])->name('forms.partenaire.store');
 Route::post('/formulaire/moi-aussi', [MoiAussiFormController::class, 'store'])->name('forms.moi-aussi.store');
+Route::post('/formulaire/contact', [\App\Http\Controllers\Forms\ContactFormController::class, 'store'])->name('forms.contact.store');
 
 // Magic link access
 Route::get('/mes-formulaires', [FormAccessController::class, 'showRequestForm'])->name('forms.access.request');

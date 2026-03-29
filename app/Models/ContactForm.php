@@ -7,31 +7,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class SoutienForm extends Model
+class ContactForm extends Model
 {
     use HasFactory, HasRef;
 
     protected $fillable = [
         'ref',
         'name',
-        'address',
+        'city',
         'email',
         'phone',
-        'wants_events',
-        'wants_participation',
+        'subject',
         'message',
-        'consents_email',
-        'consents_rgpd',
+        'profile',
+        'contact_preference',
     ];
 
     protected function casts(): array
     {
-        return [
-            'wants_events' => 'boolean',
-            'wants_participation' => 'boolean',
-            'consents_email' => 'boolean',
-            'consents_rgpd' => 'boolean',
-        ];
+        return [];
     }
 
     public function submission(): MorphOne

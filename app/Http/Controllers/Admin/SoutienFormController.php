@@ -19,7 +19,8 @@ class SoutienFormController extends Controller
                 $q->where('email', 'ilike', "%{$search}%")
                     ->orWhere('ref', 'ilike', "%{$search}%")
                     ->orWhere('name', 'ilike', "%{$search}%")
-                    ->orWhere('organisation', 'ilike', "%{$search}%");
+                    ->orWhere('address', 'ilike', "%{$search}%")
+                    ->orWhere('phone', 'ilike', "%{$search}%");
             });
         }
 

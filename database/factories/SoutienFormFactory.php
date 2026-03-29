@@ -19,11 +19,9 @@ class SoutienFormFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'organisation' => fake()->optional()->company(),
-            'statut' => fake()->randomElement(['physique', 'morale']),
+            'address' => fake()->streetAddress(),
             'email' => fake()->safeEmail(),
             'phone' => fake()->optional()->phoneNumber(),
-            'wants_partnership' => fake()->boolean(),
             'wants_events' => fake()->boolean(),
             'wants_participation' => fake()->boolean(),
             'message' => fake()->optional()->paragraph(),

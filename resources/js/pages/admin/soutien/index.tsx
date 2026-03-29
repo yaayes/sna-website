@@ -1,7 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -24,13 +23,9 @@ type SoutienEntry = {
     id: number;
     ref: string;
     name: string;
-    organisation: string | null;
-    statut: string;
+    address: string;
     email: string;
-    wants_partnership: boolean;
-    wants_events: boolean;
-    wants_participation: boolean;
-    consents_rgpd: boolean;
+    phone: string | null;
     created_at: string;
 };
 
@@ -59,7 +54,7 @@ export default function SoutienIndex({
                 title="Formulaires Soutien"
                 description={`${entries.total} soumission${entries.total !== 1 ? 's' : ''} au total.`}
                 search={filters.search ?? ''}
-                searchPlaceholder="Rechercher par email, ref, nom, organisation…"
+                searchPlaceholder="Rechercher par email, ref, nom, adresse, telephone…"
                 searchUrl={admin.soutien.index}
                 pagination={entries}
             >
@@ -68,9 +63,9 @@ export default function SoutienIndex({
                         <TableRow>
                             <TableHead>Réf.</TableHead>
                             <TableHead>Nom</TableHead>
-                            <TableHead>Organisation</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Statut</TableHead>
+                            <TableHead>Adresse</TableHead>
+                            <TableHead>Téléphone</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead className="w-10" />
                         </TableRow>
@@ -92,21 +87,9 @@ export default function SoutienIndex({
                                     {entry.ref}
                                 </TableCell>
                                 <TableCell>{entry.name}</TableCell>
-                                <TableCell>
-                                    {entry.organisation ?? (
-                                        <span className="text-muted-foreground">
-                                            —
-                                        </span>
-                                    )}
-                                </TableCell>
                                 <TableCell>{entry.email}</TableCell>
-                                <TableCell>
-                                    <Badge variant="secondary">
-                                        {entry.statut === 'physique'
-                                            ? 'Personne physique'
-                                            : 'Personne morale'}
-                                    </Badge>
-                                </TableCell>
+                                <TableCell>{entry.address}</TableCell>
+                                <TableCell>{entry.phone ?? '—'}</TableCell>
                                 <TableCell className="text-xs text-muted-foreground">
                                     {new Date(
                                         entry.created_at,

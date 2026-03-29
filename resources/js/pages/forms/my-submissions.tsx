@@ -3,11 +3,9 @@ import forms from '@/routes/forms';
 
 type SoutienData = {
     name: string;
-    organisation: string | null;
-    statut: string;
+    address: string;
     email: string;
     phone: string | null;
-    wants_partnership: boolean;
     wants_events: boolean;
     wants_participation: boolean;
     message: string | null;
@@ -66,7 +64,6 @@ const typeLabels: Record<string, { label: string; color: string; bg: string }> =
 
 function SoutienDetails({ data }: { data: SoutienData }) {
     const engagements = [
-        data.wants_partnership && 'Partenaire',
         data.wants_events && 'Informé des événements',
         data.wants_participation && 'Participation',
     ].filter(Boolean);
@@ -77,23 +74,11 @@ function SoutienDetails({ data }: { data: SoutienData }) {
                 <dt className="min-w-32 font-semibold text-gray-700">Nom :</dt>
                 <dd>{data.name}</dd>
             </div>
-            {data.organisation && (
-                <div className="flex gap-2">
-                    <dt className="min-w-32 font-semibold text-gray-700">
-                        Organisation :
-                    </dt>
-                    <dd>{data.organisation}</dd>
-                </div>
-            )}
             <div className="flex gap-2">
                 <dt className="min-w-32 font-semibold text-gray-700">
-                    Statut :
+                    Adresse :
                 </dt>
-                <dd className="capitalize">
-                    {data.statut === 'physique'
-                        ? 'Personne physique'
-                        : 'Personne morale'}
-                </dd>
+                <dd>{data.address}</dd>
             </div>
             <div className="flex gap-2">
                 <dt className="min-w-32 font-semibold text-gray-700">

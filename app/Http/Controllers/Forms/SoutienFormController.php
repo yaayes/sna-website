@@ -13,7 +13,12 @@ class SoutienFormController extends Controller
 {
     public function store(StoreSoutienFormRequest $request): RedirectResponse
     {
-        $form = SoutienForm::create($request->validated());
+        $payload = $request->validated();
+        $payload['wants_events'] = $payload['wants_events'] ?? false;
+        $payload['wants_participation'] = $payload['wants_participation'] ?? false;
+        $payload['consents_email'] = $payload['consents_email'] ?? false;
+
+        $form = SoutienForm::create($payload);
 
         FormSubmission::create([
             'email' => $form->email,
@@ -24,6 +29,6 @@ class SoutienFormController extends Controller
             'token_expires_at' => now()->addDays(30),
         ]);
 
-        return back()->with('success', 'Votre demande de soutien a bien été enregistrée. Un email de confirmation vous a été envoyé.');
+        return back()->with('success', 'Votre demande de soutien a bien été enregistrée.');
     }
 }

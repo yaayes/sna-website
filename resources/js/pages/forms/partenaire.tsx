@@ -1,28 +1,62 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
+import { useState } from 'react';
 import forms from '@/routes/forms';
 
 export default function PartenairePage() {
+    const [fileNames, setFileNames] = useState<string[]>([]);
+
     const { data, setData, submit, processing, errors, wasSuccessful, reset } =
         useForm({
             organisation_name: '',
             legal_status: '',
+            address: '',
+            phone: '',
             email: '',
             contact_name: '',
             partnership_moral: false,
+            partnership_moral_details: '',
             partnership_technical: false,
+            partnership_technical_details: '',
             partnership_financial: false,
             objectives: '',
+            comment_libre: '',
             commitment_projects: false,
             commitment_communication: false,
             commitment_expertise: false,
+            attachments: [] as File[],
             consents_email: false,
             consents_rgpd: false,
         });
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        submit(forms.partenaire.store(), { onSuccess: () => reset() });
+        submit(forms.partenaire.store(), {
+            onSuccess: () => {
+                reset();
+                setFileNames([]);
+            },
+        });
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newFiles = Array.from(e.target.files || []);
+        if (newFiles.length === 0) {
+            return;
+        }
+
+        const mergedFiles = [...data.attachments, ...newFiles];
+        setData('attachments', mergedFiles);
+        setFileNames(mergedFiles.map((file) => file.name));
+
+        // Reset input so selecting the same file again still triggers onChange.
+        e.target.value = '';
+    };
+
+    const removeAttachment = (index: number) => {
+        const newAttachments = data.attachments.filter((_, i) => i !== index);
+        setData('attachments', newAttachments);
+        setFileNames(fileNames.filter((_, i) => i !== index));
     };
 
     const inputCls =
@@ -137,89 +171,135 @@ export default function PartenairePage() {
                             onSubmit={handleSubmit}
                             className="space-y-6 rounded-3xl border border-gray-100 bg-gray-50 p-8 shadow-sm"
                         >
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            {/* Section A: Organization Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    A. Informations de l'organisation
+                                </h3>
+                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                    <div>
+                                        <label className={labelCls}>
+                                            Nom de l'organisation *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={data.organisation_name}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'organisation_name',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            className={inputCls}
+                                            placeholder="Mairie de Paris"
+                                        />
+                                        {errors.organisation_name && (
+                                            <p className="mt-1 text-xs text-red-500">
+                                                {errors.organisation_name}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className={labelCls}>
+                                            Statut juridique *
+                                        </label>
+                                        <select
+                                            value={data.legal_status}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'legal_status',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            className={inputCls}
+                                        >
+                                            <option value="">Sélectionner…</option>
+                                            <option value="Collectivité territoriale">
+                                                Collectivité territoriale
+                                            </option>
+                                            <option value="Association">
+                                                Association
+                                            </option>
+                                            <option value="Entreprise">
+                                                Entreprise
+                                            </option>
+                                            <option value="Service de l'État">
+                                                Service de l'État
+                                            </option>
+                                            <option value="Autre organisme public">
+                                                Autre organisme public
+                                            </option>
+                                        </select>
+                                        {errors.legal_status && (
+                                            <p className="mt-1 text-xs text-red-500">
+                                                {errors.legal_status}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label className={labelCls}>
-                                        Nom de l'organisation *
+                                        Adresse *
                                     </label>
                                     <input
                                         type="text"
-                                        value={data.organisation_name}
+                                        value={data.address}
                                         onChange={(e) =>
-                                            setData(
-                                                'organisation_name',
-                                                e.target.value,
-                                            )
+                                            setData('address', e.target.value)
                                         }
                                         className={inputCls}
-                                        placeholder="Mairie de Paris"
+                                        placeholder="123 Rue de la Paix, 75000 Paris"
                                     />
-                                    {errors.organisation_name && (
+                                    {errors.address && (
                                         <p className="mt-1 text-xs text-red-500">
-                                            {errors.organisation_name}
+                                            {errors.address}
                                         </p>
                                     )}
                                 </div>
-                                <div>
-                                    <label className={labelCls}>
-                                        Statut juridique *
-                                    </label>
-                                    <select
-                                        value={data.legal_status}
-                                        onChange={(e) =>
-                                            setData(
-                                                'legal_status',
-                                                e.target.value,
-                                            )
-                                        }
-                                        className={inputCls}
-                                    >
-                                        <option value="">Sélectionner…</option>
-                                        <option value="Collectivité territoriale">
-                                            Collectivité territoriale
-                                        </option>
-                                        <option value="Association">
-                                            Association
-                                        </option>
-                                        <option value="Entreprise">
-                                            Entreprise
-                                        </option>
-                                        <option value="Service de l'État">
-                                            Service de l'État
-                                        </option>
-                                        <option value="Autre organisme public">
-                                            Autre organisme public
-                                        </option>
-                                    </select>
-                                    {errors.legal_status && (
-                                        <p className="mt-1 text-xs text-red-500">
-                                            {errors.legal_status}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                <div>
-                                    <label className={labelCls}>Email *</label>
-                                    <input
-                                        type="email"
-                                        value={data.email}
-                                        onChange={(e) =>
-                                            setData('email', e.target.value)
-                                        }
-                                        className={inputCls}
-                                        placeholder="contact@organisation.fr"
-                                    />
-                                    {errors.email && (
-                                        <p className="mt-1 text-xs text-red-500">
-                                            {errors.email}
-                                        </p>
-                                    )}
+                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                    <div>
+                                        <label className={labelCls}>Email *</label>
+                                        <input
+                                            type="email"
+                                            value={data.email}
+                                            onChange={(e) =>
+                                                setData('email', e.target.value)
+                                            }
+                                            className={inputCls}
+                                            placeholder="contact@organisation.fr"
+                                        />
+                                        {errors.email && (
+                                            <p className="mt-1 text-xs text-red-500">
+                                                {errors.email}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className={labelCls}>
+                                            Téléphone
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={data.phone}
+                                            onChange={(e) =>
+                                                setData('phone', e.target.value)
+                                            }
+                                            className={inputCls}
+                                            placeholder="01 23 45 67 89"
+                                        />
+                                        {errors.phone && (
+                                            <p className="mt-1 text-xs text-red-500">
+                                                {errors.phone}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
+
                                 <div>
                                     <label className={labelCls}>
-                                        Nom et fonction du contact *
+                                        Nom et fonction du contact référent *
                                     </label>
                                     <input
                                         type="text"
@@ -241,23 +321,161 @@ export default function PartenairePage() {
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Type de partenariat souhaité *
-                                </label>
+                            {/* Section B: Partnership Type */}
+                            <div className="space-y-4 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    B. Type de partenariat / accompagnement
+                                </h3>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                                            <input
+                                                type="checkbox"
+                                                checked={data.partnership_moral}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'partnership_moral',
+                                                        e.target.checked,
+                                                    )
+                                                }
+                                                className="h-4 w-4 rounded"
+                                                style={{
+                                                    accentColor:
+                                                        'var(--color-sna-green)',
+                                                }}
+                                            />
+                                            Soutien moral ou promotionnel (ex. visibilité, communication)
+                                        </label>
+                                        {data.partnership_moral && (
+                                            <div className="mt-2 ml-7">
+                                                <textarea
+                                                    rows={2}
+                                                    value={
+                                                        data.partnership_moral_details
+                                                    }
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            'partnership_moral_details',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none"
+                                                    placeholder="Précisez le type de soutien..."
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                                            <input
+                                                type="checkbox"
+                                                checked={
+                                                    data.partnership_technical
+                                                }
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'partnership_technical',
+                                                        e.target.checked,
+                                                    )
+                                                }
+                                                className="h-4 w-4 rounded"
+                                                style={{
+                                                    accentColor:
+                                                        'var(--color-sna-green)',
+                                                }}
+                                            />
+                                            Soutien technique ou expertise (ex. appui sur projets, conseil stratégique)
+                                        </label>
+                                        {data.partnership_technical && (
+                                            <div className="mt-2 ml-7">
+                                                <textarea
+                                                    rows={2}
+                                                    value={
+                                                        data.partnership_technical_details
+                                                    }
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            'partnership_technical_details',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none"
+                                                    placeholder="Précisez le type d'expertise..."
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-600">
+                                            <input
+                                                type="checkbox"
+                                                checked={
+                                                    data.partnership_financial
+                                                }
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'partnership_financial',
+                                                        e.target.checked,
+                                                    )
+                                                }
+                                                className="h-4 w-4 rounded"
+                                                style={{
+                                                    accentColor:
+                                                        'var(--color-sna-green)',
+                                                }}
+                                            />
+                                            Soutien financier
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Section C: Objectives */}
+                            <div className="space-y-4 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    C. Objectifs et motivations
+                                </h3>
+                                <div>
+                                    <label className={labelCls}>
+                                        Veuillez préciser l'objet de votre partenariat
+                                        et les objectifs que vous souhaitez atteindre
+                                        avec le syndicat *
+                                    </label>
+                                    <textarea
+                                        rows={4}
+                                        value={data.objectives}
+                                        onChange={(e) =>
+                                            setData('objectives', e.target.value)
+                                        }
+                                        className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none"
+                                        placeholder="Décrivez vos objectifs..."
+                                    />
+                                    {errors.objectives && (
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {errors.objectives}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Section D: Commitments */}
+                            <div className="space-y-4 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    D. Engagements possibles
+                                </h3>
                                 <div className="space-y-2">
                                     {[
                                         {
-                                            key: 'partnership_moral' as const,
-                                            label: 'Soutien moral ou promotionnel (visibilité, communication)',
+                                            key: 'commitment_projects' as const,
+                                            label: 'Participation aux projets et événements du syndicat',
                                         },
                                         {
-                                            key: 'partnership_technical' as const,
-                                            label: 'Soutien technique ou expertise (conseil, appui sur projets)',
+                                            key: 'commitment_communication' as const,
+                                            label: 'Communication et promotion des actions du syndicat',
                                         },
                                         {
-                                            key: 'partnership_financial' as const,
-                                            label: 'Soutien financier',
+                                            key: 'commitment_expertise' as const,
+                                            label: "Apport d'expertise ou de services",
                                         },
                                     ].map((item) => (
                                         <label
@@ -285,72 +503,92 @@ export default function PartenairePage() {
                                 </div>
                             </div>
 
-                            <div>
-                                <label className={labelCls}>
-                                    Objectifs et motivations du partenariat *
-                                </label>
-                                <textarea
-                                    rows={4}
-                                    value={data.objectives}
-                                    onChange={(e) =>
-                                        setData('objectives', e.target.value)
-                                    }
-                                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none"
-                                    placeholder="Précisez l'objet de votre partenariat et les objectifs que vous souhaitez atteindre avec le SNA…"
-                                />
-                                {errors.objectives && (
-                                    <p className="mt-1 text-xs text-red-500">
-                                        {errors.objectives}
+                            {/* Section E: Attachments */}
+                            <div className="space-y-4 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    E. Pièces jointes (optionnel)
+                                </h3>
+                                <div className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept=".pdf"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                        id="file-upload"
+                                    />
+                                    <label
+                                        htmlFor="file-upload"
+                                        className="cursor-pointer"
+                                    >
+                                        <div className="text-3xl mb-2">📄</div>
+                                        <p className="text-sm font-semibold text-gray-700">
+                                            Cliquez pour ajouter des fichiers PDF
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Statuts, documents officiels, présentation...
+                                        </p>
+                                    </label>
+                                </div>
+
+                                {fileNames.length > 0 && (
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-semibold text-gray-700">
+                                            Fichiers sélectionnés :
+                                        </p>
+                                        <ul className="space-y-2">
+                                            {fileNames.map((name, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="flex items-center justify-between rounded-lg bg-white p-2 text-sm border border-gray-200"
+                                                >
+                                                    <span className="flex items-center gap-2 text-gray-700">
+                                                        📄 {name}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            removeAttachment(index)
+                                                        }
+                                                        className="text-xs font-semibold text-red-600 hover:text-red-700"
+                                                    >
+                                                        Supprimer
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {errors.attachments && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.attachments as string}
                                     </p>
                                 )}
                             </div>
 
-                            <div>
-                                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Engagements envisagés
-                                </label>
-                                <div className="grid gap-3 sm:grid-cols-3">
-                                    {[
-                                        {
-                                            key: 'commitment_projects' as const,
-                                            label: 'Participation aux projets et événements',
-                                        },
-                                        {
-                                            key: 'commitment_communication' as const,
-                                            label: 'Communication et promotion des actions',
-                                        },
-                                        {
-                                            key: 'commitment_expertise' as const,
-                                            label: "Apport d'expertise ou de services",
-                                        },
-                                    ].map((item) => (
-                                        <label
-                                            key={item.key}
-                                            className="flex cursor-pointer items-start gap-2 rounded-xl border border-gray-100 bg-white p-3 text-xs text-gray-600 transition hover:border-sna-green/50 hover:bg-sna-green/5"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={data[item.key]}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        item.key,
-                                                        e.target.checked,
-                                                    )
-                                                }
-                                                className="mt-0.5 h-4 w-4"
-                                                style={{
-                                                    accentColor:
-                                                        'var(--color-sna-green)',
-                                                }}
-                                            />
-                                            {item.label}
-                                        </label>
-                                    ))}
-                                </div>
+                            {/* Section F: Free Comments */}
+                            <div className="space-y-4 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    F. Commentaire libre (optionnel)
+                                </h3>
+                                <textarea
+                                    rows={3}
+                                    value={data.comment_libre}
+                                    onChange={(e) =>
+                                        setData('comment_libre', e.target.value)
+                                    }
+                                    className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none"
+                                    placeholder="Ajoutez tout commentaire supplémentaire..."
+                                />
                             </div>
 
-                            <div className="space-y-2 border-t border-gray-100 pt-4">
-                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                            {/* Section G: Consents */}
+                            <div className="space-y-3 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    G. Consentements
+                                </h3>
+                                <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-600">
                                     <input
                                         type="checkbox"
                                         checked={data.consents_email}
@@ -366,10 +604,10 @@ export default function PartenairePage() {
                                                 'var(--color-sna-green)',
                                         }}
                                     />
-                                    J'autorise la réception d'informations par
+                                    Autorisation de recevoir des informations par
                                     email
                                 </label>
-                                <label className="flex cursor-pointer items-start gap-3 text-xs text-gray-500">
+                                <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-600">
                                     <input
                                         type="checkbox"
                                         checked={data.consents_rgpd}
@@ -385,8 +623,8 @@ export default function PartenairePage() {
                                                 'var(--color-sna-green)',
                                         }}
                                     />
-                                    Je consens au traitement des données
-                                    personnelles conformément au RGPD *
+                                    Consentement au traitement des données
+                                    personnelles selon la RGPD *
                                 </label>
                                 {errors.consents_rgpd && (
                                     <p className="text-xs text-red-500">

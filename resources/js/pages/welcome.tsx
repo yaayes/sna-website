@@ -1,6 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { dashboard, login } from '@/routes';
+import { dashboard } from '@/routes';
 
 /* ─────────────────────────────────────────────
    Inline SVG icons (no extra dep needed)
@@ -578,9 +578,9 @@ export default function Welcome() {
                                     Mon espace
                                 </Link>
                             ) : (
-                                /* ── Fancy "Faire un don" button ── */
-                                <a
-                                    href="#contact"
+                                /* ── Fancy "Adhérer au SNA" button ── */
+                                <Link
+                                    href="/formulaire/adhesion"
                                     className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
                                     style={{
                                         background:
@@ -630,10 +630,10 @@ export default function Welcome() {
                                         <HeartIcon className="h-4 w-4" />
                                     </span>
                                     <span className="relative tracking-wide">
-                                        Faire un don
+                                        Adhérer au SNA
                                     </span>
                                     <ArrowRightIcon className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                                </a>
+                                </Link>
                             )}
 
                             {/* Hamburger – mobile only */}
@@ -802,8 +802,8 @@ export default function Welcome() {
 
                             {/* Donate CTA */}
                             {!auth.user && (
-                                <a
-                                    href="#contact"
+                                <Link
+                                    href="/formulaire/adhesion"
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl py-3.5 text-sm font-bold text-white transition-all duration-300 active:scale-95"
                                     style={{
@@ -819,9 +819,9 @@ export default function Welcome() {
                                     />
                                     <HeartIcon className="h-4 w-4" />
                                     <span className="tracking-wide">
-                                        Faire un don
+                                        Adhérer au SNA
                                     </span>
-                                </a>
+                                </Link>
                             )}
                         </div>
                     </div>
@@ -936,52 +936,29 @@ export default function Welcome() {
 
                             {/* Key figures */}
                             <div className="mt-2 grid w-full grid-cols-2 gap-0 overflow-hidden rounded-2xl border border-gray-100 bg-white/90 shadow-md backdrop-blur sm:grid-cols-4">
-                                {/* Hero stat — spans 2 cols × 2 rows */}
-                                <div className="col-span-1 row-span-2 flex cursor-default flex-col items-center justify-center gap-1 border-r border-gray-100 bg-sna-teal px-5 py-6 text-center transition-all duration-200 hover:brightness-110">
-                                    <span className="text-4xl leading-none font-extrabold text-white sm:text-5xl">
-                                        12 M
-                                    </span>
-                                    <span className="mt-1 text-sm leading-tight text-white/80">
-                                        Aidants en France
-                                    </span>
-                                </div>
-                                {/* Remaining 6 stats — 3 per row on the right */}
-                                {(
-                                    [
-                                        {
-                                            value: '1/5',
-                                            label: '1 Français sur 5 est aidant',
-                                        },
-                                        {
-                                            value: '57 %',
-                                            label: 'Sont des femmes',
-                                        },
-                                        {
-                                            value: '50 %',
-                                            label: 'Exercent une activité pro',
-                                        },
-                                        {
-                                            value: '30 %',
-                                            label: "Impact négatif sur l'emploi",
-                                        },
-                                        {
-                                            value: '40 %',
-                                            label: 'Santé dégradée',
-                                        },
-                                        {
-                                            value: '1/2',
-                                            label: 'Ne connaît pas ses droits',
-                                        },
-                                    ] as { value: string; label: string }[]
-                                ).map((stat, i) => (
+                                {[
+                                    {
+                                        value: '12 M',
+                                        label: 'Aidants en France',
+                                    },
+                                    {
+                                        value: '1/5',
+                                        label: '1 Français sur 5 est aidant',
+                                    },
+                                    {
+                                        value: '1/2',
+                                        label: 'Ne connaît pas ses droits',
+                                    },
+                                    {
+                                        value: '40 %',
+                                        label: 'Santé dégradée',
+                                    },
+                                ].map((stat, i) => (
                                     <div
                                         key={stat.label}
                                         className={[
-                                            'flex cursor-default flex-col items-center gap-1 px-3 py-4 text-center transition-colors duration-200 hover:bg-sna-teal/5',
+                                            'flex cursor-default flex-col items-center gap-1 px-3 py-5 text-center transition-colors duration-200 hover:bg-sna-teal/5',
                                             i < 3
-                                                ? 'border-b border-gray-100'
-                                                : '',
-                                            i % 3 !== 2
                                                 ? 'border-r border-gray-100'
                                                 : '',
                                         ].join(' ')}
@@ -1217,7 +1194,6 @@ export default function Welcome() {
                                     desc: 'Le SNA porte la voix des aidants dans le débat public et auprès des institutions afin que leur expérience soit reconnue et intégrée dans les décisions publiques.',
                                     objectif:
                                         'Donner aux aidants une représentation collective et structurée dans les politiques publiques.',
-                                    actions: [],
                                 },
                                 {
                                     number: '2',
@@ -1225,13 +1201,6 @@ export default function Welcome() {
                                     title: 'Droits fondamentaux et protection des aidants',
                                     desc: "Le SNA agit pour garantir les droits fondamentaux des aidants et des personnes accompagnées, et prévenir les situations d'injustice ou de vulnérabilité juridique.",
                                     objectif: null,
-                                    actions: [
-                                        'Devoir de parentalité',
-                                        'Établissement : droits garantis',
-                                        "Aidant essentiel à l'hôpital",
-                                        'Reconnaissance du traumatisme des aidants',
-                                        'Séparation conjugale et handicap évolutif',
-                                    ],
                                 },
                                 {
                                     number: '3',
@@ -1239,13 +1208,6 @@ export default function Welcome() {
                                     title: 'Justice sociale et équité du quotidien',
                                     desc: 'Le syndicat défend des mesures concrètes pour corriger les inégalités vécues par les familles confrontées au handicap, à la dépendance ou à la maladie.',
                                     objectif: null,
-                                    actions: [
-                                        'Transport sécurisé en taxi',
-                                        'Gratuité des parkings hospitaliers',
-                                        'Levée gratuite des déchets médicaux',
-                                        'Pension nationale pour service rendu',
-                                        'Prêt bancaire aidant',
-                                    ],
                                 },
                                 {
                                     number: '4',
@@ -1253,11 +1215,6 @@ export default function Welcome() {
                                     title: 'Statut et reconnaissance professionnelle des aidants',
                                     desc: "L'aidance a des conséquences majeures sur la vie professionnelle. Le SNA agit pour sécuriser les parcours d'emploi et valoriser les compétences développées dans l'aidance.",
                                     objectif: null,
-                                    actions: [
-                                        'Statut du salarié aidant',
-                                        'Programme national Employeurs & Aidants',
-                                        'Label Entreprise engagée',
-                                    ],
                                 },
                                 {
                                     number: '5',
@@ -1265,9 +1222,6 @@ export default function Welcome() {
                                     title: 'Régulation et amélioration des décisions publiques',
                                     desc: "Le SNA agit pour renforcer la qualité, la transparence et l'équité des décisions administratives qui structurent la vie des personnes handicapées et de leurs familles.",
                                     objectif: null,
-                                    actions: [
-                                        'Formation nationale des membres CDAPH',
-                                    ],
                                 },
                                 {
                                     number: '6',
@@ -1275,9 +1229,6 @@ export default function Welcome() {
                                     title: 'Connaissance, données et transformation des politiques publiques',
                                     desc: "Pour améliorer durablement les politiques publiques, le SNA développe des outils d'analyse et d'observation permettant d'objectiver la réalité de l'aidance.",
                                     objectif: null,
-                                    actions: [
-                                        'Observatoire national des aidants',
-                                    ],
                                 },
                             ].map((axe) => (
                                 <div
@@ -1302,23 +1253,6 @@ export default function Welcome() {
                                             </span>
                                             {axe.objectif}
                                         </p>
-                                    )}
-                                    {axe.actions.length > 0 && (
-                                        <div>
-                                            <p className="mb-2 text-xs font-bold tracking-widest text-gray-400 uppercase">
-                                                Actions associées
-                                            </p>
-                                            <ul className="flex flex-wrap gap-2">
-                                                {axe.actions.map((action) => (
-                                                    <li
-                                                        key={action}
-                                                        className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600"
-                                                    >
-                                                        {action}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
                                     )}
                                 </div>
                             ))}
@@ -1430,7 +1364,33 @@ export default function Welcome() {
                 </section>
 
                 {/* ══════════════════════════════
-                    FOOTER
+                    CONTACT SECTION
+                ══════════════════════════════ */}
+                <section id="contact" className="bg-sna-teal-light px-6 py-20">
+                    <div className="mx-auto max-w-4xl text-center space-y-8">
+                        <SectionHeader
+                            badge="Nous contacter"
+                            title="Le Syndicat National des Aidants est à votre écoute."
+                            subtitle="Vous avez une question ? Besoin d’une information ? Vous souhaitez nous faire remonter une problématique ou proposer une collaboration ? N’hésitez pas à nous écrire."
+                        />
+                        <div className="flex justify-center">
+                            <div className="flex flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-white p-8 shadow-lg max-w-md w-full">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg mx-auto">
+                                    <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 10.5V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2v-4.5M16 7l-4 4-4-4" /></svg>
+                                </div>
+                                <h3 className="text-xl font-bold text-sna-teal-dark">Formulaire de contact</h3>
+                                <p className="text-gray-600">Remplissez notre formulaire pour nous transmettre votre demande. Nous vous répondrons dans les meilleurs délais.</p>
+                                <Link
+                                    href="/formulaire/contact"
+                                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
+                                >
+                                    Accéder au formulaire <ArrowRightIcon />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* ══════════════════════════════
                     FOOTER
                 ══════════════════════════════ */}
@@ -1488,23 +1448,21 @@ export default function Welcome() {
                             </div>
                             <div className="space-y-3">
                                 <h4 className="text-xs font-bold tracking-widest text-white uppercase">
-                                    Espace membre
+                                    Contact
                                 </h4>
-                                {auth.user ? (
-                                    <Link
-                                        href={dashboard()}
-                                        className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
-                                    >
-                                        Mon espace
-                                    </Link>
-                                ) : (
-                                    <Link
-                                        href={login()}
-                                        className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
-                                    >
-                                        Se connecter
-                                    </Link>
-                                )}
+                                <a
+                                    href="mailto:contact@syndicat-national-aidants.fr"
+                                    className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                >
+                                    contact@syndicat-national-aidants.fr
+                                </a>
+                                <a
+                                    href="#contact"
+                                    className="inline-flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-sna-teal"
+                                >
+                                    Formulaire de contact
+                                    <ArrowRightIcon className="h-3 w-3" />
+                                </a>
                             </div>
                         </div>
                     </div>

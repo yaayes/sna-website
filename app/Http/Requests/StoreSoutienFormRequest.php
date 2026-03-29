@@ -15,15 +15,13 @@ class StoreSoutienFormRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'organisation' => ['nullable', 'string', 'max:255'],
-            'statut' => ['required', 'in:physique,morale'],
+            'address' => ['required', 'string', 'max:500'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
-            'wants_partnership' => ['boolean'],
-            'wants_events' => ['boolean'],
-            'wants_participation' => ['boolean'],
+            'wants_events' => ['nullable', 'boolean'],
+            'wants_participation' => ['nullable', 'boolean'],
             'message' => ['nullable', 'string', 'max:2000'],
-            'consents_email' => ['boolean'],
+            'consents_email' => ['nullable', 'boolean'],
             'consents_rgpd' => ['accepted'],
         ];
     }
@@ -32,7 +30,7 @@ class StoreSoutienFormRequest extends FormRequest
     {
         return [
             'name.required' => 'Le nom et prenom sont obligatoires.',
-            'statut.required' => 'Le statut est obligatoire.',
+            'address.required' => 'L adresse est obligatoire.',
             'email.required' => 'L adresse email est obligatoire.',
             'email.email' => 'L adresse email n est pas valide.',
             'consents_rgpd.accepted' => 'Vous devez accepter les conditions RGPD.',

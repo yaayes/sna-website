@@ -6,14 +6,34 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePartenaireFormRequest;
 use App\Models\FormSubmission;
 use App\Models\PartenaireForm;
+use App\Models\PartenaireFormAttachment;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PartenaireFormController extends Controller
 {
     public function store(StorePartenaireFormRequest $request): RedirectResponse
     {
-        $form = PartenaireForm::create($request->validated());
+        $validated = $request->validated();
+
+        // Remove attachments from validated data before creating form
+        $attachments = $validated['attachments'] ?? [];
+        unset($validated['attachments']);
+
+        $form = PartenaireForm::create($validated);
+
+        // Handle file uploads
+        if (!empty($attachments)) {
+            foreach ($attachments as $file) {
+                $path = $file->store('partenaire-forms', 'public');
+                PartenaireFormAttachment::create([
+                    'partenaire_form_id' => $form->id,
+                    'file_path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                ]);
+            }
+        }
 
         FormSubmission::create([
             'email' => $form->email,
@@ -27,3 +47,4 @@ class PartenaireFormController extends Controller
         return back()->with('success', 'Votre demande de partenariat a bien été enregistrée. Un email de confirmation vous a été envoyé.');
     }
 }
+

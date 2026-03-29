@@ -15,12 +15,17 @@ class PartenaireForm extends Model
         'ref',
         'organisation_name',
         'legal_status',
+        'address',
+        'phone',
         'email',
         'contact_name',
         'partnership_moral',
+        'partnership_moral_details',
         'partnership_technical',
+        'partnership_technical_details',
         'partnership_financial',
         'objectives',
+        'comment_libre',
         'commitment_projects',
         'commitment_communication',
         'commitment_expertise',
@@ -45,5 +50,10 @@ class PartenaireForm extends Model
     public function submission(): MorphOne
     {
         return $this->morphOne(FormSubmission::class, 'formable');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(PartenaireFormAttachment::class);
     }
 }

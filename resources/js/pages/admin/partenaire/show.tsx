@@ -11,12 +11,17 @@ type PartenaireEntry = {
     ref: string;
     organisation_name: string;
     legal_status: string;
+    address: string;
+    phone: string | null;
     email: string;
     contact_name: string;
     partnership_moral: boolean;
+    partnership_moral_details: string | null;
     partnership_technical: boolean;
+    partnership_technical_details: string | null;
     partnership_financial: boolean;
     objectives: string;
+    comment_libre: string | null;
     commitment_projects: boolean;
     commitment_communication: boolean;
     commitment_expertise: boolean;
@@ -24,6 +29,11 @@ type PartenaireEntry = {
     consents_rgpd: boolean;
     created_at: string;
     updated_at: string;
+    attachments?: Array<{
+        id: number;
+        file_path: string;
+        original_name: string;
+    }>;
 };
 
 const breadcrumbs = (ref: string): BreadcrumbItem[] => [
@@ -89,6 +99,12 @@ export default function PartenaireShow({ entry }: { entry: PartenaireEntry }) {
                         <DetailRow label="Statut légal">
                             {entry.legal_status}
                         </DetailRow>
+                        <DetailRow label="Adresse">
+                            {entry.address}
+                        </DetailRow>
+                        <DetailRow label="Téléphone">
+                            {entry.phone || '—'}
+                        </DetailRow>
                         <DetailRow label="Contact">
                             {entry.contact_name}
                         </DetailRow>
@@ -107,9 +123,23 @@ export default function PartenaireShow({ entry }: { entry: PartenaireEntry }) {
                         <DetailRow label="Moral">
                             <BoolBadge value={entry.partnership_moral} />
                         </DetailRow>
+                        {entry.partnership_moral_details && (
+                            <DetailRow label="Détails moral">
+                                <span className="whitespace-pre-wrap">
+                                    {entry.partnership_moral_details}
+                                </span>
+                            </DetailRow>
+                        )}
                         <DetailRow label="Technique">
                             <BoolBadge value={entry.partnership_technical} />
                         </DetailRow>
+                        {entry.partnership_technical_details && (
+                            <DetailRow label="Détails technique">
+                                <span className="whitespace-pre-wrap">
+                                    {entry.partnership_technical_details}
+                                </span>
+                            </DetailRow>
+                        )}
                         <DetailRow label="Financier">
                             <BoolBadge value={entry.partnership_financial} />
                         </DetailRow>
@@ -137,6 +167,35 @@ export default function PartenaireShow({ entry }: { entry: PartenaireEntry }) {
                         </DetailRow>
                     </dl>
                 </div>
+
+                {entry.comment_libre && (
+                    <div className="rounded-xl border p-6">
+                        <h2 className="mb-4 font-semibold">Commentaire libre</h2>
+                        <p className="whitespace-pre-wrap text-sm">
+                            {entry.comment_libre}
+                        </p>
+                    </div>
+                )}
+
+                {entry.attachments && entry.attachments.length > 0 && (
+                    <div className="rounded-xl border p-6">
+                        <h2 className="mb-4 font-semibold">Pièces jointes</h2>
+                        <ul className="space-y-2">
+                            {entry.attachments.map((attachment) => (
+                                <li key={attachment.id}>
+                                    <a
+                                        href={`/storage/${attachment.file_path}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 text-sm text-sna-green hover:underline"
+                                    >
+                                        📄 {attachment.original_name}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 <div className="rounded-xl border p-6">
                     <h2 className="mb-4 font-semibold">Consentements</h2>

@@ -10,11 +10,9 @@ type SoutienEntry = {
     id: number;
     ref: string;
     name: string;
-    organisation: string | null;
-    statut: string;
+    address: string;
     email: string;
     phone: string | null;
-    wants_partnership: boolean;
     wants_events: boolean;
     wants_participation: boolean;
     message: string | null;
@@ -80,16 +78,7 @@ export default function SoutienShow({ entry }: { entry: SoutienEntry }) {
                     <h2 className="mb-4 font-semibold">Informations</h2>
                     <dl>
                         <DetailRow label="Nom">{entry.name}</DetailRow>
-                        <DetailRow label="Organisation">
-                            {entry.organisation ?? '—'}
-                        </DetailRow>
-                        <DetailRow label="Statut">
-                            <Badge variant="secondary">
-                                {entry.statut === 'physique'
-                                    ? 'Personne physique'
-                                    : 'Personne morale'}
-                            </Badge>
-                        </DetailRow>
+                        <DetailRow label="Adresse">{entry.address}</DetailRow>
                         <DetailRow label="Email">{entry.email}</DetailRow>
                         <DetailRow label="Téléphone">
                             {entry.phone ?? '—'}
@@ -105,9 +94,6 @@ export default function SoutienShow({ entry }: { entry: SoutienEntry }) {
                         Souhaits d'implication
                     </h2>
                     <dl>
-                        <DetailRow label="Partenariat">
-                            <BoolBadge value={entry.wants_partnership} />
-                        </DetailRow>
                         <DetailRow label="Événements">
                             <BoolBadge value={entry.wants_events} />
                         </DetailRow>
