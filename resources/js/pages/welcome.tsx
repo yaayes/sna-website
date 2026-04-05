@@ -552,16 +552,14 @@ export default function Welcome() {
                                             )}
                                         </div>
                                         <div className="border-t border-gray-100 px-2 py-2">
-                                            <a
-                                                href="#actions"
-                                                onClick={() =>
-                                                    setActionsOpen(false)
-                                                }
+                                            <Link
+                                                href="/nos-actions"
+                                                onClick={() => setActionsOpen(false)}
                                                 className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-sna-teal"
                                             >
                                                 Voir toutes nos actions
                                                 <ArrowRightIcon className="h-3 w-3" />
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 )}
@@ -769,7 +767,7 @@ export default function Welcome() {
                                                 desc: 'Partenaire institutionnel',
                                             },
                                             {
-                                                href: '#actions',
+                                                href: '/nos-actions',
                                                 label: 'Voir toutes nos actions',
                                                 desc: '',
                                             },
@@ -1435,7 +1433,10 @@ export default function Welcome() {
                                         label: 'Partenariats',
                                         href: '/formulaire/partenaire',
                                     },
-                                    { label: 'Nos actions', href: '#actions' },
+                                    {
+                                        label: 'Nos actions',
+                                        href: '/nos-actions',
+                                    },
                                 ].map((link) => (
                                     <a
                                         key={link.label}

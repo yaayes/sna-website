@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
+import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
 export default function MoiAussiPage() {
@@ -61,37 +62,7 @@ export default function MoiAussiPage() {
             </Head>
 
             <div className="min-h-screen bg-linear-to-br from-[#e8f8f8] to-[#f0f9e8] font-sans">
-                {/* Header */}
-                <header className="border-b border-sna-teal/10 bg-white/80 backdrop-blur-md">
-                    <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-4">
-                        <Link href="/">
-                            <img
-                                src="/images/logo.png"
-                                alt="SNA"
-                                className="h-11 w-auto"
-                            />
-                        </Link>
-                        <Link
-                            href="/"
-                            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-sna-teal"
-                        >
-                            <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M15 19l-7-7 7-7"
-                                />
-                            </svg>
-                            Retour à l'accueil
-                        </Link>
-                    </div>
-                </header>
+                <PublicSiteHeader />
 
                 {/* Hero */}
                 <div className="relative overflow-hidden">

@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
+import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
 type AidantData = {
@@ -181,13 +182,16 @@ function AdhesionStepper({
                     Etape {currentStep + 1} sur {totalSteps}
                 </span>
                 <span>
-                    {ADHESION_STEPS[currentStep].icon} {ADHESION_STEPS[currentStep].label}
+                    {ADHESION_STEPS[currentStep].icon}{' '}
+                    {ADHESION_STEPS[currentStep].label}
                 </span>
             </div>
             <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-gray-100 sm:hidden">
                 <div
                     className="h-full rounded-full bg-sna-teal transition-all duration-500"
-                    style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                    style={{
+                        width: `${((currentStep + 1) / totalSteps) * 100}%`,
+                    }}
                 />
             </div>
 
@@ -208,7 +212,10 @@ function AdhesionStepper({
                         const active = idx === currentStep;
 
                         return (
-                            <div key={idx} className="relative z-10 flex flex-1 justify-center">
+                            <div
+                                key={idx}
+                                className="relative z-10 flex flex-1 justify-center"
+                            >
                                 <div
                                     className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-300 ${
                                         done
@@ -337,7 +344,10 @@ function AdhesionForm() {
         );
     };
 
-    const toggleTopLevelArray = (field: 'type_situation' | 'impacts', value: string) => {
+    const toggleTopLevelArray = (
+        field: 'type_situation' | 'impacts',
+        value: string,
+    ) => {
         const current = data[field];
 
         setData(
@@ -359,7 +369,8 @@ function AdhesionForm() {
         });
     };
 
-    const goNext = () => setStep((currentStep) => Math.min(currentStep + 1, totalSteps - 1));
+    const goNext = () =>
+        setStep((currentStep) => Math.min(currentStep + 1, totalSteps - 1));
     const goBack = () => setStep((currentStep) => Math.max(currentStep - 1, 0));
 
     const inputCls =
@@ -374,9 +385,12 @@ function AdhesionForm() {
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-sna-teal/10 text-4xl">
                     💙
                 </div>
-                <h2 className="text-2xl font-bold text-sna-teal-dark">Adhesion enregistree !</h2>
+                <h2 className="text-2xl font-bold text-sna-teal-dark">
+                    Adhesion enregistree !
+                </h2>
                 <p className="text-gray-500">
-                    Merci de rejoindre le Syndicat National des Aidants. Votre voix compte.
+                    Merci de rejoindre le Syndicat National des Aidants. Votre
+                    voix compte.
                 </p>
                 <Link
                     href="/"
@@ -404,23 +418,32 @@ function AdhesionForm() {
 
                         <div className="space-y-3 rounded-2xl border border-sna-teal/25 bg-sna-teal-light p-5">
                             <p className="text-sm text-gray-700">
-                                Les informations recueillies ne sont ni revendues ni transmises. Elles servent
-                                uniquement a des fins collectives et statistiques.
+                                Les informations recueillies ne sont ni
+                                revendues ni transmises. Elles servent
+                                uniquement a des fins collectives et
+                                statistiques.
                             </p>
                             <label className="flex items-start gap-3 text-sm text-gray-700">
                                 <input
                                     type="checkbox"
                                     checked={data.declaration_honneur}
                                     onChange={(event) =>
-                                        setData('declaration_honneur', event.target.checked)
+                                        setData(
+                                            'declaration_honneur',
+                                            event.target.checked,
+                                        )
                                     }
                                     className="mt-0.5 h-4 w-4 rounded accent-sna-teal"
                                 />
-                                Je declare sur l'honneur etre aidant(e), accompagner regulierement une
-                                personne de mon entourage et fournir des informations sinceres et exactes.
+                                Je declare sur l'honneur etre aidant(e),
+                                accompagner regulierement une personne de mon
+                                entourage et fournir des informations sinceres
+                                et exactes.
                             </label>
                             {errors.declaration_honneur && (
-                                <p className="text-xs text-red-600">{errors.declaration_honneur}</p>
+                                <p className="text-xs text-red-600">
+                                    {errors.declaration_honneur}
+                                </p>
                             )}
                         </div>
 
@@ -462,9 +485,16 @@ function AdhesionForm() {
                                                 <input
                                                     type="radio"
                                                     name={`aidant-genre-${index}`}
-                                                    checked={aidant.genre === option.value}
+                                                    checked={
+                                                        aidant.genre ===
+                                                        option.value
+                                                    }
                                                     onChange={() =>
-                                                        setAidantField(index, 'genre', option.value)
+                                                        setAidantField(
+                                                            index,
+                                                            'genre',
+                                                            option.value,
+                                                        )
                                                     }
                                                     className="accent-sna-teal"
                                                 />
@@ -476,34 +506,52 @@ function AdhesionForm() {
 
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label className={labelCls}>Nom *</label>
+                                        <label className={labelCls}>
+                                            Nom *
+                                        </label>
                                         <input
                                             type="text"
                                             value={aidant.nom}
                                             onChange={(event) =>
-                                                setAidantField(index, 'nom', event.target.value)
+                                                setAidantField(
+                                                    index,
+                                                    'nom',
+                                                    event.target.value,
+                                                )
                                             }
                                             className={inputCls}
                                         />
                                         {getError(`aidants.${index}.nom`) && (
                                             <p className="mt-1 text-xs text-red-600">
-                                                {getError(`aidants.${index}.nom`)}
+                                                {getError(
+                                                    `aidants.${index}.nom`,
+                                                )}
                                             </p>
                                         )}
                                     </div>
                                     <div>
-                                        <label className={labelCls}>Prenom *</label>
+                                        <label className={labelCls}>
+                                            Prenom *
+                                        </label>
                                         <input
                                             type="text"
                                             value={aidant.prenom}
                                             onChange={(event) =>
-                                                setAidantField(index, 'prenom', event.target.value)
+                                                setAidantField(
+                                                    index,
+                                                    'prenom',
+                                                    event.target.value,
+                                                )
                                             }
                                             className={inputCls}
                                         />
-                                        {getError(`aidants.${index}.prenom`) && (
+                                        {getError(
+                                            `aidants.${index}.prenom`,
+                                        ) && (
                                             <p className="mt-1 text-xs text-red-600">
-                                                {getError(`aidants.${index}.prenom`)}
+                                                {getError(
+                                                    `aidants.${index}.prenom`,
+                                                )}
                                             </p>
                                         )}
                                     </div>
@@ -513,45 +561,69 @@ function AdhesionForm() {
                                             type="text"
                                             value={aidant.age}
                                             onChange={(event) =>
-                                                setAidantField(index, 'age', event.target.value)
+                                                setAidantField(
+                                                    index,
+                                                    'age',
+                                                    event.target.value,
+                                                )
                                             }
                                             className={inputCls}
                                         />
                                     </div>
                                     <div>
-                                        <label className={labelCls}>Adresse e-mail *</label>
+                                        <label className={labelCls}>
+                                            Adresse e-mail *
+                                        </label>
                                         <input
                                             type="email"
                                             value={aidant.email}
                                             onChange={(event) =>
-                                                setAidantField(index, 'email', event.target.value)
+                                                setAidantField(
+                                                    index,
+                                                    'email',
+                                                    event.target.value,
+                                                )
                                             }
                                             className={inputCls}
                                         />
                                         {getError(`aidants.${index}.email`) && (
                                             <p className="mt-1 text-xs text-red-600">
-                                                {getError(`aidants.${index}.email`)}
+                                                {getError(
+                                                    `aidants.${index}.email`,
+                                                )}
                                             </p>
                                         )}
                                     </div>
                                     <div>
-                                        <label className={labelCls}>Telephone</label>
+                                        <label className={labelCls}>
+                                            Telephone
+                                        </label>
                                         <input
                                             type="tel"
                                             value={aidant.phone}
                                             onChange={(event) =>
-                                                setAidantField(index, 'phone', event.target.value)
+                                                setAidantField(
+                                                    index,
+                                                    'phone',
+                                                    event.target.value,
+                                                )
                                             }
                                             className={inputCls}
                                         />
                                     </div>
                                     <div>
-                                        <label className={labelCls}>Departement</label>
+                                        <label className={labelCls}>
+                                            Departement
+                                        </label>
                                         <input
                                             type="text"
                                             value={aidant.departement}
                                             onChange={(event) =>
-                                                setAidantField(index, 'departement', event.target.value)
+                                                setAidantField(
+                                                    index,
+                                                    'departement',
+                                                    event.target.value,
+                                                )
                                             }
                                             className={inputCls}
                                             placeholder="75"
@@ -560,31 +632,41 @@ function AdhesionForm() {
                                 </div>
 
                                 <div>
-                                    <label className={labelCls}>Commune (facultatif)</label>
+                                    <label className={labelCls}>
+                                        Commune (facultatif)
+                                    </label>
                                     <input
                                         type="text"
                                         value={aidant.commune}
                                         onChange={(event) =>
-                                            setAidantField(index, 'commune', event.target.value)
+                                            setAidantField(
+                                                index,
+                                                'commune',
+                                                event.target.value,
+                                            )
                                         }
                                         className={inputCls}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className={labelCls}>Vous etes... *</label>
+                                    <label className={labelCls}>
+                                        Vous etes... *
+                                    </label>
                                     <div className="space-y-2">
                                         {[
                                             {
                                                 value: 'parent_handicap',
-                                                label:
-                                                    "Parent d'un enfant en situation de handicap ou de maladie",
+                                                label: "Parent d'un enfant en situation de handicap ou de maladie",
                                             },
                                             {
                                                 value: 'conjoint',
                                                 label: "Aidant(e) d'un conjoint / partenaire",
                                             },
-                                            { value: 'parent_aine', label: "Aidant(e) d'un parent" },
+                                            {
+                                                value: 'parent_aine',
+                                                label: "Aidant(e) d'un parent",
+                                            },
                                             {
                                                 value: 'proche',
                                                 label: "Aidant(e) d'un proche (frere, soeur, autre)",
@@ -598,9 +680,16 @@ function AdhesionForm() {
                                                 <input
                                                     type="radio"
                                                     name={`aidant-type-${index}`}
-                                                    checked={aidant.aidant_type === option.value}
+                                                    checked={
+                                                        aidant.aidant_type ===
+                                                        option.value
+                                                    }
                                                     onChange={() =>
-                                                        setAidantField(index, 'aidant_type', option.value)
+                                                        setAidantField(
+                                                            index,
+                                                            'aidant_type',
+                                                            option.value,
+                                                        )
                                                     }
                                                     className="accent-sna-teal"
                                                 />
@@ -608,19 +697,27 @@ function AdhesionForm() {
                                             </label>
                                         ))}
                                     </div>
-                                    {getError(`aidants.${index}.aidant_type`) && (
+                                    {getError(
+                                        `aidants.${index}.aidant_type`,
+                                    ) && (
                                         <p className="mt-1 text-xs text-red-600">
-                                            {getError(`aidants.${index}.aidant_type`)}
+                                            {getError(
+                                                `aidants.${index}.aidant_type`,
+                                            )}
                                         </p>
                                     )}
                                 </div>
 
                                 {aidant.aidant_type === 'autre' && (
                                     <div>
-                                        <label className={labelCls}>Autre: a preciser</label>
+                                        <label className={labelCls}>
+                                            Autre: a preciser
+                                        </label>
                                         <input
                                             type="text"
-                                            value={aidant.aidant_type_autre_precisions}
+                                            value={
+                                                aidant.aidant_type_autre_precisions
+                                            }
                                             onChange={(event) =>
                                                 setAidantField(
                                                     index,
@@ -636,15 +733,31 @@ function AdhesionForm() {
                                 {aidant.aidant_type === 'parent_handicap' && (
                                     <div>
                                         <label className={labelCls}>
-                                            Situation familiale avec l'autre parent
+                                            Situation familiale avec l'autre
+                                            parent
                                         </label>
                                         <div className="flex flex-wrap gap-3">
                                             {[
-                                                { value: 'en_couple', label: 'En couple' },
-                                                { value: 'separe', label: 'Separe(e)' },
-                                                { value: 'divorce', label: 'Divorce(e)' },
-                                                { value: 'veuf', label: 'Veuf(ve)' },
-                                                { value: 'autre', label: 'Autre' },
+                                                {
+                                                    value: 'en_couple',
+                                                    label: 'En couple',
+                                                },
+                                                {
+                                                    value: 'separe',
+                                                    label: 'Separe(e)',
+                                                },
+                                                {
+                                                    value: 'divorce',
+                                                    label: 'Divorce(e)',
+                                                },
+                                                {
+                                                    value: 'veuf',
+                                                    label: 'Veuf(ve)',
+                                                },
+                                                {
+                                                    value: 'autre',
+                                                    label: 'Autre',
+                                                },
                                             ].map((option) => (
                                                 <label
                                                     key={option.value}
@@ -653,7 +766,10 @@ function AdhesionForm() {
                                                     <input
                                                         type="radio"
                                                         name={`aidant-family-${index}`}
-                                                        checked={aidant.situation_familiale === option.value}
+                                                        checked={
+                                                            aidant.situation_familiale ===
+                                                            option.value
+                                                        }
                                                         onChange={() =>
                                                             setAidantField(
                                                                 index,
@@ -672,10 +788,15 @@ function AdhesionForm() {
 
                                 {aidant.situation_familiale === 'autre' && (
                                     <div>
-                                        <label className={labelCls}>Autre situation familiale: a preciser</label>
+                                        <label className={labelCls}>
+                                            Autre situation familiale: a
+                                            preciser
+                                        </label>
                                         <input
                                             type="text"
-                                            value={aidant.situation_familiale_autre_precisions}
+                                            value={
+                                                aidant.situation_familiale_autre_precisions
+                                            }
                                             onChange={(event) =>
                                                 setAidantField(
                                                     index,
@@ -718,12 +839,23 @@ function AdhesionForm() {
 
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <div>
-                                <label className={labelCls}>Tranche d'age de la personne aidée</label>
+                                <label className={labelCls}>
+                                    Tranche d'age de la personne aidée
+                                </label>
                                 <div className="flex flex-wrap gap-3">
                                     {[
-                                        { value: 'moins_18', label: 'Moins de 18 ans' },
-                                        { value: '18_65', label: 'Entre 18 et 65 ans' },
-                                        { value: 'plus_65', label: 'Plus de 65 ans' },
+                                        {
+                                            value: 'moins_18',
+                                            label: 'Moins de 18 ans',
+                                        },
+                                        {
+                                            value: '18_65',
+                                            label: 'Entre 18 et 65 ans',
+                                        },
+                                        {
+                                            value: 'plus_65',
+                                            label: 'Plus de 65 ans',
+                                        },
                                     ].map((option) => (
                                         <label
                                             key={option.value}
@@ -732,9 +864,15 @@ function AdhesionForm() {
                                             <input
                                                 type="radio"
                                                 name="aide-tranche-age"
-                                                checked={data.aide_tranche_age === option.value}
+                                                checked={
+                                                    data.aide_tranche_age ===
+                                                    option.value
+                                                }
                                                 onChange={() =>
-                                                    setData('aide_tranche_age', option.value)
+                                                    setData(
+                                                        'aide_tranche_age',
+                                                        option.value,
+                                                    )
                                                 }
                                                 className="accent-sna-teal"
                                             />
@@ -744,18 +882,24 @@ function AdhesionForm() {
                                 </div>
                             </div>
                             <div>
-                                <label className={labelCls}>Age de la personne aidée</label>
+                                <label className={labelCls}>
+                                    Age de la personne aidée
+                                </label>
                                 <input
                                     type="text"
                                     value={data.aide_age}
-                                    onChange={(event) => setData('aide_age', event.target.value)}
+                                    onChange={(event) =>
+                                        setData('aide_age', event.target.value)
+                                    }
                                     className={inputCls}
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className={labelCls}>Type de situation</label>
+                            <label className={labelCls}>
+                                Type de situation
+                            </label>
                             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                 {TYPE_SITUATION_OPTIONS.map((option) => (
                                     <label
@@ -764,9 +908,14 @@ function AdhesionForm() {
                                     >
                                         <input
                                             type="checkbox"
-                                            checked={data.type_situation.includes(option)}
+                                            checked={data.type_situation.includes(
+                                                option,
+                                            )}
                                             onChange={() =>
-                                                toggleTopLevelArray('type_situation', option)
+                                                toggleTopLevelArray(
+                                                    'type_situation',
+                                                    option,
+                                                )
                                             }
                                             className="h-4 w-4 rounded accent-sna-teal"
                                         />
@@ -778,12 +927,17 @@ function AdhesionForm() {
 
                         {data.type_situation.includes('Autre') && (
                             <div>
-                                <label className={labelCls}>Autre type de situation: a preciser</label>
+                                <label className={labelCls}>
+                                    Autre type de situation: a preciser
+                                </label>
                                 <input
                                     type="text"
                                     value={data.type_situation_autre_precisions}
                                     onChange={(event) =>
-                                        setData('type_situation_autre_precisions', event.target.value)
+                                        setData(
+                                            'type_situation_autre_precisions',
+                                            event.target.value,
+                                        )
                                     }
                                     className={inputCls}
                                 />
@@ -791,21 +945,35 @@ function AdhesionForm() {
                         )}
 
                         <div>
-                            <label className={labelCls}>Reconnaissance administrative</label>
+                            <label className={labelCls}>
+                                Reconnaissance administrative
+                            </label>
                             <select
                                 value={data.reconnaissance_administrative}
                                 onChange={(event) =>
-                                    setData('reconnaissance_administrative', event.target.value)
+                                    setData(
+                                        'reconnaissance_administrative',
+                                        event.target.value,
+                                    )
                                 }
                                 className={inputCls}
                             >
                                 <option value="">Selectionner...</option>
-                                <option value="dossier_mdph_en_cours">Dossier MDPH en cours</option>
-                                <option value="droits_mdph_ouverts">Droits MDPH ouverts</option>
-                                <option value="refus_rupture_droits">Refus ou rupture de droits</option>
-                                <option value="absence_reconnaissance">Absence de reconnaissance</option>
+                                <option value="dossier_mdph_en_cours">
+                                    Dossier MDPH en cours
+                                </option>
+                                <option value="droits_mdph_ouverts">
+                                    Droits MDPH ouverts
+                                </option>
+                                <option value="refus_rupture_droits">
+                                    Refus ou rupture de droits
+                                </option>
+                                <option value="absence_reconnaissance">
+                                    Absence de reconnaissance
+                                </option>
                                 <option value="desaccord_mdph">
-                                    Desaccord en cours avec la MDPH (recours, contestation...)
+                                    Desaccord en cours avec la MDPH (recours,
+                                    contestation...)
                                 </option>
                             </select>
                         </div>
@@ -847,7 +1015,9 @@ function AdhesionForm() {
                                         {data.aides.length > 1 && (
                                             <button
                                                 type="button"
-                                                onClick={() => removeAide(aideIndex)}
+                                                onClick={() =>
+                                                    removeAide(aideIndex)
+                                                }
                                                 className="text-xs font-semibold text-red-600 hover:text-red-700"
                                             >
                                                 Supprimer
@@ -856,11 +1026,19 @@ function AdhesionForm() {
                                     </div>
 
                                     <div>
-                                        <label className={labelCls}>Genre</label>
+                                        <label className={labelCls}>
+                                            Genre
+                                        </label>
                                         <div className="flex flex-wrap gap-4">
                                             {[
-                                                { value: 'homme', label: 'Homme' },
-                                                { value: 'femme', label: 'Femme' },
+                                                {
+                                                    value: 'homme',
+                                                    label: 'Homme',
+                                                },
+                                                {
+                                                    value: 'femme',
+                                                    label: 'Femme',
+                                                },
                                                 {
                                                     value: 'non_renseigne',
                                                     label: 'Ne souhaite pas repondre',
@@ -873,7 +1051,10 @@ function AdhesionForm() {
                                                     <input
                                                         type="radio"
                                                         name={`aide-genre-extra-${aideIndex}`}
-                                                        checked={aide.aide_genre === option.value}
+                                                        checked={
+                                                            aide.aide_genre ===
+                                                            option.value
+                                                        }
                                                         onChange={() =>
                                                             setAideField(
                                                                 aideIndex,
@@ -890,11 +1071,20 @@ function AdhesionForm() {
                                     </div>
 
                                     <div>
-                                        <label className={labelCls}>S'il s'agit d'un enfant ou d'un adulte</label>
+                                        <label className={labelCls}>
+                                            S'il s'agit d'un enfant ou d'un
+                                            adulte
+                                        </label>
                                         <div className="flex flex-wrap gap-4">
                                             {[
-                                                { value: 'enfant', label: 'Enfant' },
-                                                { value: 'adulte', label: 'Adulte' },
+                                                {
+                                                    value: 'enfant',
+                                                    label: 'Enfant',
+                                                },
+                                                {
+                                                    value: 'adulte',
+                                                    label: 'Adulte',
+                                                },
                                             ].map((option) => (
                                                 <label
                                                     key={option.value}
@@ -903,7 +1093,10 @@ function AdhesionForm() {
                                                     <input
                                                         type="radio"
                                                         name={`aide-profile-${aideIndex}`}
-                                                        checked={aide.aide_profile === option.value}
+                                                        checked={
+                                                            aide.aide_profile ===
+                                                            option.value
+                                                        }
                                                         onChange={() =>
                                                             setAideField(
                                                                 aideIndex,
@@ -921,7 +1114,9 @@ function AdhesionForm() {
 
                                     {aide.aide_profile === 'enfant' && (
                                         <div>
-                                            <label className={labelCls}>Scolarisation (si enfant)</label>
+                                            <label className={labelCls}>
+                                                Scolarisation (si enfant)
+                                            </label>
                                             <select
                                                 value={aide.scolarisation}
                                                 onChange={(event) =>
@@ -933,23 +1128,39 @@ function AdhesionForm() {
                                                 }
                                                 className={inputCls}
                                             >
-                                                <option value="">Selectionner...</option>
-                                                <option value="ordinaire">Ordinaire</option>
-                                                <option value="ulis">ULIS</option>
+                                                <option value="">
+                                                    Selectionner...
+                                                </option>
+                                                <option value="ordinaire">
+                                                    Ordinaire
+                                                </option>
+                                                <option value="ulis">
+                                                    ULIS
+                                                </option>
                                                 <option value="ime">IME</option>
-                                                <option value="itep">ITEP</option>
-                                                <option value="descolarise">Descolarise</option>
-                                                <option value="autre">Autre</option>
+                                                <option value="itep">
+                                                    ITEP
+                                                </option>
+                                                <option value="descolarise">
+                                                    Descolarise
+                                                </option>
+                                                <option value="autre">
+                                                    Autre
+                                                </option>
                                             </select>
                                         </div>
                                     )}
 
                                     {aide.scolarisation === 'autre' && (
                                         <div>
-                                            <label className={labelCls}>Autre scolarisation: a preciser</label>
+                                            <label className={labelCls}>
+                                                Autre scolarisation: a preciser
+                                            </label>
                                             <input
                                                 type="text"
-                                                value={aide.scolarisation_autre_precisions}
+                                                value={
+                                                    aide.scolarisation_autre_precisions
+                                                }
                                                 onChange={(event) =>
                                                     setAideField(
                                                         aideIndex,
@@ -963,43 +1174,61 @@ function AdhesionForm() {
                                     )}
 
                                     {aide.aide_profile === 'adulte' && (
-                                            <div>
-                                                <label className={labelCls}>Situation (si adulte)</label>
-                                                <select
-                                                    value={aide.situation_adulte}
-                                                    onChange={(event) =>
-                                                        setAideField(
-                                                            aideIndex,
-                                                            'situation_adulte',
-                                                            event.target.value,
-                                                        )
-                                                    }
-                                                    className={inputCls}
-                                                >
-                                                    <option value="">Selectionner...</option>
-                                                    <option value="esat">Travail en ESAT</option>
-                                                    <option value="milieu_ordinaire">
-                                                        Travail en milieu ordinaire
-                                                    </option>
-                                                    <option value="samsah">SAMSAH</option>
-                                                    <option value="foyer_vie">Foyer de vie</option>
-                                                    <option value="insertion">
-                                                        Stage ou parcours d'insertion professionnelle
-                                                    </option>
-                                                    <option value="domicile_sans_structure">
-                                                        A domicile sans structure
-                                                    </option>
-                                                    <option value="autre">Autre</option>
-                                                </select>
-                                            </div>
-                                        )}
+                                        <div>
+                                            <label className={labelCls}>
+                                                Situation (si adulte)
+                                            </label>
+                                            <select
+                                                value={aide.situation_adulte}
+                                                onChange={(event) =>
+                                                    setAideField(
+                                                        aideIndex,
+                                                        'situation_adulte',
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                className={inputCls}
+                                            >
+                                                <option value="">
+                                                    Selectionner...
+                                                </option>
+                                                <option value="esat">
+                                                    Travail en ESAT
+                                                </option>
+                                                <option value="milieu_ordinaire">
+                                                    Travail en milieu ordinaire
+                                                </option>
+                                                <option value="samsah">
+                                                    SAMSAH
+                                                </option>
+                                                <option value="foyer_vie">
+                                                    Foyer de vie
+                                                </option>
+                                                <option value="insertion">
+                                                    Stage ou parcours
+                                                    d'insertion professionnelle
+                                                </option>
+                                                <option value="domicile_sans_structure">
+                                                    A domicile sans structure
+                                                </option>
+                                                <option value="autre">
+                                                    Autre
+                                                </option>
+                                            </select>
+                                        </div>
+                                    )}
 
                                     {aide.situation_adulte === 'autre' && (
                                         <div>
-                                            <label className={labelCls}>Autre situation adulte: a preciser</label>
+                                            <label className={labelCls}>
+                                                Autre situation adulte: a
+                                                preciser
+                                            </label>
                                             <input
                                                 type="text"
-                                                value={aide.situation_adulte_autre_precisions}
+                                                value={
+                                                    aide.situation_adulte_autre_precisions
+                                                }
                                                 onChange={(event) =>
                                                     setAideField(
                                                         aideIndex,
@@ -1013,7 +1242,10 @@ function AdhesionForm() {
                                     )}
 
                                     <div>
-                                        <label className={labelCls}>Lieu d'habitation de la personne aidée</label>
+                                        <label className={labelCls}>
+                                            Lieu d'habitation de la personne
+                                            aidée
+                                        </label>
                                         <select
                                             value={aide.lieu_habitation}
                                             onChange={(event) =>
@@ -1025,22 +1257,39 @@ function AdhesionForm() {
                                             }
                                             className={inputCls}
                                         >
-                                            <option value="">Selectionner...</option>
-                                            <option value="domicile_familial">Domicile familial</option>
-                                            <option value="fas_mas_fam">FAS / MAS / FAM</option>
-                                            <option value="foyer_hebergement">Foyer d'hebergement</option>
-                                            <option value="domicile_personnel">A son domicile personnel</option>
-                                            <option value="residence_autonomie">Residence autonomie</option>
+                                            <option value="">
+                                                Selectionner...
+                                            </option>
+                                            <option value="domicile_familial">
+                                                Domicile familial
+                                            </option>
+                                            <option value="fas_mas_fam">
+                                                FAS / MAS / FAM
+                                            </option>
+                                            <option value="foyer_hebergement">
+                                                Foyer d'hebergement
+                                            </option>
+                                            <option value="domicile_personnel">
+                                                A son domicile personnel
+                                            </option>
+                                            <option value="residence_autonomie">
+                                                Residence autonomie
+                                            </option>
                                             <option value="autre">Autre</option>
                                         </select>
                                     </div>
 
                                     {aide.lieu_habitation === 'autre' && (
                                         <div>
-                                            <label className={labelCls}>Autre lieu d'habitation: a preciser</label>
+                                            <label className={labelCls}>
+                                                Autre lieu d'habitation: a
+                                                preciser
+                                            </label>
                                             <input
                                                 type="text"
-                                                value={aide.lieu_habitation_autre_precisions}
+                                                value={
+                                                    aide.lieu_habitation_autre_precisions
+                                                }
                                                 onChange={(event) =>
                                                     setAideField(
                                                         aideIndex,
@@ -1091,7 +1340,12 @@ function AdhesionForm() {
                                     <input
                                         type="checkbox"
                                         checked={data.impacts.includes(option)}
-                                        onChange={() => toggleTopLevelArray('impacts', option)}
+                                        onChange={() =>
+                                            toggleTopLevelArray(
+                                                'impacts',
+                                                option,
+                                            )
+                                        }
                                         className="h-4 w-4 rounded accent-sna-teal"
                                     />
                                     {option}
@@ -1101,12 +1355,17 @@ function AdhesionForm() {
 
                         {data.impacts.includes('Autre') && (
                             <div>
-                                <label className={labelCls}>Autre impact: a preciser</label>
+                                <label className={labelCls}>
+                                    Autre impact: a preciser
+                                </label>
                                 <input
                                     type="text"
                                     value={data.impacts_autre_precisions}
                                     onChange={(event) =>
-                                        setData('impacts_autre_precisions', event.target.value)
+                                        setData(
+                                            'impacts_autre_precisions',
+                                            event.target.value,
+                                        )
                                     }
                                     className={inputCls}
                                 />
@@ -1133,9 +1392,18 @@ function AdhesionForm() {
 
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                             {[
-                                { value: 'cdi_temps_plein', label: 'CDI temps plein' },
-                                { value: 'cdi_temps_partiel', label: 'CDI temps partiel' },
-                                { value: 'cdd_interim', label: 'CDD / Interim' },
+                                {
+                                    value: 'cdi_temps_plein',
+                                    label: 'CDI temps plein',
+                                },
+                                {
+                                    value: 'cdi_temps_partiel',
+                                    label: 'CDI temps partiel',
+                                },
+                                {
+                                    value: 'cdd_interim',
+                                    label: 'CDD / Interim',
+                                },
                                 {
                                     value: 'independant',
                                     label: 'Travailleur(se) independant(e)',
@@ -1161,9 +1429,15 @@ function AdhesionForm() {
                                     <input
                                         type="radio"
                                         name="situation-professionnelle"
-                                        checked={data.situation_professionnelle === option.value}
+                                        checked={
+                                            data.situation_professionnelle ===
+                                            option.value
+                                        }
                                         onChange={() =>
-                                            setData('situation_professionnelle', option.value)
+                                            setData(
+                                                'situation_professionnelle',
+                                                option.value,
+                                            )
                                         }
                                         className="accent-sna-teal"
                                     />
@@ -1191,12 +1465,17 @@ function AdhesionForm() {
                         </h3>
 
                         <div>
-                            <label className={labelCls}>En quelques mots, si vous le souhaitez</label>
+                            <label className={labelCls}>
+                                En quelques mots, si vous le souhaitez
+                            </label>
                             <textarea
                                 rows={4}
                                 value={data.expression_libre}
                                 onChange={(event) =>
-                                    setData('expression_libre', event.target.value)
+                                    setData(
+                                        'expression_libre',
+                                        event.target.value,
+                                    )
                                 }
                                 className="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/30 focus:outline-none"
                                 placeholder="Etre aidant(e), pour moi, c'est..."
@@ -1207,37 +1486,52 @@ function AdhesionForm() {
                             <input
                                 type="checkbox"
                                 checked={data.soutient_sna}
-                                onChange={(event) => setData('soutient_sna', event.target.checked)}
+                                onChange={(event) =>
+                                    setData(
+                                        'soutient_sna',
+                                        event.target.checked,
+                                    )
+                                }
                                 className="mt-0.5 h-4 w-4 rounded accent-sna-teal"
                             />
-                            Je soutiens la creation du Syndicat National des Aidants (SNA)
+                            Je soutiens la creation du Syndicat National des
+                            Aidants (SNA)
                         </label>
 
                         <label className="flex items-start gap-3 text-sm text-gray-700">
                             <input
                                 type="checkbox"
                                 checked={data.wants_info}
-                                onChange={(event) => setData('wants_info', event.target.checked)}
+                                onChange={(event) =>
+                                    setData('wants_info', event.target.checked)
+                                }
                                 className="mt-0.5 h-4 w-4 rounded accent-sna-teal"
                             />
                             J'accepte d'etre informe(e) des actions nationales
                         </label>
 
                         <div>
-                            <label className={labelCls}>Don complementaire (EUR, facultatif)</label>
+                            <label className={labelCls}>
+                                Don complementaire (EUR, facultatif)
+                            </label>
                             <input
                                 type="number"
                                 min="1"
                                 step="0.01"
                                 value={data.don_amount}
-                                onChange={(event) => setData('don_amount', event.target.value)}
+                                onChange={(event) =>
+                                    setData('don_amount', event.target.value)
+                                }
                                 className={inputCls}
                                 placeholder="20"
                             />
                         </div>
 
                         <p className="rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-500">
-                            Code promo adhesion: <span className="font-semibold text-sna-teal">AIDANT2026</span>{' '}
+                            Code promo adhesion:{' '}
+                            <span className="font-semibold text-sna-teal">
+                                AIDANT2026
+                            </span>{' '}
                             (reduction de 20 euros)
                         </p>
 
@@ -1246,14 +1540,20 @@ function AdhesionForm() {
                                 type="checkbox"
                                 checked={data.consents_rgpd}
                                 onChange={(event) =>
-                                    setData('consents_rgpd', event.target.checked)
+                                    setData(
+                                        'consents_rgpd',
+                                        event.target.checked,
+                                    )
                                 }
                                 className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
                             />
-                            Je consens au traitement de mes donnees personnelles conformement au RGPD.
+                            Je consens au traitement de mes donnees personnelles
+                            conformement au RGPD.
                         </label>
                         {errors.consents_rgpd && (
-                            <p className="text-xs text-red-600">{errors.consents_rgpd}</p>
+                            <p className="text-xs text-red-600">
+                                {errors.consents_rgpd}
+                            </p>
                         )}
 
                         <NavButtons
@@ -1282,19 +1582,7 @@ export default function AdhesionPage() {
             </Head>
 
             <div className="min-h-screen bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] font-sans">
-                <header className="border-b border-sna-teal/10 bg-white/80 backdrop-blur-md">
-                    <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-                        <Link href="/">
-                            <img src="/images/logo.png" alt="SNA" className="h-11 w-auto" />
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-sm font-medium text-gray-500 transition hover:text-sna-teal"
-                        >
-                            Retour a l'accueil
-                        </Link>
-                    </div>
-                </header>
+                <PublicSiteHeader />
 
                 <div className="relative overflow-hidden">
                     <div className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-sna-teal/10 blur-3xl" />
@@ -1308,8 +1596,9 @@ export default function AdhesionPage() {
                             Rejoignez la voix collective des aidants
                         </h1>
                         <p className="mt-4 text-lg leading-relaxed text-gray-500">
-                            Ce formulaire permet de quantifier les aidants, qualifier leurs realites
-                            et renforcer la representation nationale du SNA.
+                            Ce formulaire permet de quantifier les aidants,
+                            qualifier leurs realites et renforcer la
+                            representation nationale du SNA.
                         </p>
                     </div>
                 </div>

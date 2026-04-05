@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Concerns\HasRef;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class MoiAussiForm extends Model
@@ -13,6 +14,7 @@ class MoiAussiForm extends Model
 
     protected $fillable = [
         'ref',
+        'action_id',
         'situation',
         'testimony',
         'consequences',
@@ -42,5 +44,10 @@ class MoiAussiForm extends Model
     public function submission(): MorphOne
     {
         return $this->morphOne(FormSubmission::class, 'formable');
+    }
+
+    public function action(): BelongsTo
+    {
+        return $this->belongsTo(Action::class);
     }
 }

@@ -1,4 +1,5 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
 type SoutienData = {
@@ -233,17 +234,12 @@ export default function MySubmissions({ email, submissions }: Props) {
         <>
             <Head title="Mes formulaires – SNA" />
 
-            <div className="min-h-screen bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-4 py-16">
-                <div className="mx-auto max-w-3xl space-y-8">
+            <div className="min-h-screen bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8]">
+                <PublicSiteHeader />
+
+                <div className="mx-auto max-w-3xl space-y-8 px-4 py-16">
                     {/* Header */}
                     <div className="space-y-2 text-center">
-                        <a href="/">
-                            <img
-                                src="/images/logo.png"
-                                alt="SNA"
-                                className="mx-auto h-12 w-auto"
-                            />
-                        </a>
                         <h1 className="mt-4 text-2xl font-bold text-gray-800">
                             Mes formulaires
                         </h1>
@@ -321,19 +317,12 @@ export default function MySubmissions({ email, submissions }: Props) {
                     )}
 
                     <div className="space-y-3 text-center">
-                        <a
-                            href={forms.access.request()}
+                        <Link
+                            href={forms.access.request().url}
                             className="inline-block text-sm text-teal-600 hover:underline"
                         >
                             Accéder de nouveau avec un autre email
-                        </a>
-                        <br />
-                        <a
-                            href="/"
-                            className="inline-block text-sm text-gray-400 hover:text-gray-600"
-                        >
-                            ← Retour à l'accueil
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

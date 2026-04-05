@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
+import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
 export default function PartenairePage() {
@@ -74,37 +75,7 @@ export default function PartenairePage() {
             </Head>
 
             <div className="min-h-screen bg-linear-to-br from-[#f0f9e8] via-white to-[#e8f8f8] font-sans">
-                {/* Header */}
-                <header className="border-b border-sna-green/10 bg-white/80 backdrop-blur-md">
-                    <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-4">
-                        <Link href="/">
-                            <img
-                                src="/images/logo.png"
-                                alt="SNA"
-                                className="h-11 w-auto"
-                            />
-                        </Link>
-                        <Link
-                            href="/"
-                            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-sna-green"
-                        >
-                            <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M15 19l-7-7 7-7"
-                                />
-                            </svg>
-                            Retour à l'accueil
-                        </Link>
-                    </div>
-                </header>
+                <PublicSiteHeader />
 
                 {/* Hero */}
                 <div className="relative overflow-hidden">
@@ -213,7 +184,9 @@ export default function PartenairePage() {
                                             }
                                             className={inputCls}
                                         >
-                                            <option value="">Sélectionner…</option>
+                                            <option value="">
+                                                Sélectionner…
+                                            </option>
                                             <option value="Collectivité territoriale">
                                                 Collectivité territoriale
                                             </option>
@@ -260,7 +233,9 @@ export default function PartenairePage() {
 
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <div>
-                                        <label className={labelCls}>Email *</label>
+                                        <label className={labelCls}>
+                                            Email *
+                                        </label>
                                         <input
                                             type="email"
                                             value={data.email}
@@ -344,7 +319,8 @@ export default function PartenairePage() {
                                                         'var(--color-sna-green)',
                                                 }}
                                             />
-                                            Soutien moral ou promotionnel (ex. visibilité, communication)
+                                            Soutien moral ou promotionnel (ex.
+                                            visibilité, communication)
                                         </label>
                                         {data.partnership_moral && (
                                             <div className="mt-2 ml-7">
@@ -384,7 +360,9 @@ export default function PartenairePage() {
                                                         'var(--color-sna-green)',
                                                 }}
                                             />
-                                            Soutien technique ou expertise (ex. appui sur projets, conseil stratégique)
+                                            Soutien technique ou expertise (ex.
+                                            appui sur projets, conseil
+                                            stratégique)
                                         </label>
                                         {data.partnership_technical && (
                                             <div className="mt-2 ml-7">
@@ -437,15 +415,18 @@ export default function PartenairePage() {
                                 </h3>
                                 <div>
                                     <label className={labelCls}>
-                                        Veuillez préciser l'objet de votre partenariat
-                                        et les objectifs que vous souhaitez atteindre
-                                        avec le syndicat *
+                                        Veuillez préciser l'objet de votre
+                                        partenariat et les objectifs que vous
+                                        souhaitez atteindre avec le syndicat *
                                     </label>
                                     <textarea
                                         rows={4}
                                         value={data.objectives}
                                         onChange={(e) =>
-                                            setData('objectives', e.target.value)
+                                            setData(
+                                                'objectives',
+                                                e.target.value,
+                                            )
                                         }
                                         className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition placeholder:text-gray-300 focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none"
                                         placeholder="Décrivez vos objectifs..."
@@ -521,12 +502,14 @@ export default function PartenairePage() {
                                         htmlFor="file-upload"
                                         className="cursor-pointer"
                                     >
-                                        <div className="text-3xl mb-2">📄</div>
+                                        <div className="mb-2 text-3xl">📄</div>
                                         <p className="text-sm font-semibold text-gray-700">
-                                            Cliquez pour ajouter des fichiers PDF
+                                            Cliquez pour ajouter des fichiers
+                                            PDF
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            Statuts, documents officiels, présentation...
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            Statuts, documents officiels,
+                                            présentation...
                                         </p>
                                     </label>
                                 </div>
@@ -540,7 +523,7 @@ export default function PartenairePage() {
                                             {fileNames.map((name, index) => (
                                                 <li
                                                     key={index}
-                                                    className="flex items-center justify-between rounded-lg bg-white p-2 text-sm border border-gray-200"
+                                                    className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-2 text-sm"
                                                 >
                                                     <span className="flex items-center gap-2 text-gray-700">
                                                         📄 {name}
@@ -548,7 +531,9 @@ export default function PartenairePage() {
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            removeAttachment(index)
+                                                            removeAttachment(
+                                                                index,
+                                                            )
                                                         }
                                                         className="text-xs font-semibold text-red-600 hover:text-red-700"
                                                     >
@@ -604,8 +589,8 @@ export default function PartenairePage() {
                                                 'var(--color-sna-green)',
                                         }}
                                     />
-                                    Autorisation de recevoir des informations par
-                                    email
+                                    Autorisation de recevoir des informations
+                                    par email
                                 </label>
                                 <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-600">
                                     <input

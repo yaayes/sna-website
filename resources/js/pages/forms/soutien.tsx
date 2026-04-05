@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
+import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
 export default function SoutienPage() {
@@ -36,37 +37,7 @@ export default function SoutienPage() {
             </Head>
 
             <div className="min-h-screen bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] font-sans">
-                {/* Header */}
-                <header className="border-b border-sna-teal/10 bg-white/80 backdrop-blur-md">
-                    <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-4">
-                        <Link href="/">
-                            <img
-                                src="/images/logo.png"
-                                alt="SNA"
-                                className="h-11 w-auto"
-                            />
-                        </Link>
-                        <Link
-                            href="/"
-                            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-sna-teal"
-                        >
-                            <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M15 19l-7-7 7-7"
-                                />
-                            </svg>
-                            Retour à l'accueil
-                        </Link>
-                    </div>
-                </header>
+                <PublicSiteHeader />
 
                 {/* Hero */}
                 <div className="relative overflow-hidden">
@@ -82,11 +53,12 @@ export default function SoutienPage() {
                         </h1>
                         <div className="mt-5 space-y-3 text-left text-sm leading-relaxed text-gray-600 sm:text-base">
                             <p>
-                                Personne n&apos;est totalement à l&apos;abri de devenir
-                                un jour aidant. Au cours d&apos;une vie, nous pouvons
-                                être amenés à accompagner un parent, un conjoint,
-                                un enfant ou un proche confronté à la maladie, au
-                                handicap ou à la perte d&apos;autonomie.
+                                Personne n&apos;est totalement à l&apos;abri de
+                                devenir un jour aidant. Au cours d&apos;une vie,
+                                nous pouvons être amenés à accompagner un
+                                parent, un conjoint, un enfant ou un proche
+                                confronté à la maladie, au handicap ou à la
+                                perte d&apos;autonomie.
                             </p>
                             <p>
                                 Certain·es d&apos;entre vous ont peut-être déjà
@@ -97,9 +69,9 @@ export default function SoutienPage() {
                             <p>
                                 En rejoignant le Syndicat National des Aidants,
                                 vous choisissez de soutenir celles et ceux qui
-                                accompagnent aujourd&apos;hui, tout en contribuant à
-                                construire une société mieux préparée à
-                                accompagner les aidants de demain.
+                                accompagnent aujourd&apos;hui, tout en
+                                contribuant à construire une société mieux
+                                préparée à accompagner les aidants de demain.
                             </p>
                         </div>
 
@@ -131,7 +103,12 @@ export default function SoutienPage() {
                                     strokeWidth="6"
                                     strokeLinecap="round"
                                 />
-                                <circle cx="48" cy="84" r="10" fill="currentColor" />
+                                <circle
+                                    cx="48"
+                                    cy="84"
+                                    r="10"
+                                    fill="currentColor"
+                                />
                             </svg>
                             <svg
                                 aria-hidden
@@ -176,9 +153,24 @@ export default function SoutienPage() {
                                 className="pointer-events-none absolute right-10 bottom-2 h-8 w-24 text-sna-teal/15"
                                 fill="none"
                             >
-                                <circle cx="20" cy="35" r="6" fill="currentColor" />
-                                <circle cx="48" cy="35" r="6" fill="currentColor" />
-                                <circle cx="76" cy="35" r="6" fill="currentColor" />
+                                <circle
+                                    cx="20"
+                                    cy="35"
+                                    r="6"
+                                    fill="currentColor"
+                                />
+                                <circle
+                                    cx="48"
+                                    cy="35"
+                                    r="6"
+                                    fill="currentColor"
+                                />
+                                <circle
+                                    cx="76"
+                                    cy="35"
+                                    r="6"
+                                    fill="currentColor"
+                                />
                             </svg>
                             <svg
                                 aria-hidden
@@ -251,7 +243,9 @@ export default function SoutienPage() {
                                     )}
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Adresse *</label>
+                                    <label className={labelCls}>
+                                        Adresse *
+                                    </label>
                                     <input
                                         type="text"
                                         value={data.address}
@@ -305,7 +299,8 @@ export default function SoutienPage() {
 
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Souhaitez-vous être informés des événements ou projets du syndicat ?
+                                    Souhaitez-vous être informés des événements
+                                    ou projets du syndicat ?
                                 </label>
                                 <div className="flex gap-6">
                                     {[
@@ -339,7 +334,8 @@ export default function SoutienPage() {
 
                             <div>
                                 <label className="mb-2 block text-sm font-semibold text-gray-700">
-                                    Souhaitez-vous participer aux événements ou projets du syndicat ?
+                                    Souhaitez-vous participer aux événements ou
+                                    projets du syndicat ?
                                 </label>
                                 <div className="flex gap-6">
                                     {[

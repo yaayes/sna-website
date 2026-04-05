@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { FileText, Handshake, Users } from 'lucide-react';
+import { FileText, FolderTree, Handshake, Megaphone, Users } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
@@ -12,6 +12,8 @@ type Stats = {
     moi_aussi: number;
     soutien: number;
     partenaire: number;
+    actions: number;
+    action_categories: number;
 };
 
 const statCards = [
@@ -39,6 +41,22 @@ const statCards = [
         color: 'text-emerald-500',
         bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
+    {
+        title: 'Actions SNA',
+        key: 'actions' as const,
+        icon: Megaphone,
+        href: admin.actions.index(),
+        color: 'text-amber-500',
+        bg: 'bg-amber-50 dark:bg-amber-950/30',
+    },
+    {
+        title: 'Categories actions',
+        key: 'action_categories' as const,
+        icon: FolderTree,
+        href: admin.actionCategories.index(),
+        color: 'text-violet-500',
+        bg: 'bg-violet-50 dark:bg-violet-950/30',
+    },
 ];
 
 export default function AdminDashboard({ stats }: { stats: Stats }) {
@@ -55,7 +73,7 @@ export default function AdminDashboard({ stats }: { stats: Stats }) {
                     </p>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     {statCards.map(
                         ({ title, key, icon: Icon, href, color, bg }) => (
                             <Link
@@ -75,14 +93,16 @@ export default function AdminDashboard({ stats }: { stats: Stats }) {
                                     {stats[key]}
                                 </p>
                                 <p className="mt-1 text-xs text-muted-foreground">
-                                    entrées enregistrées
+                                    {key === 'action_categories'
+                                        ? 'categories disponibles'
+                                        : 'entrees enregistrees'}
                                 </p>
                             </Link>
                         ),
                     )}
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     {statCards.map(({ title, key, href, color }) => (
                         <Link
                             key={key}

@@ -14,6 +14,7 @@ class StoreMoiAussiFormRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'action_id' => ['nullable', 'integer', 'exists:actions,id'],
             'situation' => ['required', 'in:oui,en_cours,resolu'],
             'testimony' => ['required', 'string', 'max:5000'],
             'consequences' => ['nullable', 'array'],
@@ -36,6 +37,7 @@ class StoreMoiAussiFormRequest extends FormRequest
             'situation.required' => 'Veuillez indiquer votre situation.',
             'situation.in' => 'La situation selectionnee est invalide.',
             'testimony.required' => 'Veuillez decrire ce que vous avez vecu.',
+            'action_id.exists' => 'L action selectionnee est invalide.',
             'email.email' => 'L adresse email n est pas valide.',
         ];
     }
