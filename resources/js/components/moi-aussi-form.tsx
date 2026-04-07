@@ -5,14 +5,24 @@ import forms from '@/routes/forms';
 const inputCls =
     'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/30 focus:outline-none placeholder:text-gray-300';
 const labelCls = 'mb-1.5 block text-sm font-semibold text-gray-700';
+const OTHER_CONSEQUENCE = 'Autre';
 
 export default function MoiAussiForm({ actionId }: { actionId?: number }) {
-    const { data, setData, submit, processing, errors, wasSuccessful, reset } =
-        useForm<{
+    const {
+        data,
+        setData,
+        submit,
+        processing,
+        errors,
+        wasSuccessful,
+        reset,
+        transform,
+    } = useForm<{
             action_id: number | null;
             situation: string;
             testimony: string;
             consequences: string[];
+            other_consequence: string;
             contacted_institution: string;
             institution_name: string;
             usage_anonymised: boolean;
@@ -27,6 +37,7 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
             situation: '',
             testimony: '',
             consequences: [],
+            other_consequence: '',
             contacted_institution: '',
             institution_name: '',
             usage_anonymised: false,
@@ -39,9 +50,15 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
         });
 
     const toggleConsequence = (item: string) => {
+        const isRemoving = data.consequences.includes(item);
+
+        if (item === OTHER_CONSEQUENCE && isRemoving) {
+            setData('other_consequence', '');
+        }
+
         setData(
             'consequences',
-            data.consequences.includes(item)
+            isRemoving
                 ? data.consequences.filter((c) => c !== item)
                 : [...data.consequences, item],
         );
@@ -49,11 +66,30 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        transform(({ other_consequence, ...formData }) => ({
+            ...formData,
+            consequences: formData.consequences.map((item) => {
+                if (
+                    item !== OTHER_CONSEQUENCE ||
+                    other_consequence.trim() === ''
+                ) {
+                    return item;
+                }
+
+                return `Autre : ${other_consequence.trim()}`;
+            }),
+        }));
+
         submit(forms.moiAussi.store(), {
             preserveScroll: true,
             onSuccess: () => reset(),
         });
     };
+
+    const otherConsequenceSelected = data.consequences.includes(
+        OTHER_CONSEQUENCE,
+    );
 
     if (wasSuccessful) {
         return (
@@ -138,7 +174,7 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
                         'Impact sur la santé / sécurité',
                         'Démarches administratives lourdes',
                         'Isolement',
-                        'Autre',
+                        OTHER_CONSEQUENCE,
                     ].map((item) => (
                         <label
                             key={item}
@@ -154,6 +190,23 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
                         </label>
                     ))}
                 </div>
+                {otherConsequenceSelected && (
+                    <div className="mt-3">
+                        <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                            Précisez l'autre conséquence
+                        </label>
+                        <input
+                            type="text"
+                            value={data.other_consequence}
+                            onChange={(e) =>
+                                setData('other_consequence', e.target.value)
+                            }
+                            className={inputCls}
+                            placeholder="Décrivez l'autre conséquence rencontrée"
+                            maxLength={90}
+                        />
+                    </div>
+                )}
             </div>
 
             <div>

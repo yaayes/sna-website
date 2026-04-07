@@ -86,4 +86,20 @@ class ActionsPageTest extends TestCase
             'action_id' => $action->id,
         ]);
     }
+
+    public function test_moi_aussi_submission_can_store_a_custom_other_consequence(): void
+    {
+        $response = $this->post('/formulaire/moi-aussi', [
+            'situation' => 'oui',
+            'testimony' => 'Le dispositif ne couvrait pas notre situation.',
+            'consequences' => ['Autre : Refus de prise en charge locale'],
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertSame(
+            ['Autre : Refus de prise en charge locale'],
+            MoiAussiForm::query()->firstOrFail()->consequences,
+        );
+    }
 }
