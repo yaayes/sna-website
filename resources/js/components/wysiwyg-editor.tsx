@@ -1,6 +1,7 @@
 import CharacterCount from '@tiptap/extension-character-count';
 import Color from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
+import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
@@ -20,10 +21,12 @@ import {
     Heading2,
     Heading3,
     Highlighter,
+    ImageIcon,
     Italic,
     Link as LinkIcon,
     List,
     ListOrdered,
+    Loader2,
     Paintbrush,
     Pilcrow,
     Quote,
@@ -37,6 +40,8 @@ import {
     Unlink,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { store as uploadWysiwygImage } from '@/actions/App/Http/Controllers/Admin/ImageUploadController';
 
 import { Separator } from '@/components/ui/separator';
 import { Toggle } from '@/components/ui/toggle';
@@ -73,6 +78,12 @@ const HIGHLIGHT_COLORS = [
 export default function WysiwygEditor({ value, onChange, minHeightClassName = 'min-h-52' }: WysiwygEditorProps) {
     const editorRef = useRef<HTMLDivElement>(null);
 
+    // Always hold the latest onChange to avoid stale closures in editor event listeners.
+    const onChangeRef = useRef(onChange);
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    }, [onChange]);
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -90,15 +101,13 @@ export default function WysiwygEditor({ value, onChange, minHeightClassName = 'm
             TextStyle,
             Color,
             Highlight.configure({ multicolor: true }),
-            TextAlign.configure({ types: ['heading', 'paragraph'] }),
+            Image.configure({ inline: false, allowBase64: false }),
+            TextAlign.configure({ types: ['heading', 'paragraph', 'image'] }),
             Placeholder.configure({ placeholder: 'Decrivez ici cette action du SNA...' }),
             Typography,
             CharacterCount,
         ],
         content: value || '<p></p>',
-        onUpdate: ({ editor: e }) => {
-            onChange(e.getHTML());
-        },
         editorProps: {
             attributes: {
                 class: 'wysiwyg-content outline-none',
@@ -106,8 +115,23 @@ export default function WysiwygEditor({ value, onChange, minHeightClassName = 'm
         },
     });
 
-    // sync external value changes (e.g. form reset)
+    // Single update listener: marks the change as internal and propagates HTML to the parent.
     const isInternalUpdate = useRef(false);
+    useEffect(() => {
+        if (!editor || editor.isDestroyed) {
+            return;
+        }
+        const handler = () => {
+            isInternalUpdate.current = true;
+            onChangeRef.current(editor.getHTML());
+        };
+        editor.on('update', handler);
+        return () => {
+            editor.off('update', handler);
+        };
+    }, [editor]);
+
+    // Sync external value changes (e.g. form reset) back into the editor.
     useEffect(() => {
         if (!editor || editor.isDestroyed) {
             return;
@@ -121,20 +145,6 @@ export default function WysiwygEditor({ value, onChange, minHeightClassName = 'm
             editor.commands.setContent(value || '<p></p>', { emitUpdate: false });
         }
     }, [value, editor]);
-
-    // wrap onChange to track internal updates
-    useEffect(() => {
-        if (!editor || editor.isDestroyed) {
-            return;
-        }
-        const handler = () => {
-            isInternalUpdate.current = true;
-        };
-        editor.on('update', handler);
-        return () => {
-            editor.off('update', handler);
-        };
-    }, [editor]);
 
     const wordCount = editor?.storage.characterCount?.words() ?? 0;
 
@@ -312,9 +322,80 @@ function Toolbar({ editor }: ToolbarProps) {
             {/* Link */}
             <LinkButton editor={editor} />
 
+            {/* Image upload */}
+            <ImageUploadButton editor={editor} />
+
             {/* Emoji picker */}
             <EmojiPicker editor={editor} />
         </div>
+    );
+}
+
+// ─── Image Upload Button ──────────────────────────────
+
+function ImageUploadButton({ editor }: ToolbarProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleFileChange = useCallback(
+        async (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (!file) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            setIsUploading(true);
+            try {
+                const response = await fetch(uploadWysiwygImage.url(), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                const data = (await response.json()) as { url: string };
+                editor.chain().focus().setImage({ src: data.url }).run();
+            } catch {
+                // silently fail — the editor remains unchanged
+            } finally {
+                setIsUploading(false);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            }
+        },
+        [editor],
+    );
+
+    return (
+        <>
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                className="hidden"
+                onChange={handleFileChange}
+            />
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <button
+                        type="button"
+                        disabled={isUploading}
+                        onClick={() => fileInputRef.current?.click()}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-600 hover:bg-muted disabled:opacity-50"
+                    >
+                        {isUploading ? <Loader2 className="size-4 animate-spin" /> : <ImageIcon className="size-4" />}
+                    </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Inserer une image</TooltipContent>
+            </Tooltip>
+        </>
     );
 }
 

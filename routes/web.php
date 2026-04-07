@@ -4,6 +4,7 @@ use App\Http\Controllers\ActionController;
 use App\Http\Controllers\Admin\ActionCategoryController as AdminActionCategoryController;
 use App\Http\Controllers\Admin\ActionController as AdminActionController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ImageUploadController as AdminImageUploadController;
 use App\Http\Controllers\Admin\MoiAussiFormController as AdminMoiAussiFormController;
 use App\Http\Controllers\Admin\PartenaireFormController as AdminPartenaireFormController;
 use App\Http\Controllers\Admin\SoutienFormController as AdminSoutienFormController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Forms\FormAccessController;
 use App\Http\Controllers\Forms\MoiAussiFormController;
 use App\Http\Controllers\Forms\PartenaireFormController;
 use App\Http\Controllers\Forms\SoutienFormController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -60,6 +62,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->g
     Route::get('/soutien/{soutienForm}', [AdminSoutienFormController::class, 'show'])->name('soutien.show');
     Route::get('/partenaire', [AdminPartenaireFormController::class, 'index'])->name('partenaire.index');
     Route::get('/partenaire/{partenaireForm}', [AdminPartenaireFormController::class, 'show'])->name('partenaire.show');
+    Route::post('/wysiwyg/images', [AdminImageUploadController::class, 'store'])
+        ->name('wysiwyg.images.store')
+        ->withoutMiddleware(VerifyCsrfToken::class);
 });
 
 require __DIR__.'/settings.php';

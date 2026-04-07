@@ -152,7 +152,7 @@ class ActionController extends Controller
     {
         $sanitized = strip_tags(
             $content,
-            '<p><div><br><strong><b><em><i><u><s><ul><ol><li><a><h2><h3><blockquote><span><mark>'
+            '<p><div><br><strong><b><em><i><u><s><ul><ol><li><a><h2><h3><blockquote><span><mark><img>'
         );
 
         $sanitized = (string) preg_replace('/\son[a-z]+\s*=\s*"[^"]*"/i', '', $sanitized);
