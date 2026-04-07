@@ -193,7 +193,7 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
                 {otherConsequenceSelected && (
                     <div className="mt-3">
                         <label className="mb-1.5 block text-xs font-semibold text-gray-600">
-                            Précisez l'autre conséquence
+                            Quelles ont été les conséquences pour vous ?
                         </label>
                         <input
                             type="text"
@@ -202,7 +202,7 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
                                 setData('other_consequence', e.target.value)
                             }
                             className={inputCls}
-                            placeholder="Décrivez l'autre conséquence rencontrée"
+                            placeholder="Quelles ont été les conséquences pour vous ?"
                             maxLength={90}
                         />
                     </div>

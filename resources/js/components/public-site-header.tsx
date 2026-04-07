@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
+    ChevronDown,
     Heart,
     Menu,
     X,
@@ -13,12 +14,44 @@ type PublicSiteHeaderProps = {
 };
 
 const navLinks = [
-    { href: 'apropos', label: 'Qui sommes nous' },
     { href: 'comprendre', label: "Comprendre l'aidance" },
     { href: '/nos-actions', label: 'Nos actions', isRoute: true },
-    { href: 'representants', label: 'Nos représentants' },
-    { href: 'actions', label: 'Rejoindre le SNA' },
-    { href: 'presse', label: 'Revue de presse' },
+    {
+        href: 'apropos',
+        label: 'Qui sommes nous',
+        children: [
+            { href: 'apropos', label: 'À propos de nous' },
+            { href: 'actions', label: 'Rejoindre le SNA' },
+            { href: 'representants', label: 'Représentant' },
+            { href: 'presse', label: 'Revue de presse' },
+        ],
+    },
+    {
+        href: 'contact',
+        label: 'Contribuer au SNA',
+    },
+    {
+        href: '/formulaire/adhesion',
+        label: 'Adhérer',
+        isRoute: true,
+        children: [
+            {
+                href: '/formulaire/adhesion',
+                label: "J'adhère au SNA",
+                isRoute: true,
+            },
+            {
+                href: '/formulaire/soutien',
+                label: 'Devenir membre soutien',
+                isRoute: true,
+            },
+            {
+                href: '/formulaire/partenaire',
+                label: 'Proposer un partenariat',
+                isRoute: true,
+            },
+        ],
+    },
 ];
 
 export default function PublicSiteHeader({
@@ -29,6 +62,9 @@ export default function PublicSiteHeader({
     const currentPath = page.url.split('?')[0];
     const isHome = currentPath === '/';
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileDropdownsOpen, setMobileDropdownsOpen] = useState<
+        Record<string, boolean>
+    >({});
 
     const linkHref = (item: (typeof navLinks)[number]) =>
         item.isRoute ? item.href : isHome ? `#${item.href}` : `/#${item.href}`;
@@ -48,14 +84,43 @@ export default function PublicSiteHeader({
 
                 <nav className="hidden items-center gap-1 lg:flex">
                     {navLinks.map((item) => (
-                        <a
-                            key={item.href}
-                            href={linkHref(item)}
-                            className="group relative px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
-                        >
-                            {item.label}
-                            <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover:w-4/5" />
-                        </a>
+                        <div key={item.href} className="group relative">
+                            {item.children ? (
+                                <button
+                                    type="button"
+                                    className="group/link relative flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
+                                    aria-haspopup="menu"
+                                    aria-expanded="false"
+                                >
+                                    {item.label}
+                                    <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180" />
+                                    <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover/link:w-4/5" />
+                                </button>
+                            ) : (
+                                <a
+                                    href={linkHref(item)}
+                                    className="group/link relative flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
+                                >
+                                    {item.label}
+                                    <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover/link:w-4/5" />
+                                </a>
+                            )}
+
+                            {item.children && (
+                                <div className="invisible absolute top-full left-0 z-30 mt-2 w-64 rounded-2xl border border-sna-teal/15 bg-white p-2 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                                    {item.children.map((child) => (
+                                        <a
+                                            key={`${item.href}-${child.href}`}
+                                            href={linkHref(child)}
+                                            className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-gray-700 transition-colors hover:bg-sna-teal/10 hover:text-sna-teal"
+                                        >
+                                            {child.label}
+                                            <ArrowRight className="h-3.5 w-3.5 text-sna-teal/50" />
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </nav>
 
@@ -116,7 +181,7 @@ export default function PublicSiteHeader({
                                 <Heart className="h-4 w-4" />
                             </span>
                             <span className="relative tracking-wide">
-                                Adherer au SNA
+                                Faire un don
                             </span>
                             <ArrowRight className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
@@ -150,20 +215,68 @@ export default function PublicSiteHeader({
                 <div className="border-t border-sna-teal/10 bg-linear-to-b from-white to-[#f8fefe] px-5 pt-3 pb-6">
                     <nav className="mb-4 flex flex-col">
                         {navLinks.map((item, index) => (
-                            <a
-                                key={item.href}
-                                href={linkHref(item)}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
-                                style={{
-                                    transitionDelay: mobileMenuOpen
-                                        ? `${index * 40}ms`
-                                        : '0ms',
-                                }}
-                            >
-                                {item.label}
-                                <ArrowRight className="h-3.5 w-3.5 text-sna-teal/50" />
-                            </a>
+                            <div key={item.href}>
+                                {item.children ? (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setMobileDropdownsOpen((current) => ({
+                                                ...current,
+                                                [item.href]:
+                                                    !current[item.href],
+                                            }))
+                                        }
+                                        className="flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-left text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
+                                        style={{
+                                            transitionDelay: mobileMenuOpen
+                                                ? `${index * 40}ms`
+                                                : '0ms',
+                                        }}
+                                        aria-expanded={
+                                            mobileDropdownsOpen[item.href]
+                                                ? 'true'
+                                                : 'false'
+                                        }
+                                    >
+                                        {item.label}
+                                        <ChevronDown
+                                            className={`h-3.5 w-3.5 text-sna-teal/50 transition-transform duration-200 ${mobileDropdownsOpen[item.href] ? 'rotate-180' : ''}`}
+                                        />
+                                    </button>
+                                ) : (
+                                    <a
+                                        href={linkHref(item)}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
+                                        style={{
+                                            transitionDelay: mobileMenuOpen
+                                                ? `${index * 40}ms`
+                                                : '0ms',
+                                        }}
+                                    >
+                                        {item.label}
+                                        <ArrowRight className="h-3.5 w-3.5 text-sna-teal/50" />
+                                    </a>
+                                )}
+
+                                {item.children && mobileDropdownsOpen[item.href] && (
+                                    <div className="ml-4 border-l border-sna-teal/20 pl-3">
+                                        {item.children.map((child) => (
+                                            <a
+                                                key={`${item.href}-${child.href}`}
+                                                href={linkHref(child)}
+                                                onClick={() =>
+                                                    setMobileMenuOpen(false)
+                                                }
+                                                className="flex items-center justify-between rounded-xl px-4 py-2.5 text-xs font-medium text-gray-600 transition-all duration-150 hover:bg-sna-teal/10 hover:text-sna-teal"
+                                            >
+                                                {child.label}
+                                                <ArrowRight className="h-3 w-3 text-sna-teal/50" />
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </nav>
 
@@ -185,9 +298,7 @@ export default function PublicSiteHeader({
                                 aria-hidden="true"
                             />
                             <Heart className="h-4 w-4" />
-                            <span className="tracking-wide">
-                                Adherer au SNA
-                            </span>
+                            <span className="tracking-wide">Faire un don</span>
                         </Link>
                     )}
                 </div>

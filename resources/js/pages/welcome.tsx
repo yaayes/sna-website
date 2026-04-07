@@ -70,6 +70,22 @@ const ArrowRightIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
         />
     </svg>
 );
+const ChevronDownIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+    >
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+        />
+    </svg>
+);
 const CheckIcon = ({
     className = 'h-4 w-4 text-sna-teal shrink-0',
 }: {
@@ -360,6 +376,42 @@ function SectionHeader({
 export default function Welcome() {
     const { auth } = usePage().props;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileDropdownsOpen, setMobileDropdownsOpen] = useState<
+        Record<string, boolean>
+    >({});
+    const headerNavLinks = [
+        { href: '#comprendre', label: "Comprendre l'aidance" },
+        { href: '/nos-actions', label: 'Nos actions' },
+        {
+            href: '#apropos',
+            label: 'Qui sommes nous',
+            children: [
+                { href: '#apropos', label: 'À propos de nous' },
+                { href: '#actions', label: 'Rejoindre le SNA' },
+                { href: '#representants', label: 'Représentant' },
+                { href: '#presse', label: 'Revue de presse' },
+            ],
+        },
+        {
+            href: '#contact',
+            label: 'Contribuer au SNA',
+        },
+        {
+            href: '/formulaire/adhesion',
+            label: 'Adhérer',
+            children: [
+                { href: '/formulaire/adhesion', label: "J'adhère au SNA" },
+                {
+                    href: '/formulaire/soutien',
+                    label: 'Devenir membre soutien',
+                },
+                {
+                    href: '/formulaire/partenaire',
+                    label: 'Proposer un partenariat',
+                },
+            ],
+        },
+    ];
 
     return (
         <>
@@ -392,34 +444,44 @@ export default function Welcome() {
 
                         {/* Nav links – desktop only */}
                         <nav className="hidden items-center gap-1 lg:flex">
-                            {[
-                                { href: '#apropos', label: 'Qui sommes nous' },
-                                {
-                                    href: '#comprendre',
-                                    label: "Comprendre l'aidance",
-                                },
-                                {
-                                    href: '/nos-actions',
-                                    label: 'Nos actions',
-                                },
-                                {
-                                    href: '#representants',
-                                    label: 'Nos représentants',
-                                },
-                                {
-                                    href: '#actions',
-                                    label: 'Rejoindre le SNA',
-                                },
-                                { href: '#presse', label: 'Revue de presse' },
-                            ].map(({ href, label }) => (
-                                <a
-                                    key={href}
-                                    href={href}
-                                    className="group relative px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
-                                >
-                                    {label}
-                                    <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover:w-4/5" />
-                                </a>
+                            {headerNavLinks.map((item) => (
+                                <div key={item.href} className="group relative">
+                                    {item.children ? (
+                                        <button
+                                            type="button"
+                                            className="group/link relative flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
+                                            aria-haspopup="menu"
+                                            aria-expanded="false"
+                                        >
+                                            {item.label}
+                                            <ChevronDownIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180" />
+                                            <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover/link:w-4/5" />
+                                        </button>
+                                    ) : (
+                                        <a
+                                            href={item.href}
+                                            className="group/link relative flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
+                                        >
+                                            {item.label}
+                                            <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover/link:w-4/5" />
+                                        </a>
+                                    )}
+
+                                    {item.children && (
+                                        <div className="invisible absolute top-full left-0 z-30 mt-2 w-64 rounded-2xl border border-sna-teal/15 bg-white p-2 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                                            {item.children.map((child) => (
+                                                <a
+                                                    key={`${item.href}-${child.href}`}
+                                                    href={child.href}
+                                                    className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-gray-700 transition-colors hover:bg-sna-teal/10 hover:text-sna-teal"
+                                                >
+                                                    {child.label}
+                                                    <ArrowRightIcon className="h-3.5 w-3.5 text-sna-teal/50" />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </nav>
 
@@ -433,7 +495,7 @@ export default function Welcome() {
                                     Mon espace
                                 </Link>
                             ) : (
-                                /* ── Fancy "Adhérer au SNA" button ── */
+                                /* ── Fancy "Faire un don" button ── */
                                 <Link
                                     href="/formulaire/adhesion"
                                     className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
@@ -485,7 +547,7 @@ export default function Welcome() {
                                         <HeartIcon className="h-4 w-4" />
                                     </span>
                                     <span className="relative tracking-wide">
-                                        Adhérer au SNA
+                                        Faire un don
                                     </span>
                                     <ArrowRightIcon className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                                 </Link>
@@ -524,46 +586,82 @@ export default function Welcome() {
                         <div className="border-t border-sna-teal/10 bg-linear-to-b from-white to-[#f8fefe] px-5 pt-3 pb-6">
                             {/* Nav links */}
                             <nav className="mb-4 flex flex-col">
-                                {[
-                                    {
-                                        href: '#apropos',
-                                        label: 'Qui sommes nous',
-                                    },
-                                    {
-                                        href: '#comprendre',
-                                        label: "Comprendre l'aidance",
-                                    },
-                                    {
-                                        href: '/nos-actions',
-                                        label: 'Nos actions',
-                                    },
-                                    {
-                                        href: '#representants',
-                                        label: 'Nos représentants',
-                                    },
-                                    {
-                                        href: '#actions',
-                                        label: 'Rejoindre le SNA',
-                                    },
-                                    {
-                                        href: '#presse',
-                                        label: 'Revue de presse',
-                                    },
-                                ].map(({ href, label }, i) => (
-                                    <a
-                                        key={href}
-                                        href={href}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
-                                        style={{
-                                            transitionDelay: mobileMenuOpen
-                                                ? `${i * 40}ms`
-                                                : '0ms',
-                                        }}
-                                    >
-                                        {label}
-                                        <ArrowRightIcon className="h-3.5 w-3.5 text-sna-teal/50" />
-                                    </a>
+                                {headerNavLinks.map((item, i) => (
+                                    <div key={item.href}>
+                                        {item.children ? (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setMobileDropdownsOpen(
+                                                        (current) => ({
+                                                            ...current,
+                                                            [item.href]:
+                                                                !current[
+                                                                    item.href
+                                                                ],
+                                                        }),
+                                                    )
+                                                }
+                                                className="flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-left text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
+                                                style={{
+                                                    transitionDelay:
+                                                        mobileMenuOpen
+                                                            ? `${i * 40}ms`
+                                                            : '0ms',
+                                                }}
+                                                aria-expanded={
+                                                    mobileDropdownsOpen[
+                                                        item.href
+                                                    ]
+                                                        ? 'true'
+                                                        : 'false'
+                                                }
+                                            >
+                                                {item.label}
+                                                <ChevronDownIcon
+                                                    className={`h-3.5 w-3.5 text-sna-teal/50 transition-transform duration-200 ${mobileDropdownsOpen[item.href] ? 'rotate-180' : ''}`}
+                                                />
+                                            </button>
+                                        ) : (
+                                            <a
+                                                href={item.href}
+                                                onClick={() =>
+                                                    setMobileMenuOpen(false)
+                                                }
+                                                className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
+                                                style={{
+                                                    transitionDelay:
+                                                        mobileMenuOpen
+                                                            ? `${i * 40}ms`
+                                                            : '0ms',
+                                                }}
+                                            >
+                                                {item.label}
+                                                <ArrowRightIcon className="h-3.5 w-3.5 text-sna-teal/50" />
+                                            </a>
+                                        )}
+
+                                        {item.children &&
+                                            mobileDropdownsOpen[item.href] && (
+                                            <div className="ml-4 border-l border-sna-teal/20 pl-3">
+                                                {item.children.map((child) => (
+                                                    <a
+                                                        key={`${item.href}-${child.href}`}
+                                                        href={child.href}
+                                                        onClick={() =>
+                                                            setMobileMenuOpen(
+                                                                false,
+                                                            )
+                                                        }
+                                                        className="flex items-center justify-between rounded-xl px-4 py-2.5 text-xs font-medium text-gray-600 transition-all duration-150 hover:bg-sna-teal/10 hover:text-sna-teal"
+                                                    >
+                                                        {child.label}
+                                                        <ArrowRightIcon className="h-3 w-3 text-sna-teal/50" />
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 ))}
                             </nav>
 
@@ -589,7 +687,7 @@ export default function Welcome() {
                                     />
                                     <HeartIcon className="h-4 w-4" />
                                     <span className="tracking-wide">
-                                        Adhérer au SNA
+                                        Faire un don
                                     </span>
                                 </Link>
                             )}
@@ -696,7 +794,6 @@ export default function Welcome() {
                                     <HandshakeIcon className="h-5 w-5" />{' '}
                                     Adhérer au SNA <ArrowRightIcon />
                                 </Link>
-
                             </div>
 
                             {/* Key figures */}
@@ -1032,7 +1129,7 @@ export default function Welcome() {
                     <div className="mx-auto max-w-6xl space-y-12">
                         <div className="mx-auto max-w-3xl space-y-6 text-center">
                             <SectionHeader
-                                badge="Nos actions"
+                                badge="Adhérer"
                                 title="Ce projet ne deviendra réalité qu'avec vous."
                                 subtitle="Si les propositions du Syndicat National des Aidants vous parlent, c'est que vous connaissez la réalité de l'aidance. Mais aucune avancée ne sera possible sans une mobilisation massive."
                             />
@@ -1132,19 +1229,37 @@ export default function Welcome() {
                     CONTACT SECTION
                 ══════════════════════════════ */}
                 <section id="contact" className="bg-sna-teal-light px-6 py-20">
-                    <div className="mx-auto max-w-4xl text-center space-y-8">
+                    <div className="mx-auto max-w-4xl space-y-8 text-center">
                         <SectionHeader
                             badge="Nous contacter"
                             title="Le Syndicat National des Aidants est à votre écoute."
                             subtitle="Vous avez une question ? Besoin d’une information ? Vous souhaitez nous faire remonter une problématique ou proposer une collaboration ? N’hésitez pas à nous écrire."
                         />
                         <div className="flex justify-center">
-                            <div className="flex flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-white p-8 shadow-lg max-w-md w-full">
-                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg mx-auto">
-                                    <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 10.5V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2v-4.5M16 7l-4 4-4-4" /></svg>
+                            <div className="flex w-full max-w-md flex-col gap-6 rounded-3xl border border-sna-teal/30 bg-white p-8 shadow-lg">
+                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sna-teal shadow-lg">
+                                    <svg
+                                        className="h-7 w-7 text-white"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M21 10.5V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2v-4.5M16 7l-4 4-4-4"
+                                        />
+                                    </svg>
                                 </div>
-                                <h3 className="text-xl font-bold text-sna-teal-dark">Formulaire de contact</h3>
-                                <p className="text-gray-600">Remplissez notre formulaire pour nous transmettre votre demande. Nous vous répondrons dans les meilleurs délais.</p>
+                                <h3 className="text-xl font-bold text-sna-teal-dark">
+                                    Formulaire de contact
+                                </h3>
+                                <p className="text-gray-600">
+                                    Remplissez notre formulaire pour nous
+                                    transmettre votre demande. Nous vous
+                                    répondrons dans les meilleurs délais.
+                                </p>
                                 <Link
                                     href="/formulaire/contact"
                                     className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-sna-teal-dark"
