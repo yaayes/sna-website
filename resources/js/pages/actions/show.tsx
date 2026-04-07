@@ -89,12 +89,6 @@ export default function ActionShowPage({
                                 __html: actionItem.content,
                             }}
                         />
-                            <div
-                                className="prose mt-6 max-w-none"
-                                dangerouslySetInnerHTML={{
-                                    __html: actionItem.content,
-                                }}
-                            />
                     </article>
 
                     <aside className="space-y-6">
