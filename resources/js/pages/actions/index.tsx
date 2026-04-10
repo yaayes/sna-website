@@ -37,25 +37,118 @@ export default function ActionsIndexPage({
 
                         <div className="relative mx-auto max-w-6xl">
                             <p className="inline-flex rounded-full bg-sna-teal/10 px-4 py-1 text-xs font-bold tracking-widest text-sna-teal-dark uppercase">
-                                Nos actions
+                                Nos dossiers & actions
                             </p>
                             <h1 className="mt-4 max-w-3xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                                Transformer le quotidien des aidants en actions
-                                concretes
+                                Défendre les droits des aidants, concrètement
                             </h1>
                             <p className="mt-4 max-w-3xl text-lg leading-relaxed text-gray-600">
-                                Le SNA agit sur le terrain, dans les
-                                institutions et dans le debat public. Cette page
-                                rassemble toutes nos actions classees par
-                                categorie.
+                                Le Syndicat National des Aidants porte un
+                                programme structuré autour d&apos;une conviction:
+                                les aidants doivent être reconnus, protégés
+                                et représentés. Mais pour être justes,
+                                efficaces et légitimes, nos actions doivent
+                                s&apos;appuyer sur une réalité essentielle:
+                                l&apos;expertise des aidants eux-mêmes.
                             </p>
-                            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-gray-500 sm:text-base">
-                                Fratrie, parentalite et handicap,
-                                reconnaissance et statut des aidants,
-                                transformation des politiques publiques: chaque
-                                action publiee ici documente un combat concret
-                                porte par le SNA.
-                            </p>
+                            <div className="mt-8 grid max-w-5xl gap-6 text-sm leading-relaxed text-gray-600 sm:text-base lg:grid-cols-2">
+                                <div className="space-y-3 rounded-2xl border border-white/80 bg-white/80 p-5 shadow-xs">
+                                    <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
+                                        Une démarche collective
+                                    </h2>
+                                    <p>
+                                        Nos dossiers ne sont pas figés. Ils
+                                        évoluent grâce aux retours du terrain,
+                                        aux expériences vécues et aux
+                                        difficultés concrètes rencontrées.
+                                    </p>
+                                    <p>
+                                        C&apos;est pourquoi nous vous invitons à
+                                        découvrir les différents dossiers portés
+                                        par le SNA, vous y reconnaître et
+                                        contribuer à les enrichir. Votre
+                                        expérience est une expertise: elle doit
+                                        nourrir les décisions publiques.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3 rounded-2xl border border-white/80 bg-white/80 p-5 shadow-xs">
+                                    <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
+                                        Une réalité, plusieurs droits
+                                    </h2>
+                                    <p>
+                                        Être aidant impacte tous les aspects de
+                                        la vie:
+                                    </p>
+                                    <ul className="list-disc space-y-1 pl-5">
+                                        <li>emploi</li>
+                                        <li>santé</li>
+                                        <li>finances</li>
+                                        <li>vie familiale</li>
+                                        <li>relations avec les institutions</li>
+                                    </ul>
+                                    <p>
+                                        Nos actions couvrent l&apos;ensemble de ces
+                                        enjeux.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="relative mt-6 max-w-5xl overflow-hidden rounded-3xl border border-sna-teal/20 bg-linear-to-br from-[#e8f8f6] via-white to-[#f4faef] p-6 shadow-[0_20px_55px_rgba(74,191,191,0.15)] sm:p-7">
+                                <svg
+                                    aria-hidden
+                                    viewBox="0 0 220 110"
+                                    className="pointer-events-none absolute -top-8 -right-10 h-28 w-56 text-sna-teal/20"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M8 78C40 40 76 24 112 30C144 36 176 66 212 54"
+                                        stroke="currentColor"
+                                        strokeWidth="6"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                                <svg
+                                    aria-hidden
+                                    viewBox="0 0 240 120"
+                                    className="pointer-events-none absolute -bottom-12 -left-12 h-28 w-60 text-sna-green/20"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M10 54C40 20 74 16 106 38C134 58 166 62 196 40C214 28 226 30 236 42"
+                                        stroke="currentColor"
+                                        strokeWidth="5"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+
+                                <div className="relative">
+                                    <p className="inline-flex rounded-full bg-sna-teal/15 px-3 py-1 text-xs font-bold tracking-[0.18em] text-sna-teal-dark uppercase">
+                                        Engagement citoyen
+                                    </p>
+                                    <h2 className="mt-3 text-xl font-semibold text-sna-teal-dark sm:text-2xl">
+                                        Votre contribution est essentielle
+                                    </h2>
+                                    <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-700 sm:text-base">
+                                        Chaque dossier évolue grâce à vous. En
+                                        bas de chaque dossier, vous pouvez:
+                                    </p>
+                                    <ul className="mt-4 grid gap-2 text-sm text-gray-700 sm:grid-cols-2 sm:text-base">
+                                        <li className="rounded-xl border border-white/80 bg-white/70 px-3 py-2">
+                                            Partager votre expérience
+                                        </li>
+                                        <li className="rounded-xl border border-white/80 bg-white/70 px-3 py-2">
+                                            Signaler une difficulté
+                                        </li>
+                                        <li className="rounded-xl border border-white/80 bg-white/70 px-3 py-2">
+                                            Proposer une amélioration
+                                        </li>
+                                        <li className="rounded-xl border border-white/80 bg-white/70 px-3 py-2">
+                                            Témoigner de votre réalité
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
