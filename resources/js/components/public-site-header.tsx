@@ -14,7 +14,7 @@ type PublicSiteHeaderProps = {
 };
 
 const navLinks = [
-    { href: 'comprendre', label: "Comprendre l'aidance" },
+    { href: '/comprendre-laidance', label: "Comprendre l'aidance", isRoute: true },
     { href: '/nos-actions', label: 'Nos actions', isRoute: true },
     {
         href: 'apropos',
