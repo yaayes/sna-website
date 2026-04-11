@@ -117,7 +117,7 @@ export default function ActionCreatePage({ categories }: { categories: CategoryO
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Contenu (WYSIWYG)</Label>
+                        <Label>Contenu de l'action</Label>
                         <WysiwygEditor
                             value={data.content}
                             onChange={(html) => setData('content', html)}

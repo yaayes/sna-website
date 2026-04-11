@@ -150,7 +150,7 @@ export default function WysiwygEditor({ value, onChange, minHeightClassName = 'm
 
     if (!editor) {
         return (
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <div className={cn('flex items-center justify-center bg-white text-sm text-gray-500', minHeightClassName)}>
                     Chargement de l&apos;editeur...
                 </div>
@@ -159,19 +159,21 @@ export default function WysiwygEditor({ value, onChange, minHeightClassName = 'm
     }
 
     return (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm" ref={editorRef}>
-            <Toolbar editor={editor} />
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm" ref={editorRef}>
+            <div className="overflow-y-auto" style={{ maxHeight: '70vh' }}>
+                <Toolbar editor={editor} />
 
-            <BubbleMenu editor={editor} className="bubble-menu">
-                <BubbleToolbar editor={editor} />
-            </BubbleMenu>
+                <BubbleMenu editor={editor} className="bubble-menu">
+                    <BubbleToolbar editor={editor} />
+                </BubbleMenu>
 
-            <div className={cn('cursor-text px-1', minHeightClassName)} onClick={() => editor.chain().focus().run()}>
-                <EditorContent editor={editor} className="h-full" />
+                <div className={cn('cursor-text px-1', minHeightClassName)} onClick={() => editor.chain().focus().run()}>
+                    <EditorContent editor={editor} className="h-full" />
+                </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50 px-3 py-2 text-[11px] text-gray-500">
-                <span>Collage riche preserve · Emojis disponibles dans la barre d&apos;outils</span>
+                <span></span>
                 <span>{wordCount} mots</span>
             </div>
         </div>
@@ -213,7 +215,7 @@ function ToolbarButton({
 
 function Toolbar({ editor }: ToolbarProps) {
     return (
-        <div className="flex flex-wrap items-center gap-0.5 border-b border-gray-100 bg-gray-50/80 px-2 py-1.5">
+        <div className="sticky top-0 z-20 flex flex-wrap items-center gap-0.5 border-b border-gray-100 bg-gray-50/95 px-2 py-1.5">
             {/* Undo / Redo */}
             <ToolbarButton tooltip="Annuler (Ctrl+Z)" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
                 <Undo className="size-4" />
