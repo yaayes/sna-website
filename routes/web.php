@@ -13,6 +13,7 @@ use App\Http\Controllers\Forms\ContactFormController;
 use App\Http\Controllers\Forms\FormAccessController;
 use App\Http\Controllers\Forms\MoiAussiFormController;
 use App\Http\Controllers\Forms\PartenaireFormController;
+use App\Http\Controllers\Forms\RejoindreSnaFormController;
 use App\Http\Controllers\Forms\SoutienFormController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 Route::inertia('/comprendre-laidance', 'comprendre-aidance')->name('comprendre-aidance');
 Route::inertia('/a-propos-nous', 'a-propos-nous')->name('a-propos-nous');
+Route::inertia('/rejoindre-le-sna', 'rejoindre-le-sna')->name('rejoindre-sna.page');
 Route::get('/nos-actions', [ActionController::class, 'index'])->name('actions.index');
 Route::get('/nos-actions/{action:slug}', [ActionController::class, 'show'])->name('actions.show');
 
@@ -36,6 +38,7 @@ Route::post('/formulaire/soutien', [SoutienFormController::class, 'store'])->nam
 Route::post('/formulaire/partenaire', [PartenaireFormController::class, 'store'])->name('forms.partenaire.store');
 Route::post('/formulaire/moi-aussi', [MoiAussiFormController::class, 'store'])->name('forms.moi-aussi.store');
 Route::post('/formulaire/contact', [ContactFormController::class, 'store'])->name('forms.contact.store');
+Route::post('/rejoindre-le-sna', [RejoindreSnaFormController::class, 'store'])->name('forms.rejoindre-sna.store');
 
 // Magic link access
 Route::get('/mes-formulaires', [FormAccessController::class, 'showRequestForm'])->name('forms.access.request');

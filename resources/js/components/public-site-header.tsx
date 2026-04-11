@@ -22,7 +22,7 @@ const navLinks = [
         isRoute: true,
         children: [
             { href: '/a-propos-nous', label: 'À propos de nous', isRoute: true },
-            { href: 'actions', label: 'Rejoindre le SNA' },
+            { href: '/rejoindre-le-sna', label: 'Rejoindre le SNA', isRoute: true },
             { href: 'representants', label: 'Représentant' },
             { href: 'presse', label: 'Revue de presse' },
         ],
