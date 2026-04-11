@@ -18,6 +18,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
+Route::inertia('/comprendre-laidance', 'comprendre-aidance')->name('comprendre-aidance');
+Route::inertia('/a-propos-nous', 'a-propos-nous')->name('a-propos-nous');
 Route::get('/nos-actions', [ActionController::class, 'index'])->name('actions.index');
 Route::get('/nos-actions/{action:slug}', [ActionController::class, 'show'])->name('actions.show');
 

@@ -17,10 +17,11 @@ const navLinks = [
     { href: '/comprendre-laidance', label: "Comprendre l'aidance", isRoute: true },
     { href: '/nos-actions', label: 'Nos actions', isRoute: true },
     {
-        href: 'apropos',
+        href: '/a-propos-nous',
         label: 'Qui sommes nous',
+        isRoute: true,
         children: [
-            { href: 'apropos', label: 'À propos de nous' },
+            { href: '/a-propos-nous', label: 'À propos de nous', isRoute: true },
             { href: 'actions', label: 'Rejoindre le SNA' },
             { href: 'representants', label: 'Représentant' },
             { href: 'presse', label: 'Revue de presse' },
