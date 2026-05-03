@@ -206,6 +206,22 @@ export default function SoutienPage() {
                                 Votre demande de soutien a bien été enregistrée.
                                 Merci pour votre engagement.
                             </p>
+                            <div className="space-y-3 rounded-2xl border border-teal-200 bg-white p-5 text-left shadow-sm">
+                                <p className="text-sm leading-6 text-gray-700">
+                                    Pour prolonger votre engagement et rendre visible la cause des aidants au quotidien,
+                                    découvrez également notre boutique dédiée : chaque produit que vous portez ou partagez
+                                    contribue à briser l’invisibilité des aidants et à faire reconnaître leur rôle
+                                    essentiel.
+                                </p>
+                                <a
+                                    href="https://boutique.syndicat-national-aidants.fr/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center rounded-full bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-700"
+                                >
+                                    Découvrir la boutique
+                                </a>
+                            </div>
                             <Link
                                 href="/"
                                 className="mt-2 inline-block rounded-full border border-teal-300 px-6 py-2.5 text-sm font-semibold text-teal-700 transition hover:bg-teal-600 hover:text-white"

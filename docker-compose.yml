@@ -1,10 +1,13 @@
 services:
     laravel.test:
-        build:
-            context: './docker/8.5'
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
+        # build: section temporarily disabled — uses the pre-built local image
+        # while ppa.launchpadcontent.net (185.125.190.80) is unreachable.
+        # Restore the block below once PPA is accessible again:
+        # build:
+        #     context: './docker/8.5'
+        #     dockerfile: Dockerfile
+        #     args:
+        #         WWWGROUP: '${WWWGROUP}'
         image: 'sail-8.5/app'
         extra_hosts:
             - 'host.docker.internal:host-gateway'

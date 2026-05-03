@@ -4,6 +4,7 @@ import {
     ChevronDown,
     Heart,
     Menu,
+    UserCircle,
     X,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -23,35 +24,13 @@ const navLinks = [
         children: [
             { href: '/a-propos-nous', label: 'À propos de nous', isRoute: true },
             { href: '/rejoindre-le-sna', label: 'Rejoindre le SNA', isRoute: true },
-            { href: 'representants', label: 'Représentant' },
-            { href: 'presse', label: 'Revue de presse' },
+            { href: '/representants', label: 'Représentants', isRoute: true },
+            { href: '/revue-de-presse', label: 'Revue de presse', isRoute: true },
         ],
     },
     {
         href: 'contact',
         label: 'Contribuer au SNA',
-    },
-    {
-        href: '/formulaire/adhesion',
-        label: 'Adhérer',
-        isRoute: true,
-        children: [
-            {
-                href: '/formulaire/adhesion',
-                label: "J'adhère au SNA",
-                isRoute: true,
-            },
-            {
-                href: '/formulaire/soutien',
-                label: 'Devenir membre soutien',
-                isRoute: true,
-            },
-            {
-                href: '/formulaire/partenaire',
-                label: 'Proposer un partenariat',
-                isRoute: true,
-            },
-        ],
     },
 ];
 
@@ -126,67 +105,66 @@ export default function PublicSiteHeader({
                 </nav>
 
                 <div className="flex items-center gap-3">
-                    {auth?.user ? (
+                    {!!auth?.user && (
                         <Link
                             href={dashboard()}
-                            className="rounded-full bg-sna-teal px-5 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-sna-teal-dark hover:shadow-lg hover:shadow-sna-teal/30"
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-sna-teal/10 text-sna-teal transition-all duration-200 hover:bg-sna-teal hover:text-white"
+                            aria-label="Mon espace"
                         >
-                            Mon espace
-                        </Link>
-                    ) : (
-                        <Link
-                            href="/formulaire/adhesion"
-                            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
-                            style={{
-                                background:
-                                    'linear-gradient(135deg, #4abfbf, #37a3a3, #a8c84a, #4abfbf)',
-                                backgroundSize: '300% 300%',
-                                boxShadow:
-                                    '0 4px 20px rgba(74,191,191,0.45), 0 1px 3px rgba(0,0,0,0.1)',
-                                animation: 'donate-gradient 4s ease infinite',
-                            }}
-                        >
-                            <span
-                                className="pointer-events-none absolute inset-0 rounded-full"
-                                style={{
-                                    boxShadow: '0 0 0 2px #4abfbf',
-                                    animation:
-                                        'donate-ring-1 2s ease-out infinite',
-                                }}
-                                aria-hidden="true"
-                            />
-                            <span
-                                className="pointer-events-none absolute inset-0 rounded-full"
-                                style={{
-                                    boxShadow: '0 0 0 2px #a8c84a',
-                                    animation:
-                                        'donate-ring-2 2s ease-out infinite 0.5s',
-                                }}
-                                aria-hidden="true"
-                            />
-                            <span
-                                className="pointer-events-none absolute inset-0 w-1/3 skew-x-[-20deg] bg-white/25 blur-sm"
-                                style={{
-                                    animation:
-                                        'donate-shimmer 3s ease-in-out infinite 1s',
-                                }}
-                                aria-hidden="true"
-                            />
-                            <span
-                                className="relative"
-                                style={{
-                                    animation:
-                                        'donate-heartbeat 2s ease-in-out infinite',
-                                }}
-                            >
-                                <Heart className="h-4 w-4" />
-                            </span>
-                            <span className="relative tracking-wide">
-                                Faire un don
-                            </span>
-                            <ArrowRight className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                            <UserCircle className="h-5 w-5" />
                         </Link>
                     )}
+                    <Link
+                        href="/rejoindre"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
+                        style={{
+                            background:
+                                'linear-gradient(135deg, #4abfbf, #37a3a3, #a8c84a, #4abfbf)',
+                            backgroundSize: '300% 300%',
+                            boxShadow:
+                                '0 4px 20px rgba(74,191,191,0.45), 0 1px 3px rgba(0,0,0,0.1)',
+                            animation: 'donate-gradient 4s ease infinite',
+                        }}
+                    >
+                        <span
+                            className="pointer-events-none absolute inset-0 rounded-full"
+                            style={{
+                                boxShadow: '0 0 0 2px #4abfbf',
+                                animation: 'donate-ring-1 2s ease-out infinite',
+                            }}
+                            aria-hidden="true"
+                        />
+                        <span
+                            className="pointer-events-none absolute inset-0 rounded-full"
+                            style={{
+                                boxShadow: '0 0 0 2px #a8c84a',
+                                animation:
+                                    'donate-ring-2 2s ease-out infinite 0.5s',
+                            }}
+                            aria-hidden="true"
+                        />
+                        <span
+                            className="pointer-events-none absolute inset-0 w-1/3 skew-x-[-20deg] bg-white/25 blur-sm"
+                            style={{
+                                animation:
+                                    'donate-shimmer 3s ease-in-out infinite 1s',
+                            }}
+                            aria-hidden="true"
+                        />
+                        <span
+                            className="relative"
+                            style={{
+                                animation:
+                                    'donate-heartbeat 2s ease-in-out infinite',
+                            }}
+                        >
+                            <Heart className="h-4 w-4" />
+                        </span>
+                        <span className="relative tracking-wide">
+                            Adhérer au SNA
+                        </span>
+                        <ArrowRight className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
 
                     <button
                         type="button"
@@ -283,9 +261,8 @@ export default function PublicSiteHeader({
 
                     <div className="mb-4 h-px bg-linear-to-r from-transparent via-sna-teal/20 to-transparent" />
 
-                    {!auth?.user && (
                         <Link
-                            href="/formulaire/adhesion"
+                            href="/rejoindre"
                             onClick={() => setMobileMenuOpen(false)}
                             className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl py-3.5 text-sm font-bold text-white transition-all duration-300 active:scale-95"
                             style={{
@@ -299,9 +276,8 @@ export default function PublicSiteHeader({
                                 aria-hidden="true"
                             />
                             <Heart className="h-4 w-4" />
-                            <span className="tracking-wide">Faire un don</span>
+                            <span className="tracking-wide">Adhérer au SNA</span>
                         </Link>
-                    )}
                 </div>
             </div>
         </header>

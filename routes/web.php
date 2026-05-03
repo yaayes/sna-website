@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ImageUploadController as AdminImageUploadController;
 use App\Http\Controllers\Admin\MoiAussiFormController as AdminMoiAussiFormController;
 use App\Http\Controllers\Admin\PartenaireFormController as AdminPartenaireFormController;
+use App\Http\Controllers\Admin\PressArticleController as AdminPressArticleController;
+use App\Http\Controllers\Admin\RepresentantController as AdminRepresentantController;
 use App\Http\Controllers\Admin\SoutienFormController as AdminSoutienFormController;
 use App\Http\Controllers\Forms\AidantAdhesionFormController;
 use App\Http\Controllers\Forms\ContactFormController;
@@ -15,6 +17,8 @@ use App\Http\Controllers\Forms\MoiAussiFormController;
 use App\Http\Controllers\Forms\PartenaireFormController;
 use App\Http\Controllers\Forms\RejoindreSnaFormController;
 use App\Http\Controllers\Forms\SoutienFormController;
+use App\Http\Controllers\PressArticleController;
+use App\Http\Controllers\RepresentantController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +26,12 @@ Route::inertia('/', 'welcome')->name('home');
 Route::inertia('/comprendre-laidance', 'comprendre-aidance')->name('comprendre-aidance');
 Route::inertia('/a-propos-nous', 'a-propos-nous')->name('a-propos-nous');
 Route::inertia('/rejoindre-le-sna', 'rejoindre-le-sna')->name('rejoindre-sna.page');
+Route::inertia('/rejoindre', 'rejoindre')->name('rejoindre');
 Route::get('/nos-actions', [ActionController::class, 'index'])->name('actions.index');
 Route::get('/nos-actions/{action:slug}', [ActionController::class, 'show'])->name('actions.show');
+Route::get('/representants', [RepresentantController::class, 'index'])->name('representants.index');
+Route::get('/revue-de-presse', [PressArticleController::class, 'index'])->name('press-articles.index');
+Route::get('/revue-de-presse/{pressArticle:slug}', [PressArticleController::class, 'show'])->name('press-articles.show');
 
 // Dedicated form pages
 Route::inertia('/formulaire/adhesion', 'forms/adhesion')->name('forms.adhesion.page');
@@ -56,11 +64,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->group(function () {
+    Route::resource('/representants', AdminRepresentantController::class)->except('show');
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::patch('/action-categories/reorder', [AdminActionCategoryController::class, 'reorder'])->name('action-categories.reorder');
     Route::resource('/action-categories', AdminActionCategoryController::class)->except('show');
     Route::patch('/actions/reorder', [AdminActionController::class, 'reorder'])->name('actions.reorder');
     Route::resource('/actions', AdminActionController::class)->except('show');
+    Route::patch('/press-articles/reorder', [AdminPressArticleController::class, 'reorder'])->name('press-articles.reorder');
+    Route::resource('/press-articles', AdminPressArticleController::class)->except('show');
     Route::get('/moi-aussi', [AdminMoiAussiFormController::class, 'index'])->name('moi-aussi.index');
     Route::get('/moi-aussi/{moiAussiForm}', [AdminMoiAussiFormController::class, 'show'])->name('moi-aussi.show');
     Route::get('/soutien', [AdminSoutienFormController::class, 'index'])->name('soutien.index');

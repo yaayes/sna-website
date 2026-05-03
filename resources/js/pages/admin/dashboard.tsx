@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { FileText, FolderTree, Handshake, Megaphone, Users } from 'lucide-react';
+import { FileText, FolderTree, Handshake, Megaphone, Newspaper, Users } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
@@ -14,6 +14,7 @@ type Stats = {
     partenaire: number;
     actions: number;
     action_categories: number;
+    press_articles: number;
 };
 
 const statCards = [
@@ -57,6 +58,14 @@ const statCards = [
         color: 'text-violet-500',
         bg: 'bg-violet-50 dark:bg-violet-950/30',
     },
+    {
+        title: 'Revue de presse',
+        key: 'press_articles' as const,
+        icon: Newspaper,
+        href: admin.pressArticles.index(),
+        color: 'text-indigo-500',
+        bg: 'bg-indigo-50 dark:bg-indigo-950/30',
+    },
 ];
 
 export default function AdminDashboard({ stats }: { stats: Stats }) {
@@ -95,7 +104,9 @@ export default function AdminDashboard({ stats }: { stats: Stats }) {
                                 <p className="mt-1 text-xs text-muted-foreground">
                                     {key === 'action_categories'
                                         ? 'categories disponibles'
-                                        : 'entrees enregistrees'}
+                                        : key === 'press_articles'
+                                          ? 'articles enregistres'
+                                          : 'entrees enregistrees'}
                                 </p>
                             </Link>
                         ),

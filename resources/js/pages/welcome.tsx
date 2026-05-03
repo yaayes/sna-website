@@ -130,171 +130,6 @@ const HandRaisedIcon = ({ className = 'h-4 w-4' }: { className?: string }) => (
     </svg>
 );
 
-/* ─────────────────────────────────────────────
-   Hero Illustration – inline SVG scene
-   A stylised parent & child with a heart
-───────────────────────────────────────────── */
-const HeroIllustration = () => (
-    <svg
-        viewBox="0 0 520 480"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        className="h-auto w-full max-w-lg"
-    >
-        {/* Background circles */}
-        <circle cx="260" cy="240" r="210" fill="#e8f8f8" />
-        <circle cx="260" cy="240" r="165" fill="#d2f2f2" opacity="0.5" />
-
-        {/* Ground */}
-        <ellipse
-            cx="260"
-            cy="410"
-            rx="160"
-            ry="18"
-            fill="#4abfbf"
-            opacity="0.12"
-        />
-
-        {/* ── Parent figure (left) ── */}
-        {/* Body */}
-        <rect x="155" y="220" width="68" height="120" rx="20" fill="#4abfbf" />
-        {/* Head */}
-        <circle cx="189" cy="200" r="30" fill="#fcd9b6" />
-        {/* Hair */}
-        <path d="M162 192 Q169 168 189 170 Q209 168 216 192" fill="#5a3825" />
-        {/* Arms */}
-        <path
-            d="M155 255 Q125 268 118 290"
-            stroke="#fcd9b6"
-            strokeWidth="14"
-            strokeLinecap="round"
-            fill="none"
-        />
-        <path
-            d="M223 255 Q248 260 258 275"
-            stroke="#fcd9b6"
-            strokeWidth="14"
-            strokeLinecap="round"
-            fill="none"
-        />
-        {/* Legs */}
-        <rect x="165" y="330" width="22" height="70" rx="11" fill="#2d7a8a" />
-        <rect x="196" y="330" width="22" height="70" rx="11" fill="#2d7a8a" />
-        {/* Feet */}
-        <ellipse cx="176" cy="400" rx="14" ry="7" fill="#1a4a55" />
-        <ellipse cx="207" cy="400" rx="14" ry="7" fill="#1a4a55" />
-
-        {/* ── Child figure (right, smaller) ── */}
-        {/* Body */}
-        <rect x="272" y="268" width="52" height="90" rx="16" fill="#a8c84a" />
-        {/* Head */}
-        <circle cx="298" cy="250" r="24" fill="#fcd9b6" />
-        {/* Hair */}
-        <path d="M276 243 Q282 224 298 226 Q314 224 320 243" fill="#c97b3a" />
-        {/* Arms stretched up toward parent */}
-        <path
-            d="M272 290 Q256 278 250 270"
-            stroke="#fcd9b6"
-            strokeWidth="11"
-            strokeLinecap="round"
-            fill="none"
-        />
-        <path
-            d="M324 290 Q338 280 344 272"
-            stroke="#fcd9b6"
-            strokeWidth="11"
-            strokeLinecap="round"
-            fill="none"
-        />
-        {/* Legs */}
-        <rect x="278" y="350" width="18" height="54" rx="9" fill="#6a8a20" />
-        <rect x="302" y="350" width="18" height="54" rx="9" fill="#6a8a20" />
-        {/* Feet */}
-        <ellipse cx="287" cy="404" rx="12" ry="6" fill="#4a5a15" />
-        <ellipse cx="311" cy="404" rx="12" ry="6" fill="#4a5a15" />
-
-        {/* Wheelchair (accessibility icon) */}
-        <circle
-            cx="355"
-            cy="385"
-            r="22"
-            stroke="#4abfbf"
-            strokeWidth="4"
-            fill="none"
-        />
-        <circle
-            cx="340"
-            cy="385"
-            r="15"
-            stroke="#a8c84a"
-            strokeWidth="3"
-            fill="none"
-        />
-        <path
-            d="M340 368 L340 355 Q340 348 347 348 L362 348"
-            stroke="#4abfbf"
-            strokeWidth="4"
-            strokeLinecap="round"
-            fill="none"
-        />
-        <circle cx="345" cy="344" r="6" fill="#4abfbf" />
-
-        {/* Holding hands / connection line */}
-        <path
-            d="M258 275 Q265 282 272 290"
-            stroke="#fcd9b6"
-            strokeWidth="10"
-            strokeLinecap="round"
-            fill="none"
-        />
-
-        {/* ── Floating heart ── */}
-        <g transform="translate(310, 185)">
-            <path
-                d="M0,-12 C0,-22 -18,-22 -18,-8 C-18,2 0,16 0,16 C0,16 18,2 18,-8 C18,-22 0,-22 0,-12 Z"
-                fill="#f97066"
-                opacity="0.9"
-            />
-        </g>
-
-        {/* ── Floating sparkles / stars ── */}
-        <g fill="#a8c84a" opacity="0.8">
-            <polygon
-                points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140"
-                transform="scale(0.7) translate(170,10)"
-            />
-        </g>
-        <g fill="#4abfbf" opacity="0.7">
-            <polygon
-                points="390,130 393,140 404,140 395,147 398,157 390,151 382,157 385,147 376,140 387,140"
-                transform="scale(0.5) translate(-280,230)"
-            />
-        </g>
-        <circle cx="420" cy="160" r="5" fill="#a8c84a" opacity="0.6" />
-        <circle cx="108" cy="300" r="4" fill="#4abfbf" opacity="0.5" />
-        <circle cx="148" cy="148" r="6" fill="#4abfbf" opacity="0.4" />
-        <circle cx="390" cy="310" r="4" fill="#a8c84a" opacity="0.5" />
-
-        {/* ── Sun / warmth ── */}
-        <circle cx="415" cy="95" r="28" fill="#fbbf24" opacity="0.3" />
-        <circle cx="415" cy="95" r="18" fill="#fbbf24" opacity="0.5" />
-
-        {/* Rays */}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-            <line
-                key={i}
-                x1={415 + Math.cos((angle * Math.PI) / 180) * 22}
-                y1={95 + Math.sin((angle * Math.PI) / 180) * 22}
-                x2={415 + Math.cos((angle * Math.PI) / 180) * 32}
-                y2={95 + Math.sin((angle * Math.PI) / 180) * 32}
-                stroke="#fbbf24"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                opacity="0.6"
-            />
-        ))}
-    </svg>
-);
 
 /* ─────────────────────────────────────────────
    Reusable Section Header
@@ -334,6 +169,12 @@ export default function Welcome() {
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
                     rel="stylesheet"
                 />
+                <link
+                    rel="preload"
+                    as="image"
+                    href="/images/hero/page-accueil-hero.webp"
+                    type="image/webp"
+                />
                 <meta
                     name="description"
                     content="Le Syndicat National des Aidants défend les droits des familles qui accompagnent un enfant en situation de handicap. Rejoignez le mouvement."
@@ -346,23 +187,32 @@ export default function Welcome() {
                 {/* ══════════════════════════════
                     HERO
                 ══════════════════════════════ */}
-                <section className="relative overflow-hidden bg-linear-to-br from-[#e8f8f8] via-white to-[#f0f9e8] px-6 py-10">
-                    {/* Decorative blobs */}
-                    <div className="pointer-events-none absolute -top-32 -right-32 h-125 w-125 rounded-full bg-sna-teal/10 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-sna-green/10 blur-2xl" />
+                <section className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden">
+                    {/* Full-bleed background image */}
+                    <img
+                        src="/images/hero/page-accueil-hero.webp"
+                        alt=""
+                        aria-hidden="true"
+                        width={1200}
+                        height={800}
+                        loading="eager"
+                        fetchPriority="high"
+                        className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    {/* Gradient overlay – heavier at the bottom for text legibility */}
+                    <div className="absolute inset-0 bg-linear-to-t from-gray-900/90 via-gray-900/50 to-gray-900/10" />
 
-                    <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-10 lg:flex-row lg:gap-16">
-                        {/* ── Left: text ── */}
-                        <div className="flex flex-1 flex-col items-start gap-6">
-                            <span className="inline-flex items-center gap-2 rounded-full bg-sna-teal/15 px-4 py-1.5 text-sm font-semibold tracking-wide text-sna-teal-dark uppercase">
+                    <div className="relative mx-auto w-full max-w-6xl px-6 pb-14 pt-40">
+                        <div className="flex max-w-3xl flex-col items-start gap-6">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-semibold tracking-wide text-white uppercase ring-1 ring-white/20 backdrop-blur-sm">
                                 <StarIcon className="h-4 w-4 shrink-0" />
                                 Syndicat National des Aidants
                             </span>
 
-                            <h1 className="text-4xl leading-tight font-bold text-gray-800 sm:text-5xl lg:text-6xl">
+                            <h1 className="text-4xl leading-tight font-bold text-white sm:text-5xl lg:text-6xl">
                                 12 millions de Français aident un proche.{' '}
                                 <span className="relative text-sna-teal">
-                                    Mais qui porte leur voix{' '}?
+                                    Mais qui porte leur voix{' '}?
                                     {/* underline squiggle */}
                                     <svg
                                         className="absolute -bottom-2 left-0 w-full"
@@ -381,18 +231,18 @@ export default function Welcome() {
                                 </span>
                             </h1>
 
-                            <p className="max-w-xl text-lg leading-relaxed text-gray-500 sm:text-xl">
+                            <p className="max-w-xl text-lg leading-relaxed text-white/80 sm:text-xl">
                                 Le{' '}
-                                <strong className="text-gray-700">
+                                <strong className="text-white">
                                     Syndicat National des Aidants (SNA)
                                 </strong>{' '}
-                                est la première organisation syndicale 100{' '}%
+                                est la première organisation syndicale 100{' '}%
                                 dédiée aux aidants familiaux en France. Une
-                                force militante nationale créée pour{' '}:
+                                force militante nationale créée pour{' '}:
                             </p>
 
                             {/* Bullet point badges */}
-                            <div className="flex flex-col items-start gap-3">
+                            <div className="flex flex-wrap items-start gap-3">
                                 {(
                                     [
                                         {
@@ -426,7 +276,7 @@ export default function Welcome() {
                                 ).map(({ icon, label }) => (
                                     <span
                                         key={label}
-                                        className="inline-flex items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm"
+                                        className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm"
                                     >
                                         {icon}
                                         {label}
@@ -436,133 +286,43 @@ export default function Welcome() {
 
                             <div className="flex flex-col gap-4 pt-2 sm:flex-row">
                                 <Link
-                                    href="/formulaire/adhesion"
+                                    href="/rejoindre"
                                     className="inline-flex items-center justify-center gap-2 rounded-full bg-sna-teal px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-sna-teal/30 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark"
                                 >
                                     <HandshakeIcon className="h-5 w-5" />{' '}
                                     Adhérer au SNA <ArrowRightIcon />
                                 </Link>
                             </div>
-
-                            {/* Key figures */}
-                            <div className="mt-2 grid w-full grid-cols-2 gap-0 overflow-hidden rounded-2xl border border-gray-100 bg-white/90 shadow-md backdrop-blur sm:grid-cols-4">
-                                {[
-                                    {
-                                        value: '12 M',
-                                        label: 'Aidants en France',
-                                    },
-                                    {
-                                        value: '1/5',
-                                        label: '1 Français sur 5 est aidant',
-                                    },
-                                    {
-                                        value: '1/2',
-                                        label: 'Ne connaît pas ses droits',
-                                    },
-                                    {
-                                        value: '40 %',
-                                        label: 'Santé dégradée',
-                                    },
-                                ].map((stat, i) => (
-                                    <div
-                                        key={stat.label}
-                                        className={[
-                                            'flex cursor-default flex-col items-center gap-1 px-3 py-5 text-center transition-colors duration-200 hover:bg-sna-teal/5',
-                                            i < 3
-                                                ? 'border-r border-gray-100'
-                                                : '',
-                                        ].join(' ')}
-                                    >
-                                        <span className="text-xl leading-none font-extrabold text-sna-teal sm:text-2xl">
-                                            {stat.value}
-                                        </span>
-                                        <span className="text-xs leading-tight text-gray-500">
-                                            {stat.label}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
 
-                        {/* ── Right: illustration ── */}
-                        <div className="relative flex w-full flex-1 items-center justify-center lg:max-w-md">
-                            {/* Floating accent cards */}
-                            <div className="absolute -top-4 -left-4 z-10 flex items-center gap-2 rounded-2xl border border-gray-50 bg-white px-4 py-3 shadow-lg lg:-left-8">
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-400">
-                                    <svg
-                                        className="h-4 w-4"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                </span>
-                                <div>
-                                    <p className="text-xs leading-none font-bold text-gray-800">
-                                        12 M d'aidants
-                                    </p>
-                                    <p className="mt-0.5 text-xs text-gray-400">
-                                        en France
-                                    </p>
+                        {/* Key figures – frosted glass bar */}
+                        <div className="mt-10 grid grid-cols-2 gap-0 overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-xl backdrop-blur-md sm:grid-cols-4">
+                            {[
+                                { value: '12 M', label: 'Aidants en France' },
+                                { value: '1/5', label: '1 Français sur 5 est aidant' },
+                                { value: '1/2', label: 'Ne connaît pas ses droits' },
+                                { value: '40 %', label: 'Santé dégradée' },
+                            ].map((stat, i) => (
+                                <div
+                                    key={stat.label}
+                                    className={[
+                                        'flex cursor-default flex-col items-center gap-1 px-3 py-5 text-center transition-colors duration-200 hover:bg-white/10',
+                                        i < 3 ? 'border-r border-white/10' : '',
+                                    ].join(' ')}
+                                >
+                                    <span className="text-xl leading-none font-extrabold text-sna-teal sm:text-2xl">
+                                        {stat.value}
+                                    </span>
+                                    <span className="text-xs leading-tight text-white/70">
+                                        {stat.label}
+                                    </span>
                                 </div>
-                            </div>
-                            <div className="absolute right-2 -bottom-4 z-10 flex items-center gap-2 rounded-2xl border border-gray-50 bg-white px-4 py-3 shadow-lg lg:-right-4">
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sna-teal/10 text-sna-teal">
-                                    <svg
-                                        className="h-4 w-4"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                                        />
-                                    </svg>
-                                </span>
-                                <div>
-                                    <p className="text-xs leading-none font-bold text-gray-800">
-                                        Vos droits
-                                    </p>
-                                    <p className="mt-0.5 text-xs text-gray-400">
-                                        défendus
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="absolute top-1/2 -right-2 z-10 flex -translate-y-1/2 items-center gap-2 rounded-2xl bg-sna-teal px-4 py-3 shadow-lg lg:-right-6">
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-white">
-                                    <svg
-                                        className="h-4 w-4"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
-                                        />
-                                    </svg>
-                                </span>
-                                <div>
-                                    <p className="text-xs leading-none font-bold text-white">
-                                        Solidarité
-                                    </p>
-                                    <p className="mt-0.5 text-xs text-white/70">
-                                        active
-                                    </p>
-                                </div>
-                            </div>
-
-                            <HeroIllustration />
+                            ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ══════════════════════════════
+                                {/* ══════════════════════════════
                     QUI SOMMES-NOUS
                 ══════════════════════════════ */}
                 <section id="apropos" className="bg-white px-6 py-20">

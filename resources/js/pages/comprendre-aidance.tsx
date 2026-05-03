@@ -29,13 +29,16 @@ export default function ComprendreAidancePage() {
                                 </p>
                                 <p>Souvent, on le devient sans le savoir.</p>
                                 <p>
-                                    Chaque jour, des millions de personnes accompagnent un proche
-                                    fragilisé par la maladie, le handicap ou la perte d'autonomie.
+                                    Chaque jour, des millions de personnes
+                                    accompagnent un proche fragilisé par la
+                                    maladie, le handicap ou la perte
+                                    d'autonomie.
                                 </p>
                                 <p>Sans toujours se définir comme aidant·e.</p>
                                 <p>Sans toujours connaître leurs droits.</p>
                                 <p>
-                                    Sans toujours mesurer l'impact sur leur propre vie.
+                                    Sans toujours mesurer l'impact sur leur
+                                    propre vie.
                                 </p>
                             </div>
 
@@ -46,7 +49,10 @@ export default function ComprendreAidancePage() {
                                 <ul className="space-y-2 text-gray-700">
                                     <li className="flex items-start gap-3">
                                         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sna-teal" />
-                                        <span>Comprendre ce qu'est réellement l'aidance</span>
+                                        <span>
+                                            Comprendre ce qu'est réellement
+                                            l'aidance
+                                        </span>
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sna-teal" />
@@ -58,7 +64,10 @@ export default function ComprendreAidancePage() {
                                     </li>
                                     <li className="flex items-start gap-3">
                                         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sna-teal" />
-                                        <span>Ne plus rester seul face à cette réalité</span>
+                                        <span>
+                                            Ne plus rester seul face à cette
+                                            réalité
+                                        </span>
                                     </li>
                                 </ul>
                             </div>
@@ -77,13 +86,12 @@ export default function ComprendreAidancePage() {
 
                             <div className="prose prose-lg max-w-none text-gray-700">
                                 <p className="text-lg font-medium text-gray-900">
-                                    Un·e aidant·e est une personne qui apporte une aide régulière
-                                    à un proche en difficulté.
+                                    Un·e aidant·e est une personne qui apporte
+                                    une aide régulière à un proche en
+                                    difficulté.
                                 </p>
 
-                                <p className="mt-4">
-                                    Cette aide peut être :
-                                </p>
+                                <p className="mt-4">Cette aide peut être :</p>
                                 <ul className="mt-2 space-y-2">
                                     <li>Accompagner au quotidien</li>
                                     <li>Organiser les soins</li>
@@ -92,13 +100,15 @@ export default function ComprendreAidancePage() {
                                 </ul>
 
                                 <p className="mt-6 font-semibold text-gray-900">
-                                    Être aidant, ce n'est pas un statut officiel.
+                                    Être aidant, ce n'est pas un statut
+                                    officiel.
                                     <br />
                                     C'est une réalité vécue.
                                 </p>
 
                                 <p className="mt-4">
-                                    Et cette réalité transforme profondément la vie :
+                                    Et cette réalité transforme profondément la
+                                    vie :
                                 </p>
                                 <ul className="mt-2 space-y-2">
                                     <li>Organisation du quotidien</li>
@@ -119,8 +129,8 @@ export default function ComprendreAidancePage() {
                         <div className="mt-1 h-1 w-16 bg-sna-green" />
 
                         <p className="mt-6 text-gray-700">
-                            L'aidance ne correspond pas à un seul profil. Vous pouvez être
-                            aidant·e si :
+                            L'aidance ne correspond pas à un seul profil. Vous
+                            pouvez être aidant·e si :
                         </p>
 
                         <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -131,9 +141,14 @@ export default function ComprendreAidancePage() {
                                 'Vous coordonnez des soins ou des démarches',
                                 'Vous êtes la personne sur qui tout repose',
                             ].map((item, idx) => (
-                                <div key={idx} className="flex items-start gap-3">
-                                    <div className="mt-1 h-2 w-2 rounded-full bg-sna-green shrink-0" />
-                                    <span className="text-gray-700">{item}</span>
+                                <div
+                                    key={idx}
+                                    className="flex items-start gap-3"
+                                >
+                                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-sna-green" />
+                                    <span className="text-gray-700">
+                                        {item}
+                                    </span>
                                 </div>
                             ))}
                         </div>
@@ -143,7 +158,8 @@ export default function ComprendreAidancePage() {
                                 Point clé : Il n'y a pas de "petite aidance".
                             </p>
                             <p className="mt-1 text-gray-700">
-                                Dès qu'il y a régularité et responsabilité, il y a aidance.
+                                Dès qu'il y a régularité et responsabilité, il y
+                                a aidance.
                             </p>
                         </div>
                     </section>
@@ -167,27 +183,34 @@ export default function ComprendreAidancePage() {
                                 'Vous aidez régulièrement un proche dans son quotidien',
                                 'Vous organisez ou suivez des soins',
                                 'Vous êtes souvent préoccupé par sa situation',
-                                "Vous avez adapté votre travail ou votre emploi du temps",
+                                'Vous avez adapté votre travail ou votre emploi du temps',
                                 'Vous gérez des démarches administratives',
-                                'Vous êtes sollicité en cas d\'urgence',
+                                "Vous êtes sollicité en cas d'urgence",
                                 'Vous ressentez de la fatigue liée à cette situation',
                                 'Vous avez moins de temps pour vous',
                                 'Vous vous sentez parfois seul face à cette responsabilité',
-                                'Vous avez le sentiment que votre rôle n\'est pas reconnu',
+                                "Vous avez le sentiment que votre rôle n'est pas reconnu",
                             ].map((item, idx) => (
-                                <label key={idx} className="flex items-center gap-3">
+                                <label
+                                    key={idx}
+                                    className="flex items-center gap-3"
+                                >
                                     <input
                                         type="checkbox"
                                         className="h-5 w-5 rounded border-gray-300 text-sna-teal"
                                         aria-label={item}
                                     />
-                                    <span className="text-gray-700">{item}</span>
+                                    <span className="text-gray-700">
+                                        {item}
+                                    </span>
                                 </label>
                             ))}
                         </div>
 
                         <div className="mt-8 space-y-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 p-6">
-                            <h3 className="font-semibold text-gray-900">Résultat</h3>
+                            <h3 className="font-semibold text-gray-900">
+                                Résultat
+                            </h3>
                             <div className="space-y-3">
                                 <div className="flex gap-3">
                                     <div className="rounded-lg bg-yellow-100 px-3 py-1 text-sm font-semibold text-yellow-900">
@@ -207,7 +230,8 @@ export default function ComprendreAidancePage() {
                                 </div>
                             </div>
                             <p className="mt-4 font-medium text-gray-900">
-                                Et si vous vous reconnaissez, vous n'êtes pas seul·e.
+                                Et si vous vous reconnaissez, vous n'êtes pas
+                                seul·e.
                             </p>
                         </div>
                     </section>
@@ -221,11 +245,12 @@ export default function ComprendreAidancePage() {
 
                         <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-6">
                             <p className="text-gray-700">
-                                Aider un proche est un engagement profondément humain.
+                                Aider un proche est un engagement profondément
+                                humain.
                             </p>
                             <p className="mt-3 text-gray-700">
-                                Mais lorsqu'il devient quotidien, il peut avoir des
-                                conséquences importantes.
+                                Mais lorsqu'il devient quotidien, il peut avoir
+                                des conséquences importantes.
                             </p>
 
                             <p className="mt-6 font-semibold text-gray-900">
@@ -239,16 +264,21 @@ export default function ComprendreAidancePage() {
                                     'Un impact sur la vie professionnelle',
                                     'Une dégradation de la santé',
                                 ].map((item, idx) => (
-                                    <li key={idx} className="flex items-start gap-3">
-                                        <div className="mt-1 h-2 w-2 rounded-full bg-red-500 shrink-0" />
-                                        <span className="text-gray-700">{item}</span>
+                                    <li
+                                        key={idx}
+                                        className="flex items-start gap-3"
+                                    >
+                                        <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-red-500" />
+                                        <span className="text-gray-700">
+                                            {item}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
 
                             <p className="mt-6 rounded-lg bg-white p-3 font-medium text-sna-teal-dark">
-                                ⚠️ L'aidance ne doit pas se faire au détriment de votre
-                                équilibre.
+                                ⚠️ L'aidance ne doit pas se faire au détriment
+                                de votre équilibre.
                             </p>
                         </div>
                     </section>
@@ -261,8 +291,9 @@ export default function ComprendreAidancePage() {
                         <div className="mt-1 h-1 w-16 bg-sna-teal" />
 
                         <p className="mt-6 text-gray-700">
-                            L'aidance évolue par étapes. Elle ne devient pas difficile du jour
-                            au lendemain. Elle progresse souvent ainsi :
+                            L'aidance évolue par étapes. Elle ne devient pas
+                            difficile du jour au lendemain. Elle progresse
+                            souvent ainsi :
                         </p>
 
                         <div className="mt-8">
@@ -292,8 +323,8 @@ export default function ComprendreAidancePage() {
                             Mesurer la violence institutionnelle
                         </p>
                         <p className="mt-3 text-gray-700">
-                            Le SNA a créé un outil inédit : l'Indice National de Violence
-                            Institutionnelle subie par les Aidants.
+                            Le SNA a créé un outil inédit : l'Indice National de
+                            Violence Institutionnelle subie par les Aidants.
                         </p>
 
                         <p className="mt-4 text-gray-700">
@@ -306,9 +337,14 @@ export default function ComprendreAidancePage() {
                                 'Les familles ne sont plus écoutées',
                                 'La relation avec les institutions se dégrade',
                             ].map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-3">
-                                    <div className="mt-1 h-2 w-2 rounded-full bg-sna-teal shrink-0" />
-                                    <span className="text-gray-700">{item}</span>
+                                <li
+                                    key={idx}
+                                    className="flex items-start gap-3"
+                                >
+                                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-sna-teal" />
+                                    <span className="text-gray-700">
+                                        {item}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
@@ -330,8 +366,8 @@ export default function ComprendreAidancePage() {
                         <div className="mt-1 h-1 w-16 bg-sna-green" />
 
                         <p className="mt-6 text-gray-700">
-                            Pendant longtemps, on a considéré que l'épuisement des aidants
-                            venait uniquement de l'aide apportée.
+                            Pendant longtemps, on a considéré que l'épuisement
+                            des aidants venait uniquement de l'aide apportée.
                         </p>
                         <p className="mt-3 text-gray-700">
                             Mais la réalité est plus complexe.
@@ -343,15 +379,20 @@ export default function ComprendreAidancePage() {
                         <ul className="mt-3 space-y-2">
                             {[
                                 'La complexité administrative',
-                                'Le manque d\'information',
+                                "Le manque d'information",
                                 'Les décisions incomprises',
-                                'L\'absence de coordination',
+                                "L'absence de coordination",
                                 'Le manque de solutions',
                                 'Le déséquilibre avec les institutions',
                             ].map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-3">
-                                    <div className="mt-1 h-2 w-2 rounded-full bg-orange-500 shrink-0" />
-                                    <span className="text-gray-700">{item}</span>
+                                <li
+                                    key={idx}
+                                    className="flex items-start gap-3"
+                                >
+                                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-orange-500" />
+                                    <span className="text-gray-700">
+                                        {item}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
@@ -387,16 +428,21 @@ export default function ComprendreAidancePage() {
                                     'Maintenir sa vie sociale',
                                     'Respecter ses limites',
                                 ].map((item, idx) => (
-                                    <li key={idx} className="flex items-start gap-3">
-                                        <div className="mt-1 h-2 w-2 rounded-full bg-green-600 shrink-0" />
-                                        <span className="text-gray-700">{item}</span>
+                                    <li
+                                        key={idx}
+                                        className="flex items-start gap-3"
+                                    >
+                                        <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-green-600" />
+                                        <span className="text-gray-700">
+                                            {item}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
 
                             <p className="mt-6 font-semibold text-sna-teal-dark">
-                                Prendre soin de soi est une condition pour pouvoir continuer
-                                à aider.
+                                Prendre soin de soi est une condition pour
+                                pouvoir continuer à aider.
                             </p>
                         </div>
                     </section>
@@ -404,13 +450,13 @@ export default function ComprendreAidancePage() {
                     {/* Section 10: You're not alone */}
                     <section className="mb-16 rounded-2xl border border-sna-teal bg-gradient-to-br from-sna-teal/5 to-sna-teal/10 p-8">
                         <h2 className="text-3xl font-bold text-gray-900">
-                            Vous n'êtes pas seul
+                            Vous n'êtes pas seul·e
                         </h2>
                         <div className="mt-1 h-1 w-16 bg-sna-teal" />
 
                         <p className="mt-6 text-gray-700">
-                            Des millions de personnes vivent la même situation. Mais trop
-                            souvent :
+                            Des millions de personnes vivent la même situation.
+                            Mais trop souvent :
                         </p>
 
                         <ul className="mt-4 space-y-2">
@@ -419,9 +465,14 @@ export default function ComprendreAidancePage() {
                                 'Elles ne connaissent pas leurs droits',
                                 'Elles restent isolées',
                             ].map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-3">
-                                    <div className="mt-1 h-2 w-2 rounded-full bg-sna-teal shrink-0" />
-                                    <span className="text-gray-700">{item}</span>
+                                <li
+                                    key={idx}
+                                    className="flex items-start gap-3"
+                                >
+                                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-sna-teal" />
+                                    <span className="text-gray-700">
+                                        {item}
+                                    </span>
                                 </li>
                             ))}
                         </ul>

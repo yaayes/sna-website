@@ -6,6 +6,10 @@
                 "artisan",
                 "boost:mcp"
             ]
+        },
+        "office-docx": {
+            "command": "mcp-server-office",
+            "args": []
         }
     }
 }
