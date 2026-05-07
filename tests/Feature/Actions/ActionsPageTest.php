@@ -102,4 +102,55 @@ class ActionsPageTest extends TestCase
             MoiAussiForm::query()->firstOrFail()->consequences,
         );
     }
+
+    public function test_moi_aussi_submission_accepts_boolean_contacted_institution(): void
+    {
+        $response = $this->post('/formulaire/moi-aussi', [
+            'situation' => 'oui',
+            'testimony' => 'Ma demande MDPH a été refusée sans explication.',
+            'contacted_institution' => true,
+            'institution_name' => 'MDPH',
+        ]);
+
+        $response->assertRedirect();
+
+        $form = MoiAussiForm::query()->firstOrFail();
+        $this->assertTrue($form->contacted_institution);
+        $this->assertSame('MDPH', $form->institution_name);
+    }
+
+    public function test_moi_aussi_submission_from_action_page_with_institution_stores_correctly(): void
+    {
+        $action = Action::factory()->create();
+
+        $response = $this->post('/formulaire/moi-aussi', [
+            'action_id' => $action->id,
+            'situation' => 'en_cours',
+            'testimony' => 'J ai saisi la CAF pour un dossier bloqué depuis six mois.',
+            'contacted_institution' => true,
+            'institution_name' => 'CAF',
+            'usage_anonymised' => true,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('moi_aussi_forms', [
+            'action_id' => $action->id,
+            'situation' => 'en_cours',
+            'institution_name' => 'CAF',
+        ]);
+    }
+
+    public function test_moi_aussi_submission_rejects_string_oui_for_contacted_institution(): void
+    {
+        $response = $this->post('/formulaire/moi-aussi', [
+            'situation' => 'oui',
+            'testimony' => 'Contenu de témoignage valide pour ce test.',
+            'contacted_institution' => 'oui',
+        ]);
+
+        $response->assertSessionHasErrors('contacted_institution');
+        $this->assertDatabaseCount('moi_aussi_forms', 0);
+    }
 }

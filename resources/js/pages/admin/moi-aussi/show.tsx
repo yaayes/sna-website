@@ -6,6 +6,12 @@ import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
 
+type ActionSummary = {
+    id: number;
+    title: string;
+    slug: string;
+};
+
 type MoiAussiEntry = {
     id: number;
     ref: string;
@@ -23,6 +29,7 @@ type MoiAussiEntry = {
     usage_confidential: boolean;
     created_at: string;
     updated_at: string;
+    action: ActionSummary | null;
 };
 
 const breadcrumbs = (ref: string): BreadcrumbItem[] => [
@@ -96,6 +103,19 @@ export default function MoiAussiShow({ entry }: { entry: MoiAussiEntry }) {
                 <div className="rounded-xl border p-6">
                     <h2 className="mb-4 font-semibold">Témoignage</h2>
                     <dl>
+                        <DetailRow label="Action liée">
+                            {entry.action ? (
+                                <Link
+                                    href={`/nos-actions/${entry.action.slug}`}
+                                    className="font-medium text-blue-600 hover:underline"
+                                    target="_blank"
+                                >
+                                    {entry.action.title}
+                                </Link>
+                            ) : (
+                                '—'
+                            )}
+                        </DetailRow>
                         <DetailRow label="Situation">
                             <Badge variant="secondary">
                                 {situationLabels[entry.situation] ??

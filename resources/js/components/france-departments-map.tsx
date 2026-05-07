@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DEPARTMENT_NAMES, DEPARTMENT_PATHS, VIEWBOX_H, VIEWBOX_W } from '@/data/france-departments';
 
 type Representant = {
@@ -14,28 +15,59 @@ type Representant = {
 
 const DOM_CODES = ['971', '972', '973', '974', '976'] as const;
 
-function RepresentantCard({
-    representant,
+function RepresentantCarousel({
+    representants,
     onClose,
 }: {
-    representant: Representant;
+    representants: Representant[];
     onClose: () => void;
 }) {
+    const [index, setIndex] = useState(0);
+    const rep = representants[index];
+    const total = representants.length;
+
+    const prev = () => setIndex((i) => (i - 1 + total) % total);
+    const next = () => setIndex((i) => (i + 1) % total);
+
     return (
-        <div className="animate-in slide-in-from-bottom-4 fade-in duration-200 rounded-2xl border border-sna-teal/20 bg-white p-5 shadow-xl ring-1 ring-black/5">
-            <div className="flex items-start gap-4">
+        <div className="animate-in slide-in-from-bottom-4 fade-in duration-200 rounded-2xl border border-sna-teal/20 bg-white shadow-xl ring-1 ring-black/5">
+            {/* Carousel nav (only when multiple reps) */}
+            {total > 1 && (
+                <div className="flex items-center justify-between border-b border-sna-teal/10 px-5 py-2.5">
+                    <button
+                        onClick={prev}
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-sna-teal"
+                        aria-label="Représentant précédent"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <p className="text-xs text-gray-500">
+                        <span className="font-semibold text-sna-teal">{index + 1}</span>{' '}sur{' '}
+                        <span className="font-semibold">{total}</span> représentants
+                    </p>
+                    <button
+                        onClick={next}
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-sna-teal"
+                        aria-label="Représentant suivant"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
+
+            <div className="flex items-start gap-4 p-5">
                 {/* Avatar */}
                 <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-sna-teal/20 to-sna-teal/5">
-                    {representant.photo_path ? (
+                    {rep.photo_path ? (
                         <img
-                            src={representant.photo_path}
-                            alt={`Photo de ${representant.first_name} ${representant.last_name}`}
+                            src={rep.photo_path}
+                            alt={`Photo de ${rep.first_name} ${rep.last_name}`}
                             className="h-full w-full object-cover"
                         />
                     ) : (
                         <div className="flex h-full w-full items-center justify-center text-xl font-bold text-sna-teal">
-                            {representant.first_name[0]}
-                            {representant.last_name[0]}
+                            {rep.first_name[0]}
+                            {rep.last_name[0]}
                         </div>
                     )}
                 </div>
@@ -45,14 +77,14 @@ function RepresentantCard({
                     <div className="flex items-start justify-between gap-2">
                         <div>
                             <p className="font-bold text-gray-900">
-                                {representant.first_name}{' '}
-                                <span className="text-gray-700">{representant.last_name}</span>
+                                {rep.first_name}{' '}
+                                <span className="text-gray-700">{rep.last_name}</span>
                             </p>
                             <p className="text-xs font-semibold tracking-wide text-sna-teal uppercase">
-                                {representant.role}
+                                {rep.role}
                             </p>
                             <p className="mt-0.5 text-xs text-gray-500">
-                                Dép. {representant.department_code} — {representant.department_name}
+                                Dép. {rep.department_code} — {rep.department_name}
                             </p>
                         </div>
                         <button
@@ -65,9 +97,26 @@ function RepresentantCard({
                             </svg>
                         </button>
                     </div>
-                    <p className="mt-2 text-sm leading-relaxed text-gray-600">{representant.short_bio}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-600">{rep.short_bio}</p>
                 </div>
             </div>
+
+            {/* Dot indicators */}
+            {total > 1 && (
+                <div className="flex justify-center gap-1.5 pb-4">
+                    {representants.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setIndex(i)}
+                            className={[
+                                'h-1.5 rounded-full transition-all',
+                                i === index ? 'w-4 bg-sna-teal' : 'w-1.5 bg-gray-300 hover:bg-gray-400',
+                            ].join(' ')}
+                            aria-label={`Représentant ${i + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -77,22 +126,23 @@ export default function FranceDepartmentsMap({ representants }: { representants:
     const [tooltip, setTooltip] = useState<{ x: number; y: number; code: string } | null>(null);
     const svgRef = useRef<SVGSVGElement>(null);
 
-    const repByCode = useMemo(() => {
-        const map: Record<string, Representant> = {};
+    const repsByCode = useMemo(() => {
+        const map: Record<string, Representant[]> = {};
         for (const r of representants) {
-            map[r.department_code] = r;
+            if (!map[r.department_code]) map[r.department_code] = [];
+            map[r.department_code].push(r);
         }
         return map;
     }, [representants]);
 
-    const selectedRep = selectedCode ? repByCode[selectedCode] ?? null : null;
+    const selectedReps = selectedCode ? (repsByCode[selectedCode] ?? []) : [];
 
     const handlePathClick = useCallback(
         (code: string) => {
-            if (!(code in repByCode)) return;
+            if (!(code in repsByCode)) return;
             setSelectedCode((prev) => (prev === code ? null : code));
         },
-        [repByCode],
+        [repsByCode],
     );
 
     const handleMouseMove = useCallback(
@@ -110,7 +160,7 @@ export default function FranceDepartmentsMap({ representants }: { representants:
 
     const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
-    const domReps = DOM_CODES.filter((c) => c in repByCode);
+    const domReps = DOM_CODES.filter((c) => c in repsByCode);
 
     return (
         <div className="flex flex-col gap-6">
@@ -124,7 +174,8 @@ export default function FranceDepartmentsMap({ representants }: { representants:
                     role="img"
                 >
                     {Object.entries(DEPARTMENT_PATHS).map(([code, d]) => {
-                        const hasRep = code in repByCode;
+                        const reps = repsByCode[code];
+                        const hasRep = !!reps;
                         const isSelected = selectedCode === code;
 
                         return (
@@ -144,7 +195,9 @@ export default function FranceDepartmentsMap({ representants }: { representants:
                                 ].join(' ')}
                                 aria-label={
                                     hasRep
-                                        ? `${code} ${DEPARTMENT_NAMES[code] ?? ''} — ${repByCode[code].first_name} ${repByCode[code].last_name}`
+                                        ? reps.length > 1
+                                            ? `${code} ${DEPARTMENT_NAMES[code] ?? ''} — ${reps.length} représentants`
+                                            : `${code} ${DEPARTMENT_NAMES[code] ?? ''} — ${reps[0].first_name} ${reps[0].last_name}`
                                         : `${code} ${DEPARTMENT_NAMES[code] ?? ''}`
                                 }
                             />
@@ -161,21 +214,32 @@ export default function FranceDepartmentsMap({ representants }: { representants:
                         <span className="font-mono font-bold text-sna-teal">{tooltip.code}</span>
                         {' — '}
                         <span className="text-gray-700">{DEPARTMENT_NAMES[tooltip.code]}</span>
-                        {tooltip.code in repByCode && (
+                        {tooltip.code in repsByCode && (
                             <>
                                 <br />
-                                <span className="font-semibold text-gray-900">
-                                    {repByCode[tooltip.code].first_name} {repByCode[tooltip.code].last_name}
-                                </span>
+                                {repsByCode[tooltip.code].length > 1 ? (
+                                    <span className="font-semibold text-gray-900">
+                                        {repsByCode[tooltip.code].length} représentants
+                                    </span>
+                                ) : (
+                                    <span className="font-semibold text-gray-900">
+                                        {repsByCode[tooltip.code][0].first_name}{' '}
+                                        {repsByCode[tooltip.code][0].last_name}
+                                    </span>
+                                )}
                             </>
                         )}
                     </div>
                 )}
 
-                {/* Floating representative card */}
-                {selectedRep && (
-                    <div className="absolute bottom-4 left-1/2 z-20 w-[min(420px,90%)] -translate-x-1/2">
-                        <RepresentantCard representant={selectedRep} onClose={() => setSelectedCode(null)} />
+                {/* Floating representative carousel */}
+                {selectedReps.length > 0 && (
+                    <div className="absolute bottom-4 left-1/2 z-20 w-[min(440px,92%)] -translate-x-1/2">
+                        <RepresentantCarousel
+                            key={selectedCode}
+                            representants={selectedReps}
+                            onClose={() => setSelectedCode(null)}
+                        />
                     </div>
                 )}
             </div>
@@ -185,7 +249,7 @@ export default function FranceDepartmentsMap({ representants }: { representants:
                 <div className="flex flex-wrap gap-3">
                     <span className="self-center text-xs font-medium text-gray-400">Outre-mer :</span>
                     {domReps.map((code) => {
-                        const rep = repByCode[code];
+                        const reps = repsByCode[code];
                         const isSelected = selectedCode === code;
                         return (
                             <button
@@ -200,10 +264,11 @@ export default function FranceDepartmentsMap({ representants }: { representants:
                             >
                                 <span className="font-mono font-bold">{code}</span>
                                 <span>{DEPARTMENT_NAMES[code]}</span>
-                                {rep && (
-                                    <span className="opacity-75">
-                                        — {rep.first_name} {rep.last_name}
-                                    </span>
+                                {reps && reps.length === 1 && (
+                                    <span className="opacity-75">— {reps[0].first_name} {reps[0].last_name}</span>
+                                )}
+                                {reps && reps.length > 1 && (
+                                    <span className="opacity-75">— {reps.length} représentants</span>
                                 )}
                             </button>
                         );

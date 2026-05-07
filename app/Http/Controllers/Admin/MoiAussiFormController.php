@@ -12,7 +12,7 @@ class MoiAussiFormController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = MoiAussiForm::query()->latest();
+        $query = MoiAussiForm::query()->with('action:id,title,slug')->latest();
 
         if ($search = $request->string('search')->trim()->value()) {
             $query->where(function ($q) use ($search): void {
@@ -30,6 +30,8 @@ class MoiAussiFormController extends Controller
 
     public function show(MoiAussiForm $moiAussiForm): Response
     {
+        $moiAussiForm->load('action:id,title,slug');
+
         return Inertia::render('admin/moi-aussi/show', [
             'entry' => $moiAussiForm,
         ]);

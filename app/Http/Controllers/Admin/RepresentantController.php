@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRepresentantRequest;
 use App\Http\Requests\UpdateRepresentantRequest;
 use App\Models\Representant;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -14,13 +15,38 @@ use Inertia\Response;
 
 class RepresentantController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = Representant::query()
+            ->orderBy('sort_order')
+            ->orderBy('last_name');
+
+        if ($search = $request->string('search')->trim()->value()) {
+            $query->where(function ($builder) use ($search): void {
+                $builder
+                    ->where('first_name', 'ilike', "%{$search}%")
+                    ->orWhere('last_name', 'ilike', "%{$search}%")
+                    ->orWhere('role', 'ilike', "%{$search}%")
+                    ->orWhere('department_name', 'ilike', "%{$search}%");
+            });
+        }
+
+        if ($department = $request->string('department')->trim()->value()) {
+            $query->where('department_code', $department);
+        }
+
         return Inertia::render('admin/representants/index', [
-            'representants' => Representant::query()
-                ->orderBy('sort_order')
-                ->orderBy('last_name')
-                ->get(['id', 'department_code', 'department_name', 'first_name', 'last_name', 'role', 'photo_path', 'sort_order', 'is_active', 'updated_at']),
+            'representants' => $query->get(['id', 'department_code', 'department_name', 'first_name', 'last_name', 'role', 'photo_path', 'sort_order', 'is_active', 'updated_at']),
+            'departments' => Representant::query()
+                ->orderBy('department_code')
+                ->get(['department_code', 'department_name'])
+                ->unique('department_code')
+                ->map(fn (Representant $r) => ['code' => $r->department_code, 'name' => $r->department_name])
+                ->values(),
+            'filters' => [
+                'search' => $request->string('search')->trim()->value(),
+                'department' => $request->string('department')->trim()->value(),
+            ],
         ]);
     }
 

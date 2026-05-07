@@ -23,7 +23,7 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
             testimony: string;
             consequences: string[];
             other_consequence: string;
-            contacted_institution: string;
+            contacted_institution: boolean | null;
             institution_name: string;
             usage_anonymised: boolean;
             usage_collective: boolean;
@@ -38,7 +38,7 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
             testimony: '',
             consequences: [],
             other_consequence: '',
-            contacted_institution: '',
+            contacted_institution: null,
             institution_name: '',
             usage_anonymised: false,
             usage_collective: false,
@@ -215,17 +215,16 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
                 </label>
                 <div className="mb-3 flex gap-4">
                     {[
-                        { value: 'oui', label: 'Oui' },
-                        { value: 'non', label: 'Non' },
+                        { value: true, label: 'Oui' },
+                        { value: false, label: 'Non' },
                     ].map((opt) => (
                         <label
-                            key={opt.value}
+                            key={opt.label}
                             className="flex cursor-pointer items-center gap-2 text-sm text-gray-600"
                         >
                             <input
                                 type="radio"
                                 name="institution"
-                                value={opt.value}
                                 checked={
                                     data.contacted_institution === opt.value
                                 }
@@ -250,6 +249,16 @@ export default function MoiAussiForm({ actionId }: { actionId?: number }) {
                     className={inputCls}
                     placeholder="Si oui, laquelle ? (CAF, MDPH, employeur, assurance…)"
                 />
+                {errors.contacted_institution && (
+                    <p className="mt-1 text-xs text-red-500">
+                        {errors.contacted_institution}
+                    </p>
+                )}
+                {errors.institution_name && (
+                    <p className="mt-1 text-xs text-red-500">
+                        {errors.institution_name}
+                    </p>
+                )}
             </div>
 
             <div>

@@ -1,7 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
@@ -19,12 +23,58 @@ type RepresentantItem = {
     updated_at: string;
 };
 
+type DepartmentOption = {
+    code: string;
+    name: string;
+};
+
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Admin', href: admin.dashboard() },
     { title: 'Représentants', href: admin.representants.index() },
 ];
 
-export default function RepresentantsIndex({ representants }: { representants: RepresentantItem[] }) {
+export default function RepresentantsIndex({
+    representants,
+    departments,
+    filters,
+}: {
+    representants: RepresentantItem[];
+    departments: DepartmentOption[];
+    filters: { search: string; department: string };
+}) {
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [department, setDepartment] = useState(filters.department ?? '');
+
+    const applyFilters = (newSearch: string, newDept: string) => {
+        router.get(
+            admin.representants.index().url,
+            {
+                search: newSearch || undefined,
+                department: newDept || undefined,
+            },
+            { preserveState: true, replace: true },
+        );
+    };
+
+    const submitSearch = (e: FormEvent) => {
+        e.preventDefault();
+        applyFilters(search, department);
+    };
+
+    const changeDept = (value: string) => {
+        const newDept = value === '__all__' ? '' : value;
+        setDepartment(newDept);
+        applyFilters(search, newDept);
+    };
+
+    const clearFilters = () => {
+        setSearch('');
+        setDepartment('');
+        applyFilters('', '');
+    };
+
+    const hasFilters = !!filters.search || !!filters.department;
+
     const deleteRepresentant = (representant: RepresentantItem) => {
         if (!window.confirm(`Supprimer ${representant.first_name} ${representant.last_name} ?`)) {
             return;
@@ -54,6 +104,45 @@ export default function RepresentantsIndex({ representants }: { representants: R
                         </Link>
                     </Button>
                 </div>
+
+                {/* Filters */}
+                <form onSubmit={submitSearch} className="flex flex-wrap items-center gap-3">
+                    <div className="relative flex-1" style={{ minWidth: '200px' }}>
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Rechercher par nom, rôle…"
+                            className="pl-9"
+                        />
+                    </div>
+
+                    <Select value={department || '__all__'} onValueChange={changeDept}>
+                        <SelectTrigger className="w-56">
+                            <SelectValue placeholder="Tous les départements" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="__all__">Tous les départements</SelectItem>
+                            {departments.map((d) => (
+                                <SelectItem key={d.code} value={d.code}>
+                                    {d.code} — {d.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <Button type="submit" variant="secondary">
+                        <Search className="h-4 w-4" />
+                        Filtrer
+                    </Button>
+
+                    {hasFilters && (
+                        <Button type="button" variant="ghost" onClick={clearFilters}>
+                            <X className="h-4 w-4" />
+                            Réinitialiser
+                        </Button>
+                    )}
+                </form>
 
                 <div className="space-y-3">
                     {representants.length === 0 && (

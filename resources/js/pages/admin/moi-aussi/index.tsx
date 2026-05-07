@@ -20,6 +20,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Moi Aussi', href: admin.moiAussi.index() },
 ];
 
+type ActionSummary = {
+    id: number;
+    title: string;
+    slug: string;
+};
+
 type MoiAussiEntry = {
     id: number;
     ref: string;
@@ -28,6 +34,7 @@ type MoiAussiEntry = {
     situation: string;
     usage_confidential: boolean;
     created_at: string;
+    action: ActionSummary | null;
 };
 
 type Paginated<T> = {
@@ -69,6 +76,7 @@ export default function MoiAussiIndex({
                     <TableHeader>
                         <TableRow>
                             <TableHead>Réf.</TableHead>
+                            <TableHead>Action liée</TableHead>
                             <TableHead>Nom</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Situation</TableHead>
@@ -81,7 +89,7 @@ export default function MoiAussiIndex({
                         {entries.data.length === 0 && (
                             <TableRow>
                                 <TableCell
-                                    colSpan={7}
+                                    colSpan={8}
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     Aucun résultat trouvé.
@@ -92,6 +100,19 @@ export default function MoiAussiIndex({
                             <TableRow key={entry.id}>
                                 <TableCell className="font-mono text-xs">
                                     {entry.ref}
+                                </TableCell>
+                                <TableCell className="max-w-[180px]">
+                                    {entry.action ? (
+                                        <Link
+                                            href={`/nos-actions/${entry.action.slug}`}
+                                            className="line-clamp-2 text-xs font-medium text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            {entry.action.title}
+                                        </Link>
+                                    ) : (
+                                        <span className="text-muted-foreground">—</span>
+                                    )}
                                 </TableCell>
                                 <TableCell>
                                     {entry.name ?? (
