@@ -82,9 +82,9 @@ const typeLabels: Record<string, { label: string; color: string; bg: string }> =
     };
 
 const aidantTypeLabels: Record<string, string> = {
-    parent_handicap: 'Parent d'un enfant en situation de handicap',
+    parent_handicap: "Parent d'un enfant en situation de handicap",
     conjoint: 'Conjoint(e)',
-    parent_aine: 'Parent d'un aîné',
+    parent_aine: "Parent d'un aîné",
     proche: 'Proche',
     autre: 'Autre',
 };
