@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     ChevronDown,
+    ExternalLink,
     Heart,
     Menu,
     UserCircle,
@@ -29,8 +30,8 @@ const navLinks = [
         ],
     },
     {
-        href: 'contact',
-        label: 'Contribuer au SNA',
+        href: 'https://boutique.syndicat-national-aidants.fr/',
+        label: 'Boutique SNA',
     },
 ];
 
@@ -46,8 +47,15 @@ export default function PublicSiteHeader({
         Record<string, boolean>
     >({});
 
+    const isExternalHref = (href: string) =>
+        href.startsWith('http://') || href.startsWith('https://');
+
     const linkHref = (item: (typeof navLinks)[number]) =>
-        item.isRoute ? item.href : isHome ? `#${item.href}` : `/#${item.href}`;
+        item.isRoute || isExternalHref(item.href)
+            ? item.href
+            : isHome
+              ? `#${item.href}`
+              : `/#${item.href}`;
 
     return (
         <header
@@ -79,9 +87,17 @@ export default function PublicSiteHeader({
                             ) : (
                                 <a
                                     href={linkHref(item)}
+                                    target={isExternalHref(item.href) ? '_blank' : undefined}
+                                    rel={isExternalHref(item.href) ? 'noopener noreferrer' : undefined}
                                     className="group/link relative flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-sna-teal"
                                 >
-                                    {item.label}
+                                    <span>{item.label}</span>
+                                    {isExternalHref(item.href) && (
+                                        <ExternalLink
+                                            className="h-3.5 w-3.5"
+                                            aria-hidden="true"
+                                        />
+                                    )}
                                     <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-sna-teal transition-all duration-300 group-hover/link:w-4/5" />
                                 </a>
                             )}
@@ -225,6 +241,8 @@ export default function PublicSiteHeader({
                                 ) : (
                                     <a
                                         href={linkHref(item)}
+                                        target={isExternalHref(item.href) ? '_blank' : undefined}
+                                        rel={isExternalHref(item.href) ? 'noopener noreferrer' : undefined}
                                         onClick={() => setMobileMenuOpen(false)}
                                         className="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-sna-teal/10 hover:pl-5 hover:text-sna-teal"
                                         style={{
@@ -233,7 +251,15 @@ export default function PublicSiteHeader({
                                                 : '0ms',
                                         }}
                                     >
-                                        {item.label}
+                                        <span className="flex items-center gap-2">
+                                            {item.label}
+                                            {isExternalHref(item.href) && (
+                                                <ExternalLink
+                                                    className="h-3.5 w-3.5"
+                                                    aria-hidden="true"
+                                                />
+                                            )}
+                                        </span>
                                         <ArrowRight className="h-3.5 w-3.5 text-sna-teal/50" />
                                     </a>
                                 )}
