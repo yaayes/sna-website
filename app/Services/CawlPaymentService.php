@@ -92,8 +92,12 @@ class CawlPaymentService
             ->hostedCheckout()
             ->getHostedCheckout($hostedCheckoutId);
 
-        $status = $response->getStatus();
+        $checkoutStatus = $response->getStatus();
         $payment = $response->getCreatedPaymentOutput()?->getPayment();
+
+        // Use the payment-level status when available; the hosted checkout status
+        // (e.g. "PAYMENT_CREATED") is not granular enough for our state machine.
+        $status = $payment?->getStatus() ?? $checkoutStatus;
 
         return [
             'status' => $status,

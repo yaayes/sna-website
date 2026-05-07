@@ -46,6 +46,85 @@ class PaymentControllerTest extends TestCase
         ]);
     }
 
+    public function test_return_updates_payment_and_renders_success_page_when_pending_capture(): void
+    {
+        $payment = Payment::factory()->create([
+            'hosted_checkout_id' => 'hco_pending_capture',
+            'status' => 'pending',
+        ]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getHostedCheckoutStatus')
+                ->once()
+                ->with('hco_pending_capture')
+                ->andReturn([
+                    'status' => 'PENDING_CAPTURE',
+                    'status_code' => 5,
+                    'cawl_payment_id' => '9000005678_1',
+                    'raw' => ['status' => 'PENDING_CAPTURE'],
+                ]);
+        });
+
+        $response = $this->get('/payment/return?hostedCheckoutId=hco_pending_capture');
+
+        $response->assertInertia(fn ($page) => $page->component('payment/success'));
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'authorized',
+        ]);
+    }
+
+    public function test_return_renders_success_when_cawl_returns_payment_created_checkout_status_with_pending_capture_payment(): void
+    {
+        // Real-world scenario: CAWL redirects back with hosted-checkout status PAYMENT_CREATED
+        // but the underlying payment status is PENDING_CAPTURE. The service should return the
+        // payment-level status so we show the success page rather than retrying.
+        $payment = Payment::factory()->create([
+            'hosted_checkout_id' => 'hco_real_world',
+            'status' => 'pending',
+        ]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            // Service now returns the payment-level status (PENDING_CAPTURE), not the
+            // checkout-level status (PAYMENT_CREATED).
+            $mock->shouldReceive('getHostedCheckoutStatus')
+                ->once()
+                ->with('hco_real_world')
+                ->andReturn([
+                    'status' => 'PENDING_CAPTURE',
+                    'status_code' => 5,
+                    'cawl_payment_id' => '9000009999_1',
+                    'raw' => ['status' => 'PAYMENT_CREATED'],
+                ]);
+        });
+
+        $response = $this->get('/payment/return?hostedCheckoutId=hco_real_world');
+
+        $response->assertInertia(fn ($page) => $page->component('payment/success'));
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'authorized',
+        ]);
+    }
+
+    public function test_return_renders_success_page_when_already_authorized(): void
+    {
+        Payment::factory()->create([
+            'hosted_checkout_id' => 'hco_authorized',
+            'status' => 'authorized',
+        ]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('getHostedCheckoutStatus');
+        });
+
+        $response = $this->get('/payment/return?hostedCheckoutId=hco_authorized');
+
+        $response->assertInertia(fn ($page) => $page->component('payment/success'));
+    }
+
     public function test_return_renders_failure_page_when_rejected(): void
     {
         Payment::factory()->create([

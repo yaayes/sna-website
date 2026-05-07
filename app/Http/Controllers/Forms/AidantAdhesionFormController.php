@@ -200,7 +200,7 @@ class AidantAdhesionFormController extends Controller
                 // Only reuse if this submission is pending (not already captured)
                 if ($form) {
                     $submission = $form->submission;
-                    $isCaptured = $submission?->payments()->where('status', 'captured')->exists();
+                    $isCaptured = $submission?->payments()->whereIn('status', ['captured', 'authorized'])->exists();
 
                     if (! $isCaptured) {
                         $form->update(array_merge($payload, [

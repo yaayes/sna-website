@@ -43,6 +43,11 @@ class Payment extends Model
         return $this->status === 'captured';
     }
 
+    public function isSuccessful(): bool
+    {
+        return in_array($this->status, ['captured', 'authorized']);
+    }
+
     public function isFailed(): bool
     {
         return in_array($this->status, ['rejected', 'cancelled', 'failed']);

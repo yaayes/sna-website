@@ -43,7 +43,7 @@ class PaymentController extends Controller
             $payment->refresh();
         }
 
-        if ($payment->isCaptured()) {
+        if ($payment->isSuccessful()) {
             return Inertia::render('payment/success', [
                 'amountEuros' => $payment->amountEuros(),
                 'merchantReference' => $payment->merchant_reference,

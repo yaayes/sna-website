@@ -41,8 +41,8 @@ class AidantAdhesionFormController extends Controller
                 'commune' => $form->commune,
                 'aidant_type' => $form->aidant_type,
                 'created_at' => $form->created_at,
-                'payment_status' => $form->submission?->payments->firstWhere('status', 'captured')?->status,
-                'payment_amount_cents' => $form->submission?->payments->firstWhere('status', 'captured')?->amount_cents,
+                'payment_status' => $form->submission?->payments->first(fn ($p) => $p->isSuccessful())?->status,
+                'payment_amount_cents' => $form->submission?->payments->first(fn ($p) => $p->isSuccessful())?->amount_cents,
             ]),
             'filters' => ['search' => $request->string('search')->trim()->value()],
         ]);
@@ -54,7 +54,7 @@ class AidantAdhesionFormController extends Controller
             $q->latest();
         }]);
 
-        $capturedPayment = $aidantAdhesionForm->submission?->payments->firstWhere('status', 'captured');
+        $capturedPayment = $aidantAdhesionForm->submission?->payments->first(fn ($p) => $p->isSuccessful());
 
         return Inertia::render('admin/adhesion/show', [
             'entry' => $aidantAdhesionForm,
