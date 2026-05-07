@@ -32,11 +32,24 @@ type MoiAussiData = {
     email: string | null;
 };
 
+type AdhesionData = {
+    nom: string;
+    prenom: string;
+    email: string;
+    phone: string | null;
+    departement: string | null;
+    commune: string | null;
+    aidant_type: string | null;
+    situation_professionnelle: string | null;
+    soutient_sna: boolean;
+    wants_info: boolean;
+};
+
 type Submission = {
     id: number;
-    type: 'soutien' | 'partenaire' | 'moi_aussi';
+    type: 'soutien' | 'partenaire' | 'moi_aussi' | 'adhesion';
     created_at: string;
-    data: SoutienData | PartenaireData | MoiAussiData | null;
+    data: SoutienData | PartenaireData | MoiAussiData | AdhesionData | null;
 };
 
 type Props = {
@@ -61,7 +74,82 @@ const typeLabels: Record<string, { label: string; color: string; bg: string }> =
             color: 'text-blue-700',
             bg: 'bg-blue-50 border-blue-200',
         },
+        adhesion: {
+            label: 'Adhésion aidant',
+            color: 'text-purple-700',
+            bg: 'bg-purple-50 border-purple-200',
+        },
     };
+
+const aidantTypeLabels: Record<string, string> = {
+    parent_handicap: 'Parent d'un enfant en situation de handicap',
+    conjoint: 'Conjoint(e)',
+    parent_aine: 'Parent d'un aîné',
+    proche: 'Proche',
+    autre: 'Autre',
+};
+
+function AdhesionDetails({ data }: { data: AdhesionData }) {
+    return (
+        <dl className="space-y-2 text-sm text-gray-600">
+            <div className="flex gap-2">
+                <dt className="min-w-32 font-semibold text-gray-700">Nom :</dt>
+                <dd>
+                    {data.prenom} {data.nom}
+                </dd>
+            </div>
+            <div className="flex gap-2">
+                <dt className="min-w-32 font-semibold text-gray-700">Email :</dt>
+                <dd>{data.email}</dd>
+            </div>
+            {data.phone && (
+                <div className="flex gap-2">
+                    <dt className="min-w-32 font-semibold text-gray-700">
+                        Téléphone :
+                    </dt>
+                    <dd>{data.phone}</dd>
+                </div>
+            )}
+            {(data.departement || data.commune) && (
+                <div className="flex gap-2">
+                    <dt className="min-w-32 font-semibold text-gray-700">
+                        Localisation :
+                    </dt>
+                    <dd>
+                        {[data.commune, data.departement]
+                            .filter(Boolean)
+                            .join(', ')}
+                    </dd>
+                </div>
+            )}
+            {data.aidant_type && (
+                <div className="flex gap-2">
+                    <dt className="min-w-32 font-semibold text-gray-700">
+                        Type d'aidant :
+                    </dt>
+                    <dd>
+                        {aidantTypeLabels[data.aidant_type] ??
+                            data.aidant_type}
+                    </dd>
+                </div>
+            )}
+            {data.situation_professionnelle && (
+                <div className="flex gap-2">
+                    <dt className="min-w-32 font-semibold text-gray-700">
+                        Situation professionnelle :
+                    </dt>
+                    <dd>{data.situation_professionnelle}</dd>
+                </div>
+            )}
+            <div className="flex gap-2">
+                <dt className="min-w-32 font-semibold text-gray-700">
+                    Soutient le SNA :
+                </dt>
+                <dd>{data.soutient_sna ? 'Oui' : 'Non'}</dd>
+            </div>
+        </dl>
+    );
+}
 
 function SoutienDetails({ data }: { data: SoutienData }) {
     const engagements = [
@@ -305,6 +393,14 @@ export default function MySubmissions({ email, submissions }: Props) {
                                                     <MoiAussiDetails
                                                         data={
                                                             submission.data as MoiAussiData
+                                                        }
+                                                    />
+                                                )}
+                                                {submission.type ===
+                                                    'adhesion' && (
+                                                    <AdhesionDetails
+                                                        data={
+                                                            submission.data as AdhesionData
                                                         }
                                                     />
                                                 )}

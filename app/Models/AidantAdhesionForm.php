@@ -11,8 +11,17 @@ class AidantAdhesionForm extends Model
 {
     use HasFactory, HasRef;
 
+    public const STATUS_DRAFT = 'draft';
+
+    public const STATUS_COMPLETED = 'completed';
+
     protected $fillable = [
         'ref',
+        'draft_token',
+        'draft_step',
+        'draft_saved_at',
+        'draft_completed_at',
+        'status',
         'genre',
         'nom',
         'prenom',
@@ -48,6 +57,8 @@ class AidantAdhesionForm extends Model
         'consents_rgpd',
         'declaration_honneur',
         'don_amount_cents',
+        'coupon_code',
+        'coupon_discount_cents',
     ];
 
     protected function casts(): array
@@ -61,6 +72,10 @@ class AidantAdhesionForm extends Model
             'wants_info' => 'boolean',
             'consents_rgpd' => 'boolean',
             'declaration_honneur' => 'boolean',
+            'draft_step' => 'integer',
+            'draft_saved_at' => 'datetime',
+            'draft_completed_at' => 'datetime',
+            'status' => 'string',
         ];
     }
 

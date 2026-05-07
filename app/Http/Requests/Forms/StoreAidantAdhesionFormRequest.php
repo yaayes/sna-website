@@ -83,23 +83,26 @@ class StoreAidantAdhesionFormRequest extends FormRequest
             'soutient_sna' => ['boolean'],
             'wants_info' => ['boolean'],
             'declaration_honneur' => ['accepted'],
-            'don_amount' => ['nullable', 'numeric', 'min:1', 'max:100000'],
+            'don_amount' => ['nullable', 'numeric', 'min:0', 'max:100000'],
             'consents_rgpd' => ['accepted'],
+            'coupon_code' => ['nullable', 'string', 'max:50'],
+            'pending_form_id' => ['nullable', 'integer', 'exists:aidant_adhesion_forms,id'],
+            'draft_token' => ['nullable', 'string', 'size:64'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'aidants.required' => "Veuillez renseigner au moins un aidant.",
-            'aidants.min' => "Veuillez renseigner au moins un aidant.",
-            'aides.required' => "Veuillez renseigner au moins une personne aidee.",
-            'aides.min' => "Veuillez renseigner au moins une personne aidee.",
+            'aidants.required' => 'Veuillez renseigner au moins un aidant.',
+            'aidants.min' => 'Veuillez renseigner au moins un aidant.',
+            'aides.required' => 'Veuillez renseigner au moins une personne aidee.',
+            'aides.min' => 'Veuillez renseigner au moins une personne aidee.',
             'aidants.*.nom.required' => 'Le nom de chaque aidant est obligatoire.',
             'aidants.*.prenom.required' => 'Le prénom de chaque aidant est obligatoire.',
             'aidants.*.email.required' => "L'adresse e-mail de chaque aidant est obligatoire.",
             'aidants.*.email.email' => "Une adresse e-mail d'aidant n'est pas valide.",
-            'aidants.*.aidant_type.required' => "Veuillez indiquer la situation de chaque aidant.",
+            'aidants.*.aidant_type.required' => 'Veuillez indiquer la situation de chaque aidant.',
             'declaration_honneur.accepted' => "Vous devez confirmer la déclaration sur l'honneur.",
             'consents_rgpd.accepted' => 'Vous devez accepter le traitement de vos données conformément au RGPD.',
         ];

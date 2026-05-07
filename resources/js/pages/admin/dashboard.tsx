@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { FileText, FolderTree, Handshake, Megaphone, Newspaper, Users } from 'lucide-react';
+import { ClipboardList, FileText, FolderTree, Handshake, Megaphone, Newspaper, Users } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
@@ -12,6 +12,7 @@ type Stats = {
     moi_aussi: number;
     soutien: number;
     partenaire: number;
+    adhesion: number;
     actions: number;
     action_categories: number;
     press_articles: number;
@@ -41,6 +42,14 @@ const statCards = [
         href: admin.partenaire.index(),
         color: 'text-emerald-500',
         bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+    },
+    {
+        title: 'Adhésions aidants',
+        key: 'adhesion' as const,
+        icon: ClipboardList,
+        href: admin.adhesion.index(),
+        color: 'text-purple-500',
+        bg: 'bg-purple-50 dark:bg-purple-950/30',
     },
     {
         title: 'Actions SNA',

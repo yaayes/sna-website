@@ -1,8 +1,13 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
+
+type PageProps = {
+    membershipFeeCents: number;
+    prefillData?: AdhesionFormData & { pending_form_id?: number; coupon_discount_cents?: number } | null;
+};
 
 type AidantData = {
     genre: string;
@@ -54,6 +59,9 @@ type AdhesionFormData = {
     declaration_honneur: boolean;
     consents_rgpd: boolean;
     don_amount: string;
+    coupon_code: string;
+    draft_token: string | null;
+    pending_form_id: number | null;
 };
 
 const ADHESION_STEPS = [
@@ -119,6 +127,22 @@ const emptyAide = (): AideData => ({
     lieu_habitation: '',
     lieu_habitation_autre_precisions: '',
 });
+
+const normalizeDonationInputValue = (value: string): string => {
+    const trimmed = value.trim();
+
+    if (trimmed === '') {
+        return '';
+    }
+
+    const parsedValue = Number.parseFloat(trimmed);
+
+    if (Number.isNaN(parsedValue) || parsedValue <= 0) {
+        return '';
+    }
+
+    return trimmed;
+};
 
 function NavButtons({
     step,
@@ -253,9 +277,32 @@ function AdhesionStepper({
     );
 }
 
-function AdhesionForm() {
+function AdhesionForm({ membershipFeeCents, prefillData }: { membershipFeeCents: number; prefillData?: AdhesionFormData & { pending_form_id?: number } | null }) {
     const [step, setStep] = useState(0);
     const totalSteps = ADHESION_STEPS.length;
+    const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
+    const [couponStatus, setCouponStatus] = useState<{ valid: boolean; message: string; discount_cents: number } | null>(() => {
+        if (prefillData?.coupon_code) {
+            const discountCents = prefillData.coupon_discount_cents ?? 0;
+            return {
+                valid: true,
+                message: discountCents > 0
+                    ? `Coupon appliqué : -${(discountCents / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
+                    : '',
+                discount_cents: discountCents,
+            };
+        }
+        return null;
+    });
+    const [couponChecking, setCouponChecking] = useState(false);
+
+    const [draftToken, setDraftToken] = useState<string | null>(() => {
+        if (typeof window !== 'undefined') {
+            return new URLSearchParams(window.location.search).get('draft_token');
+        }
+        return null;
+    });
+    const [draftSaving, setDraftSaving] = useState(false);
 
     const { data, setData, submit, processing, errors, wasSuccessful, reset } =
         useForm<AdhesionFormData>({
@@ -282,10 +329,138 @@ function AdhesionForm() {
             declaration_honneur: false,
             consents_rgpd: false,
             don_amount: '',
+            coupon_code: '',
+            draft_token: null,
+            pending_form_id: null,
         });
 
     const getError = (path: string): string | undefined => {
         return (errors as Record<string, string>)[path];
+    };
+
+    // Prefill effect: when returning from a failed payment, restore data and jump to last step
+    useEffect(() => {
+        if (prefillData) {
+            const { pending_form_id: pfid, coupon_discount_cents: _cdc, ...formFields } = prefillData;
+            setData({ ...formFields, draft_token: null, pending_form_id: pfid ?? null });
+            setStep(5);
+
+            if (prefillData.coupon_code && !(prefillData.coupon_discount_cents && prefillData.coupon_discount_cents > 0)) {
+                checkCoupon(prefillData.coupon_code);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Draft resume effect: when draft_token in URL and no payment-retry prefill, fetch and restore
+    useEffect(() => {
+        if (!prefillData && draftToken) {
+            fetch(forms.adhesion.draft.fetch.url({ query: { draft_token: draftToken } }), {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            })
+                .then((res) => res.json())
+                .then((json: { found: boolean; step?: number; draft_token?: string; draft_id?: number; data?: Partial<AdhesionFormData> & { coupon_discount_cents?: number } }) => {
+                    if (json.found && json.data) {
+                        const { coupon_discount_cents: draftCouponDiscount, ...formFields } = json.data;
+                        setData((prev) => ({
+                            ...prev,
+                            ...formFields,
+                            draft_token: draftToken,
+                            pending_form_id: json.draft_id ?? prev.pending_form_id,
+                        }));
+                        setStep(json.step ?? 0);
+                        if (json.data.coupon_code) {
+                            if (draftCouponDiscount && draftCouponDiscount > 0) {
+                                setCouponStatus({
+                                    valid: true,
+                                    message: `Coupon appliqu\u00e9 : -${(draftCouponDiscount / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} \u20ac`,
+                                    discount_cents: draftCouponDiscount,
+                                });
+                            } else {
+                                checkCoupon(json.data.coupon_code);
+                            }
+                        }
+                    } else {
+                        setDraftToken(null);
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('draft_token');
+                        history.replaceState({}, '', url.toString());
+                    }
+                })
+                .catch(() => {
+                    setDraftToken(null);
+                });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const checkCoupon = (code: string) => {
+        if (!code.trim()) {
+            setCouponStatus(null);
+            return;
+        }
+
+        setCouponChecking(true);
+        fetch(forms.adhesion.validateCoupon.url({ query: { code: code.trim().toUpperCase() } }), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        })
+            .then((res) => res.json())
+            .then((json: { valid: boolean; message: string; discount_cents?: number }) => {
+                setCouponStatus({ valid: json.valid, message: json.message, discount_cents: json.discount_cents ?? 0 });
+            })
+            .catch(() => setCouponStatus({ valid: false, message: 'Erreur lors de la validation du coupon.', discount_cents: 0 }))
+            .finally(() => setCouponChecking(false));
+    };
+
+    const saveDraft = (stepToSave: number, currentData: AdhesionFormData, currentDraftToken: string | null) => {
+        setDraftSaving(true);
+        const xsrfMatch = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+        const xsrfToken = xsrfMatch ? decodeURIComponent(xsrfMatch[1]) : '';
+        const normalizedDonationAmount = normalizeDonationInputValue(currentData.don_amount);
+        fetch(forms.adhesion.draft.save.url(), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-XSRF-TOKEN': xsrfToken,
+            },
+            body: JSON.stringify({
+                ...currentData,
+                don_amount: normalizedDonationAmount,
+                draft_token: currentData.draft_token ?? currentDraftToken,
+                step: stepToSave,
+            }),
+        })
+            .then((res) => res.json())
+            .then((json: { draft_token?: string; draft_id?: number; step?: number }) => {
+                if (!currentData.draft_token && json.draft_token) {
+                    setData((prev) => ({
+                        ...prev,
+                        draft_token: json.draft_token,
+                        pending_form_id: prev.pending_form_id ?? json.draft_id,
+                    }));
+                    setDraftToken(json.draft_token);
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('draft_token', json.draft_token);
+                    history.replaceState({}, '', url.toString());
+                }
+            })
+            .catch(() => { /* silently ignore draft save failures */ })
+            .finally(() => setDraftSaving(false));
+    };
+
+    const handleCouponChange = (value: string) => {
+        setData('coupon_code', value);
+        // Reset status when user edits the field
+        if (couponStatus) {
+            setCouponStatus(null);
+        }
+    };
+
+    const removeCoupon = () => {
+        setData('coupon_code', '');
+        setCouponStatus(null);
     };
 
     const setAidantField = <K extends keyof AidantData>(
@@ -358,20 +533,140 @@ function AdhesionForm() {
         );
     };
 
+    const validateStep = (currentStep: number): Record<string, string> => {
+        const nextErrors: Record<string, string> = {};
+
+        if (currentStep === 0) {
+            if (!data.declaration_honneur) {
+                nextErrors.declaration_honneur =
+                    "Vous devez déclarer sur l'honneur votre situation.";
+            }
+
+            data.aidants.forEach((aidant, index) => {
+                if (!aidant.nom.trim()) {
+                    nextErrors[`aidants.${index}.nom`] =
+                        'Le nom est obligatoire.';
+                }
+
+                if (!aidant.prenom.trim()) {
+                    nextErrors[`aidants.${index}.prenom`] =
+                        'Le prénom est obligatoire.';
+                }
+
+                if (!aidant.email.trim()) {
+                    nextErrors[`aidants.${index}.email`] =
+                        "L'adresse e-mail est obligatoire.";
+                } else if (
+                    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(aidant.email)
+                ) {
+                    nextErrors[`aidants.${index}.email`] =
+                        "L'adresse e-mail est invalide.";
+                }
+
+                if (!aidant.aidant_type) {
+                    nextErrors[`aidants.${index}.aidant_type`] =
+                        "Veuillez préciser votre type d'aidant.";
+                }
+            });
+        }
+
+        if (currentStep === 1) {
+            if (!data.aide_tranche_age) {
+                nextErrors.aide_tranche_age =
+                    "Veuillez sélectionner la tranche d'age de la personne aidée.";
+            }
+
+            if (data.type_situation.length === 0) {
+                nextErrors.type_situation =
+                    'Veuillez sélectionner au moins un type de situation.';
+            }
+        }
+
+        if (currentStep === 2) {
+            data.aides.forEach((aide, index) => {
+                if (!aide.aide_genre) {
+                    nextErrors[`aides.${index}.aide_genre`] =
+                        'Veuillez sélectionner le genre de la personne aidée.';
+                }
+
+                if (!aide.aide_profile) {
+                    nextErrors[`aides.${index}.aide_profile`] =
+                        'Veuillez indiquer si la personne aidée est un enfant ou un adulte.';
+                }
+            });
+        }
+
+        if (currentStep === 3 && data.impacts.length === 0) {
+            nextErrors.impacts =
+                'Veuillez sélectionner au moins un impact.';
+        }
+
+        if (currentStep === 4 && !data.situation_professionnelle) {
+            nextErrors.situation_professionnelle =
+                'Veuillez sélectionner votre situation professionnelle.';
+        }
+
+        if (currentStep === 5 && !data.consents_rgpd) {
+            nextErrors.consents_rgpd =
+                'Vous devez consentir au traitement de vos données.';
+        }
+
+        return nextErrors;
+    };
+
     const handleSubmit: FormEventHandler = (event) => {
         event.preventDefault();
 
+        const nextErrors = validateStep(step);
+
+        if (Object.keys(nextErrors).length > 0) {
+            setStepErrors(nextErrors);
+
+            return;
+        }
+
+        const normalizedDonationAmount = normalizeDonationInputValue(data.don_amount);
+
+        if (normalizedDonationAmount !== data.don_amount) {
+            setData('don_amount', normalizedDonationAmount);
+        }
+
         submit(forms.adhesion.store(), {
+            data: {
+                ...data,
+                don_amount: normalizedDonationAmount,
+            },
             onSuccess: () => {
                 reset();
                 setStep(0);
+                setStepErrors({});
+                setDraftToken(null);
+                const url = new URL(window.location.href);
+                url.searchParams.delete('draft_token');
+                history.replaceState({}, '', url.toString());
             },
         });
     };
 
-    const goNext = () =>
-        setStep((currentStep) => Math.min(currentStep + 1, totalSteps - 1));
-    const goBack = () => setStep((currentStep) => Math.max(currentStep - 1, 0));
+    const goNext = () => {
+        const nextErrors = validateStep(step);
+
+        if (Object.keys(nextErrors).length > 0) {
+            setStepErrors(nextErrors);
+
+            return;
+        }
+
+        setStepErrors({});
+        const nextStep = Math.min(step + 1, totalSteps - 1);
+        setStep(nextStep);
+        saveDraft(nextStep, data, draftToken);
+    };
+
+    const goBack = () => {
+        setStepErrors({});
+        setStep((currentStep) => Math.max(currentStep - 1, 0));
+    };
 
     const inputCls =
         'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/30 focus:outline-none placeholder:text-gray-300';
@@ -422,6 +717,12 @@ function AdhesionForm() {
     return (
         <form onSubmit={handleSubmit}>
             <AdhesionStepper currentStep={step} totalSteps={totalSteps} />
+            {draftSaving && (
+                <p className="mb-3 text-center text-xs text-gray-400">Sauvegarde en cours…</p>
+            )}
+            {draftToken && !draftSaving && !prefillData && (
+                <p className="mb-3 text-center text-xs text-green-600">✓ Brouillon sauvegardé</p>
+            )}
 
             <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
                 {step === 0 && (
@@ -457,9 +758,11 @@ function AdhesionForm() {
                                 entourage et fournir des informations sinceres
                                 et exactes.
                             </label>
-                            {errors.declaration_honneur && (
+                            {(stepErrors.declaration_honneur ||
+                                errors.declaration_honneur) && (
                                 <p className="text-xs text-red-600">
-                                    {errors.declaration_honneur}
+                                    {stepErrors.declaration_honneur ||
+                                        errors.declaration_honneur}
                                 </p>
                             )}
                         </div>
@@ -538,11 +841,17 @@ function AdhesionForm() {
                                             }
                                             className={inputCls}
                                         />
-                                        {getError(`aidants.${index}.nom`) && (
+                                        {(stepErrors[`aidants.${index}.nom`] ||
+                                            getError(
+                                                `aidants.${index}.nom`,
+                                            )) && (
                                             <p className="mt-1 text-xs text-red-600">
-                                                {getError(
-                                                    `aidants.${index}.nom`,
-                                                )}
+                                                {stepErrors[
+                                                    `aidants.${index}.nom`
+                                                ] ||
+                                                    getError(
+                                                        `aidants.${index}.nom`,
+                                                    )}
                                             </p>
                                         )}
                                     </div>
@@ -562,13 +871,19 @@ function AdhesionForm() {
                                             }
                                             className={inputCls}
                                         />
-                                        {getError(
-                                            `aidants.${index}.prenom`,
-                                        ) && (
+                                        {(stepErrors[
+                                            `aidants.${index}.prenom`
+                                        ] ||
+                                            getError(
+                                                `aidants.${index}.prenom`,
+                                            )) && (
                                             <p className="mt-1 text-xs text-red-600">
-                                                {getError(
-                                                    `aidants.${index}.prenom`,
-                                                )}
+                                                {stepErrors[
+                                                    `aidants.${index}.prenom`
+                                                ] ||
+                                                    getError(
+                                                        `aidants.${index}.prenom`,
+                                                    )}
                                             </p>
                                         )}
                                     </div>
@@ -603,11 +918,19 @@ function AdhesionForm() {
                                             }
                                             className={inputCls}
                                         />
-                                        {getError(`aidants.${index}.email`) && (
+                                        {(stepErrors[
+                                            `aidants.${index}.email`
+                                        ] ||
+                                            getError(
+                                                `aidants.${index}.email`,
+                                            )) && (
                                             <p className="mt-1 text-xs text-red-600">
-                                                {getError(
-                                                    `aidants.${index}.email`,
-                                                )}
+                                                {stepErrors[
+                                                    `aidants.${index}.email`
+                                                ] ||
+                                                    getError(
+                                                        `aidants.${index}.email`,
+                                                    )}
                                             </p>
                                         )}
                                     </div>
@@ -714,13 +1037,19 @@ function AdhesionForm() {
                                             </label>
                                         ))}
                                     </div>
-                                    {getError(
-                                        `aidants.${index}.aidant_type`,
-                                    ) && (
+                                    {(stepErrors[
+                                        `aidants.${index}.aidant_type`
+                                    ] ||
+                                        getError(
+                                            `aidants.${index}.aidant_type`,
+                                        )) && (
                                         <p className="mt-1 text-xs text-red-600">
-                                            {getError(
-                                                `aidants.${index}.aidant_type`,
-                                            )}
+                                            {stepErrors[
+                                                `aidants.${index}.aidant_type`
+                                            ] ||
+                                                getError(
+                                                    `aidants.${index}.aidant_type`,
+                                                )}
                                         </p>
                                     )}
                                 </div>
@@ -897,6 +1226,11 @@ function AdhesionForm() {
                                         </label>
                                     ))}
                                 </div>
+                                {stepErrors.aide_tranche_age && (
+                                    <p className="mt-1 text-xs text-red-600">
+                                        {stepErrors.aide_tranche_age}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className={labelCls}>
@@ -940,6 +1274,11 @@ function AdhesionForm() {
                                     </label>
                                 ))}
                             </div>
+                            {stepErrors.type_situation && (
+                                <p className="mt-1 text-xs text-red-600">
+                                    {stepErrors.type_situation}
+                                </p>
+                            )}
                         </div>
 
                         {data.type_situation.includes('Autre') && (
@@ -1085,6 +1424,17 @@ function AdhesionForm() {
                                                 </label>
                                             ))}
                                         </div>
+                                        {stepErrors[
+                                            `aides.${aideIndex}.aide_genre`
+                                        ] && (
+                                            <p className="mt-1 text-xs text-red-600">
+                                                {
+                                                    stepErrors[
+                                                        `aides.${aideIndex}.aide_genre`
+                                                    ]
+                                                }
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div>
@@ -1127,6 +1477,17 @@ function AdhesionForm() {
                                                 </label>
                                             ))}
                                         </div>
+                                        {stepErrors[
+                                            `aides.${aideIndex}.aide_profile`
+                                        ] && (
+                                            <p className="mt-1 text-xs text-red-600">
+                                                {
+                                                    stepErrors[
+                                                        `aides.${aideIndex}.aide_profile`
+                                                    ]
+                                                }
+                                            </p>
+                                        )}
                                     </div>
 
                                     {aide.aide_profile === 'enfant' && (
@@ -1370,6 +1731,10 @@ function AdhesionForm() {
                             ))}
                         </div>
 
+                        {stepErrors['impacts'] && (
+                            <p className="text-xs text-red-600">{stepErrors['impacts']}</p>
+                        )}
+
                         {data.impacts.includes('Autre') && (
                             <div>
                                 <label className={labelCls}>
@@ -1463,6 +1828,10 @@ function AdhesionForm() {
                             ))}
                         </div>
 
+                        {stepErrors['situation_professionnelle'] && (
+                            <p className="text-xs text-red-600">{stepErrors['situation_professionnelle']}</p>
+                        )}
+
                         <NavButtons
                             step={step}
                             processing={processing}
@@ -1533,43 +1902,147 @@ function AdhesionForm() {
                             </label>
                             <input
                                 type="number"
-                                min="1"
+                                min="0"
                                 step="0.01"
                                 value={data.don_amount}
                                 onChange={(event) =>
                                     setData('don_amount', event.target.value)
+                                }
+                                onBlur={(event) =>
+                                    setData(
+                                        'don_amount',
+                                        normalizeDonationInputValue(
+                                            event.target.value,
+                                        ),
+                                    )
                                 }
                                 className={inputCls}
                                 placeholder="20"
                             />
                         </div>
 
-                        <p className="rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-500">
-                            Code promo adhesion:{' '}
-                            <span className="font-semibold text-sna-teal">
-                                AIDANT2026
-                            </span>{' '}
-                            (reduction de 20 euros)
-                        </p>
+                        <div className="space-y-2">
+                            <label className={labelCls}>
+                                Code coupon (facultatif)
+                            </label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={data.coupon_code}
+                                    onChange={(e) => handleCouponChange(e.target.value)}
+                                    disabled={couponStatus?.valid === true}
+                                    className={inputCls + ' uppercase disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400'}
+                                    placeholder="Ex: AIDANT2026"
+                                    maxLength={50}
+                                />
+                                {couponStatus?.valid ? (
+                                    <button
+                                        type="button"
+                                        onClick={removeCoupon}
+                                        className="shrink-0 rounded-xl border border-red-400 px-4 py-2 text-sm font-medium text-red-500 transition hover:bg-red-500 hover:text-white"
+                                    >
+                                        Supprimer
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => checkCoupon(data.coupon_code)}
+                                        disabled={couponChecking || !data.coupon_code.trim()}
+                                        className="shrink-0 rounded-xl border border-sna-teal px-4 py-2 text-sm font-medium text-sna-teal transition hover:bg-sna-teal hover:text-white disabled:opacity-50"
+                                    >
+                                        {couponChecking ? '...' : 'Appliquer'}
+                                    </button>
+                                )}
+                            </div>
+                            {couponStatus && (
+                                <p className={`text-xs font-medium ${couponStatus.valid ? 'text-green-600' : 'text-red-600'}`}>
+                                    {couponStatus.valid ? '✓ ' : '✗ '}{couponStatus.message}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Payment summary */}
+                        {(() => {
+                            const feeCents = membershipFeeCents;
+                            const discountCents = couponStatus?.valid ? (couponStatus.discount_cents ?? 0) : 0;
+                            const afterDiscount = Math.max(0, feeCents - discountCents);
+                            const donCents = data.don_amount
+                                ? Math.round(parseFloat(data.don_amount) * 100)
+                                : 0;
+                            const totalCents = afterDiscount + (donCents > 0 ? donCents : 0);
+                            const fmt = (cents: number) =>
+                                (cents / 100).toLocaleString('fr-FR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                });
+
+                            return (
+                                <div className="rounded-2xl border border-sna-teal/20 bg-sna-teal-light p-5 space-y-2">
+                                    <p className="text-sm font-bold text-sna-teal-dark mb-3">
+                                        Recapitulatif du paiement
+                                    </p>
+                                    <div className="flex justify-between text-sm text-gray-700">
+                                        <span>Cotisation SNA</span>
+                                        <span className="font-semibold">
+                                            {feeCents > 0 ? `${fmt(feeCents)} €` : 'Gratuit'}
+                                        </span>
+                                    </div>
+                                    {discountCents > 0 && (
+                                        <>
+                                            <div className="flex justify-between text-sm text-green-700">
+                                                <span>Reduction coupon</span>
+                                                <span className="font-semibold">-{fmt(discountCents)} €</span>
+                                            </div>
+                                            <div className="flex justify-between items-center rounded-lg bg-green-50 px-3 py-1.5 text-xs">
+                                                <span className="text-green-700 font-medium">Code appliqué</span>
+                                                <span className="font-bold tracking-wider text-green-800">{data.coupon_code.toUpperCase()}</span>
+                                            </div>
+                                        </>
+                                    )}
+                                    {donCents > 0 && (
+                                        <div className="flex justify-between text-sm text-gray-700">
+                                            <span>Don complementaire</span>
+                                            <span className="font-semibold">{fmt(donCents)} €</span>
+                                        </div>
+                                    )}
+                                    <div className="mt-2 border-t border-sna-teal/20 pt-2 flex justify-between text-sm font-bold text-sna-teal-dark">
+                                        <span>Total</span>
+                                        <span>{totalCents > 0 ? `${fmt(totalCents)} €` : 'Gratuit'}</span>
+                                    </div>
+                                    {totalCents > 0 && (
+                                        <p className="text-xs text-gray-500 pt-1">
+                                            Vous serez redirige(e) vers la page de paiement securisee apres soumission.
+                                        </p>
+                                    )}
+                                </div>
+                            );
+                        })()}
 
                         <label className="flex items-start gap-3 text-xs text-gray-600">
                             <input
                                 type="checkbox"
                                 checked={data.consents_rgpd}
-                                onChange={(event) =>
+                                onChange={(event) => {
                                     setData(
                                         'consents_rgpd',
                                         event.target.checked,
-                                    )
-                                }
+                                    );
+                                    if (event.target.checked) {
+                                        setStepErrors((prev) => {
+                                            const next = { ...prev };
+                                            delete next['consents_rgpd'];
+                                            return next;
+                                        });
+                                    }
+                                }}
                                 className="mt-0.5 h-4 w-4 shrink-0 rounded accent-sna-teal"
                             />
                             Je consens au traitement de mes donnees personnelles
                             conformement au RGPD.
                         </label>
-                        {errors.consents_rgpd && (
+                        {(stepErrors['consents_rgpd'] || errors.consents_rgpd) && (
                             <p className="text-xs text-red-600">
-                                {errors.consents_rgpd}
+                                {stepErrors['consents_rgpd'] || errors.consents_rgpd}
                             </p>
                         )}
 
@@ -1587,7 +2060,7 @@ function AdhesionForm() {
     );
 }
 
-export default function AdhesionPage() {
+export default function AdhesionPage({ membershipFeeCents, prefillData }: PageProps) {
     return (
         <>
             <Head title="Adhesion - Syndicat National des Aidants">
@@ -1621,7 +2094,7 @@ export default function AdhesionPage() {
                 </div>
 
                 <div className="mx-auto max-w-4xl px-6 pb-20">
-                    <AdhesionForm />
+                    <AdhesionForm membershipFeeCents={membershipFeeCents} prefillData={prefillData} />
 
                     <p className="mt-8 text-center text-xs text-gray-400">
                         Deja soumis un formulaire ?{' '}

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { FileText, FolderTree, Handshake, LayoutGrid, Megaphone, Users, UserCheck } from 'lucide-react';
+import { ClipboardList, FileText, FolderTree, Handshake, LayoutGrid, Megaphone, Newspaper, TicketPercent, Users, UserCheck } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -35,6 +35,16 @@ const mainNavItems: NavItem[] = [
         title: 'Partenaire',
         href: admin.partenaire.index(),
         icon: Handshake,
+    },
+    {
+        title: 'Adhésions aidants',
+        href: admin.adhesion.index(),
+        icon: ClipboardList,
+    },
+    {
+        title: 'Coupons',
+        href: admin.coupons.index(),
+        icon: TicketPercent,
     },
     {
         title: 'Actions SNA',

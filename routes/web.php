@@ -3,6 +3,8 @@
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\Admin\ActionCategoryController as AdminActionCategoryController;
 use App\Http\Controllers\Admin\ActionController as AdminActionController;
+use App\Http\Controllers\Admin\AidantAdhesionFormController as AdminAidantAdhesionFormController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ImageUploadController as AdminImageUploadController;
 use App\Http\Controllers\Admin\MoiAussiFormController as AdminMoiAussiFormController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\Forms\MoiAussiFormController;
 use App\Http\Controllers\Forms\PartenaireFormController;
 use App\Http\Controllers\Forms\RejoindreSnaFormController;
 use App\Http\Controllers\Forms\SoutienFormController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PressArticleController;
 use App\Http\Controllers\RepresentantController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -34,7 +37,10 @@ Route::get('/revue-de-presse', [PressArticleController::class, 'index'])->name('
 Route::get('/revue-de-presse/{pressArticle:slug}', [PressArticleController::class, 'show'])->name('press-articles.show');
 
 // Dedicated form pages
-Route::inertia('/formulaire/adhesion', 'forms/adhesion')->name('forms.adhesion.page');
+Route::get('/formulaire/adhesion', [AidantAdhesionFormController::class, 'show'])->name('forms.adhesion.page');
+Route::get('/formulaire/adhesion/validate-coupon', [AidantAdhesionFormController::class, 'validateCoupon'])->name('forms.adhesion.validate-coupon');
+Route::post('/formulaire/adhesion/draft', [AidantAdhesionFormController::class, 'saveDraft'])->name('forms.adhesion.draft.save');
+Route::get('/formulaire/adhesion/draft', [AidantAdhesionFormController::class, 'fetchDraft'])->name('forms.adhesion.draft.fetch');
 Route::inertia('/formulaire/soutien', 'forms/soutien')->name('forms.soutien.page');
 Route::inertia('/formulaire/partenaire', 'forms/partenaire')->name('forms.partenaire.page');
 Route::inertia('/formulaire/moi-aussi', 'forms/moi-aussi')->name('forms.moi-aussi.page');
@@ -52,6 +58,10 @@ Route::post('/rejoindre-le-sna', [RejoindreSnaFormController::class, 'store'])->
 Route::get('/mes-formulaires', [FormAccessController::class, 'showRequestForm'])->name('forms.access.request');
 Route::post('/mes-formulaires', [FormAccessController::class, 'sendAccessLink'])->name('forms.access.send');
 Route::get('/mes-formulaires/{token}', [FormAccessController::class, 'show'])->name('forms.access.show');
+
+// Payment
+Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -74,6 +84,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->g
     Route::resource('/press-articles', AdminPressArticleController::class)->except('show');
     Route::get('/moi-aussi', [AdminMoiAussiFormController::class, 'index'])->name('moi-aussi.index');
     Route::get('/moi-aussi/{moiAussiForm}', [AdminMoiAussiFormController::class, 'show'])->name('moi-aussi.show');
+    Route::get('/adhesion', [AdminAidantAdhesionFormController::class, 'index'])->name('adhesion.index');
+    Route::get('/adhesion/{aidantAdhesionForm}', [AdminAidantAdhesionFormController::class, 'show'])->name('adhesion.show');
+    Route::resource('/coupons', AdminCouponController::class)->except('show');
     Route::get('/soutien', [AdminSoutienFormController::class, 'index'])->name('soutien.index');
     Route::get('/soutien/{soutienForm}', [AdminSoutienFormController::class, 'show'])->name('soutien.show');
     Route::get('/partenaire', [AdminPartenaireFormController::class, 'index'])->name('partenaire.index');
