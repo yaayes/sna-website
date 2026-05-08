@@ -31,6 +31,7 @@ class PartenaireForm extends Model
         'commitment_expertise',
         'consents_email',
         'consents_rgpd',
+        'don_amount_cents',
     ];
 
     protected function casts(): array
@@ -44,6 +45,7 @@ class PartenaireForm extends Model
             'commitment_expertise' => 'boolean',
             'consents_email' => 'boolean',
             'consents_rgpd' => 'boolean',
+            'don_amount_cents' => 'integer',
         ];
     }
 

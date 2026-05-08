@@ -34,6 +34,8 @@ class StorePartenaireFormRequest extends FormRequest
             'attachments.*' => ['file', 'mimes:pdf', 'max:5120'],
             'consents_email' => ['boolean'],
             'consents_rgpd' => ['accepted'],
+            'don_amount' => ['nullable', 'numeric', 'min:0', 'max:100000'],
+            'pending_form_id' => ['nullable', 'integer', 'exists:partenaire_forms,id'],
         ];
     }
 

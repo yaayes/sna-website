@@ -31,6 +31,8 @@ type PartenaireEntry = {
     partnership_technical: boolean;
     partnership_financial: boolean;
     created_at: string;
+    payment_status: string | null;
+    payment_amount_cents: number | null;
 };
 
 type Paginated<T> = {
@@ -42,6 +44,14 @@ type Paginated<T> = {
     links: { url: string | null; label: string; active: boolean }[];
     prev_page_url: string | null;
     next_page_url: string | null;
+};
+
+const paymentStatusLabel: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+    captured: { label: 'Paye', variant: 'default' },
+    pending: { label: 'En attente', variant: 'secondary' },
+    authorized: { label: 'Autorise', variant: 'secondary' },
+    rejected: { label: 'Refuse', variant: 'destructive' },
+    cancelled: { label: 'Annule', variant: 'outline' },
 };
 
 export default function PartenaireIndex({
@@ -69,7 +79,9 @@ export default function PartenaireIndex({
                             <TableHead>Organisation</TableHead>
                             <TableHead>Contact</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Statut légal</TableHead>
+                            <TableHead>Statut legal</TableHead>
+                            <TableHead>Paiement</TableHead>
+                            <TableHead>Montant</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead className="w-10" />
                         </TableRow>
@@ -78,7 +90,7 @@ export default function PartenaireIndex({
                         {entries.data.length === 0 && (
                             <TableRow>
                                 <TableCell
-                                    colSpan={7}
+                                    colSpan={9}
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     Aucun résultat trouvé.
@@ -97,6 +109,20 @@ export default function PartenaireIndex({
                                     <Badge variant="secondary">
                                         {entry.legal_status}
                                     </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    {entry.payment_status ? (
+                                        <Badge variant={paymentStatusLabel[entry.payment_status]?.variant ?? 'outline'}>
+                                            {paymentStatusLabel[entry.payment_status]?.label ?? entry.payment_status}
+                                        </Badge>
+                                    ) : (
+                                        <span className="text-xs text-muted-foreground">—</span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="text-xs">
+                                    {entry.payment_amount_cents !== null
+                                        ? (entry.payment_amount_cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+                                        : '—'}
                                 </TableCell>
                                 <TableCell className="text-xs text-muted-foreground">
                                     {new Date(

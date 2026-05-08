@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\FormSubmission;
+use App\Models\PartenaireForm;
 use App\Models\Payment;
+use App\Models\SoutienForm;
 use App\Services\CawlPaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
@@ -148,6 +151,81 @@ class PaymentControllerTest extends TestCase
         $response->assertRedirect(route('forms.adhesion.page'));
     }
 
+    public function test_return_redirects_to_soutien_page_with_prefill_on_failed_soutien_payment(): void
+    {
+        $form = SoutienForm::factory()->create([
+            'name' => 'Alice Doe',
+            'email' => 'soutien@example.com',
+        ]);
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'soutien',
+            'formable_type' => SoutienForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'hosted_checkout_id' => 'hco_soutien_failed',
+            'status' => 'pending',
+        ]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getHostedCheckoutStatus')
+                ->once()
+                ->with('hco_soutien_failed')
+                ->andReturn([
+                    'status' => 'REJECTED',
+                    'status_code' => 2,
+                    'cawl_payment_id' => null,
+                    'raw' => ['status' => 'REJECTED'],
+                ]);
+        });
+
+        $response = $this->get('/payment/return?hostedCheckoutId=hco_soutien_failed');
+
+        $response->assertRedirect(route('forms.soutien.page'));
+        $response->assertSessionHas('soutien_prefill');
+    }
+
+    public function test_return_redirects_to_partenaire_page_with_prefill_on_failed_partenaire_payment(): void
+    {
+        $form = PartenaireForm::factory()->create([
+            'email' => 'partenaire@example.com',
+        ]);
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'partenaire',
+            'formable_type' => PartenaireForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'hosted_checkout_id' => 'hco_partenaire_failed',
+            'status' => 'pending',
+        ]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getHostedCheckoutStatus')
+                ->once()
+                ->with('hco_partenaire_failed')
+                ->andReturn([
+                    'status' => 'REJECTED',
+                    'status_code' => 2,
+                    'cawl_payment_id' => null,
+                    'raw' => ['status' => 'REJECTED'],
+                ]);
+        });
+
+        $response = $this->get('/payment/return?hostedCheckoutId=hco_partenaire_failed');
+
+        $response->assertRedirect(route('forms.partenaire.page'));
+        $response->assertSessionHas('partenaire_prefill');
+    }
+
     public function test_return_returns_422_when_hosted_checkout_id_is_missing(): void
     {
         $this->get('/payment/return')->assertStatus(422);
@@ -277,6 +355,98 @@ class PaymentControllerTest extends TestCase
         $this->assertDatabaseCount('payments', 0);
     }
 
+    public function test_soutien_store_redirects_to_cawl_with_minimum_fee_only(): void
+    {
+        config(['cawl.membership_fee_cents' => 2000]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('createHostedCheckout')
+                ->once()
+                ->with(2000, \Mockery::type('string'), route('payment.return'), route('payment.webhook'))
+                ->andReturn([
+                    'hosted_checkout_id' => 'hco_sou_min_fee',
+                    'redirect_url' => 'https://payment.preprod.cawl-solutions.fr/hostedcheckout/sou',
+                    'returnmac' => 'mac123',
+                ]);
+        });
+
+        $response = $this->withHeaders(['X-Inertia' => 'true'])
+            ->post('/formulaire/soutien', $this->validSoutienPayload());
+
+        $response->assertStatus(409);
+        $response->assertHeader('X-Inertia-Location', 'https://payment.preprod.cawl-solutions.fr/hostedcheckout/sou');
+
+        $this->assertDatabaseHas('payments', [
+            'hosted_checkout_id' => 'hco_sou_min_fee',
+            'amount_cents' => 2000,
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_soutien_store_adds_donation_to_total_amount(): void
+    {
+        config(['cawl.membership_fee_cents' => 2000]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('createHostedCheckout')
+                ->once()
+                ->with(2550, \Mockery::type('string'), route('payment.return'), route('payment.webhook'))
+                ->andReturn([
+                    'hosted_checkout_id' => 'hco_sou_don',
+                    'redirect_url' => 'https://payment.preprod.cawl-solutions.fr/hostedcheckout/sou-don',
+                    'returnmac' => 'mac123',
+                ]);
+        });
+
+        $response = $this->withHeaders(['X-Inertia' => 'true'])
+            ->post('/formulaire/soutien', $this->validSoutienPayload([
+                'don_amount' => '5.50',
+            ]));
+
+        $response->assertStatus(409);
+        $this->assertDatabaseHas('soutien_forms', [
+            'email' => 'soutien@example.com',
+            'don_amount_cents' => 550,
+        ]);
+        $this->assertDatabaseHas('payments', [
+            'hosted_checkout_id' => 'hco_sou_don',
+            'amount_cents' => 2550,
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_partenaire_store_redirects_to_cawl_with_minimum_fee_and_donation(): void
+    {
+        config(['cawl.membership_fee_cents' => 2000]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('createHostedCheckout')
+                ->once()
+                ->with(3000, \Mockery::type('string'), route('payment.return'), route('payment.webhook'))
+                ->andReturn([
+                    'hosted_checkout_id' => 'hco_par_don',
+                    'redirect_url' => 'https://payment.preprod.cawl-solutions.fr/hostedcheckout/par-don',
+                    'returnmac' => 'mac123',
+                ]);
+        });
+
+        $response = $this->withHeaders(['X-Inertia' => 'true'])
+            ->post('/formulaire/partenaire', $this->validPartenairePayload([
+                'don_amount' => '10.00',
+            ]));
+
+        $response->assertStatus(409);
+        $this->assertDatabaseHas('partenaire_forms', [
+            'email' => 'partenaire@example.com',
+            'don_amount_cents' => 1000,
+        ]);
+        $this->assertDatabaseHas('payments', [
+            'hosted_checkout_id' => 'hco_par_don',
+            'amount_cents' => 3000,
+            'status' => 'pending',
+        ]);
+    }
+
     // ─── Helpers ────────────────────────────────────────────────────────────────
 
     private function validAdhesionPayload(array $overrides = []): array
@@ -308,6 +478,45 @@ class PaymentControllerTest extends TestCase
                 'aide_genre' => 'homme',
                 'scolarisation' => 'ulis',
             ]],
+        ], $overrides);
+    }
+
+    private function validSoutienPayload(array $overrides = []): array
+    {
+        return array_merge([
+            'name' => 'Alice Soutien',
+            'address' => '1 rue des Aidants, Paris',
+            'email' => 'soutien@example.com',
+            'phone' => '0102030405',
+            'wants_events' => true,
+            'wants_participation' => true,
+            'message' => 'Je souhaite soutenir le syndicat.',
+            'consents_email' => true,
+            'consents_rgpd' => true,
+        ], $overrides);
+    }
+
+    private function validPartenairePayload(array $overrides = []): array
+    {
+        return array_merge([
+            'organisation_name' => 'Association Test',
+            'legal_status' => 'Association',
+            'address' => '2 avenue de Test, Lyon',
+            'phone' => '0102030406',
+            'email' => 'partenaire@example.com',
+            'contact_name' => 'Jean Martin',
+            'partnership_moral' => true,
+            'partnership_moral_details' => 'Communication locale',
+            'partnership_technical' => false,
+            'partnership_technical_details' => '',
+            'partnership_financial' => true,
+            'objectives' => 'Soutenir les aidants sur le territoire.',
+            'comment_libre' => 'Merci.',
+            'commitment_projects' => true,
+            'commitment_communication' => false,
+            'commitment_expertise' => true,
+            'consents_email' => true,
+            'consents_rgpd' => true,
         ], $overrides);
     }
 

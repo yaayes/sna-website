@@ -91,6 +91,69 @@ class AdminFormListTest extends TestCase
             ->assertInertia(fn ($page) => $page->where('entries.total', 1));
     }
 
+    public function test_soutien_index_exposes_successful_payment_status_and_amount(): void
+    {
+        $this->withoutMiddleware(HandleInertiaRequests::class);
+
+        $admin = User::factory()->admin()->create();
+        $form = SoutienForm::factory()->create(['email' => 'soutien-paid@example.com']);
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'soutien',
+            'formable_type' => SoutienForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'status' => 'captured',
+            'amount_cents' => 2400,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->withHeaders([
+                'X-Inertia' => 'true',
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json',
+            ])
+            ->get('/@/soutien?search=soutien-paid@example.com');
+
+        $response->assertOk();
+        $payload = json_decode($response->getContent(), true);
+
+        $this->assertEquals('captured', $payload['props']['entries']['data'][0]['payment_status']);
+        $this->assertEquals(2400, $payload['props']['entries']['data'][0]['payment_amount_cents']);
+    }
+
+    public function test_soutien_show_exposes_payment_summary(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = SoutienForm::factory()->create();
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'soutien',
+            'formable_type' => SoutienForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'status' => 'captured',
+            'amount_cents' => 2300,
+            'merchant_reference' => 'SOU-TESTPAY001',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/@/soutien/'.$form->id)
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/soutien/show')
+                ->where('payment.status', 'captured')
+                ->where('payment.amount_cents', 2300));
+    }
+
     // ── Partenaire ─────────────────────────────────────────────────────────────
 
     public function test_partenaire_index_is_accessible_by_admin(): void
@@ -112,6 +175,69 @@ class AdminFormListTest extends TestCase
         $this->actingAs($admin)
             ->get('/@/partenaire?search=green')
             ->assertInertia(fn ($page) => $page->where('entries.total', 1));
+    }
+
+    public function test_partenaire_index_exposes_successful_payment_status_and_amount(): void
+    {
+        $this->withoutMiddleware(HandleInertiaRequests::class);
+
+        $admin = User::factory()->admin()->create();
+        $form = PartenaireForm::factory()->create(['email' => 'partenaire-paid@example.com']);
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'partenaire',
+            'formable_type' => PartenaireForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'status' => 'captured',
+            'amount_cents' => 3600,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->withHeaders([
+                'X-Inertia' => 'true',
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json',
+            ])
+            ->get('/@/partenaire?search=partenaire-paid@example.com');
+
+        $response->assertOk();
+        $payload = json_decode($response->getContent(), true);
+
+        $this->assertEquals('captured', $payload['props']['entries']['data'][0]['payment_status']);
+        $this->assertEquals(3600, $payload['props']['entries']['data'][0]['payment_amount_cents']);
+    }
+
+    public function test_partenaire_show_exposes_payment_summary(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = PartenaireForm::factory()->create();
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'partenaire',
+            'formable_type' => PartenaireForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'status' => 'captured',
+            'amount_cents' => 3200,
+            'merchant_reference' => 'PAR-TESTPAY001',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/@/partenaire/'.$form->id)
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/partenaire/show')
+                ->where('payment.status', 'captured')
+                ->where('payment.amount_cents', 3200));
     }
 
     // ── HasRef trait ───────────────────────────────────────────────────────────
@@ -155,8 +281,22 @@ class AdminFormListTest extends TestCase
     public function test_adhesion_index_search_filters_by_email(): void
     {
         $admin = User::factory()->admin()->create();
-        AidantAdhesionForm::factory()->create(['email' => 'alice@example.com']);
-        AidantAdhesionForm::factory()->create(['email' => 'bob@example.com']);
+        AidantAdhesionForm::factory()->create([
+            'nom' => 'Durand',
+            'prenom' => 'Alice',
+            'email' => 'alice@example.com',
+            'aidant_type' => 'parent_handicap',
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
+            'draft_completed_at' => now(),
+        ]);
+        AidantAdhesionForm::factory()->create([
+            'nom' => 'Bernard',
+            'prenom' => 'Bob',
+            'email' => 'bob@example.com',
+            'aidant_type' => 'parent_handicap',
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
+            'draft_completed_at' => now(),
+        ]);
 
         $this->actingAs($admin)
             ->get('/@/adhesion?search=alice')
@@ -166,8 +306,22 @@ class AdminFormListTest extends TestCase
     public function test_adhesion_index_search_filters_by_nom(): void
     {
         $admin = User::factory()->admin()->create();
-        AidantAdhesionForm::factory()->create(['nom' => 'Dupont', 'email' => 'a@example.com']);
-        AidantAdhesionForm::factory()->create(['nom' => 'Martin', 'email' => 'b@example.com']);
+        AidantAdhesionForm::factory()->create([
+            'nom' => 'Dupont',
+            'prenom' => 'Alice',
+            'email' => 'a@example.com',
+            'aidant_type' => 'parent_handicap',
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
+            'draft_completed_at' => now(),
+        ]);
+        AidantAdhesionForm::factory()->create([
+            'nom' => 'Martin',
+            'prenom' => 'Bob',
+            'email' => 'b@example.com',
+            'aidant_type' => 'parent_handicap',
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
+            'draft_completed_at' => now(),
+        ]);
 
         $this->actingAs($admin)
             ->get('/@/adhesion?search=dupont')
@@ -177,7 +331,12 @@ class AdminFormListTest extends TestCase
     public function test_adhesion_show_is_accessible_by_admin(): void
     {
         $admin = User::factory()->admin()->create();
-        $form = AidantAdhesionForm::factory()->create();
+        $form = AidantAdhesionForm::factory()->create([
+            'nom' => 'Leroy',
+            'prenom' => 'Claire',
+            'email' => 'claire@example.com',
+            'aidant_type' => 'parent_handicap',
+        ]);
 
         $this->actingAs($admin)
             ->get('/@/adhesion/'.$form->id)

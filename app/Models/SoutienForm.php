@@ -22,6 +22,7 @@ class SoutienForm extends Model
         'message',
         'consents_email',
         'consents_rgpd',
+        'don_amount_cents',
     ];
 
     protected function casts(): array
@@ -31,6 +32,7 @@ class SoutienForm extends Model
             'wants_participation' => 'boolean',
             'consents_email' => 'boolean',
             'consents_rgpd' => 'boolean',
+            'don_amount_cents' => 'integer',
         ];
     }
 

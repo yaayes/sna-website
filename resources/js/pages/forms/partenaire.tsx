@@ -1,33 +1,65 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
 import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
+type PartenaireFormData = {
+    organisation_name: string;
+    legal_status: string;
+    address: string;
+    phone: string;
+    email: string;
+    contact_name: string;
+    partnership_moral: boolean;
+    partnership_moral_details: string;
+    partnership_technical: boolean;
+    partnership_technical_details: string;
+    partnership_financial: boolean;
+    objectives: string;
+    comment_libre: string;
+    commitment_projects: boolean;
+    commitment_communication: boolean;
+    commitment_expertise: boolean;
+    attachments: File[];
+    consents_email: boolean;
+    consents_rgpd: boolean;
+    don_amount: string;
+    pending_form_id: number | null;
+};
+
+type PageProps = {
+    membershipFeeCents: number;
+    prefillData?: Partial<PartenaireFormData> & { pending_form_id?: number } | null;
+};
+
 export default function PartenairePage() {
+    const { membershipFeeCents, prefillData } = usePage<PageProps>().props;
     const [fileNames, setFileNames] = useState<string[]>([]);
 
     const { data, setData, submit, processing, errors, wasSuccessful, reset } =
-        useForm({
-            organisation_name: '',
-            legal_status: '',
-            address: '',
-            phone: '',
-            email: '',
-            contact_name: '',
-            partnership_moral: false,
-            partnership_moral_details: '',
-            partnership_technical: false,
-            partnership_technical_details: '',
-            partnership_financial: false,
-            objectives: '',
-            comment_libre: '',
-            commitment_projects: false,
-            commitment_communication: false,
-            commitment_expertise: false,
-            attachments: [] as File[],
-            consents_email: false,
-            consents_rgpd: false,
+        useForm<PartenaireFormData>({
+            organisation_name: prefillData?.organisation_name ?? '',
+            legal_status: prefillData?.legal_status ?? '',
+            address: prefillData?.address ?? '',
+            phone: prefillData?.phone ?? '',
+            email: prefillData?.email ?? '',
+            contact_name: prefillData?.contact_name ?? '',
+            partnership_moral: prefillData?.partnership_moral ?? false,
+            partnership_moral_details: prefillData?.partnership_moral_details ?? '',
+            partnership_technical: prefillData?.partnership_technical ?? false,
+            partnership_technical_details: prefillData?.partnership_technical_details ?? '',
+            partnership_financial: prefillData?.partnership_financial ?? false,
+            objectives: prefillData?.objectives ?? '',
+            comment_libre: prefillData?.comment_libre ?? '',
+            commitment_projects: prefillData?.commitment_projects ?? false,
+            commitment_communication: prefillData?.commitment_communication ?? false,
+            commitment_expertise: prefillData?.commitment_expertise ?? false,
+            attachments: [],
+            consents_email: prefillData?.consents_email ?? false,
+            consents_rgpd: prefillData?.consents_rgpd ?? false,
+            don_amount: prefillData?.don_amount ?? '',
+            pending_form_id: prefillData?.pending_form_id ?? null,
         });
 
     const handleSubmit: FormEventHandler = (e) => {
@@ -35,8 +67,13 @@ export default function PartenairePage() {
         submit(forms.partenaire.store(), {
             onSuccess: () => {
                 reset();
+                setData('pending_form_id', null);
                 setFileNames([]);
             },
+            transform: (payload) => ({
+                ...payload,
+                don_amount: payload.don_amount.trim() === '' ? '' : payload.don_amount,
+            }),
         });
     };
 
@@ -63,6 +100,13 @@ export default function PartenairePage() {
     const inputCls =
         'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-green focus:ring-2 focus:ring-sna-green/30 focus:outline-none placeholder:text-gray-300';
     const labelCls = 'mb-1.5 block text-sm font-semibold text-gray-700';
+
+    const baseFeeEuros = membershipFeeCents / 100;
+    const parsedDonation = Number.parseFloat(data.don_amount || '0');
+    const donationEuros = Number.isFinite(parsedDonation) && parsedDonation > 0
+        ? parsedDonation
+        : 0;
+    const totalEuros = baseFeeEuros + donationEuros;
 
     return (
         <>
@@ -584,10 +628,56 @@ export default function PartenairePage() {
                                 />
                             </div>
 
-                            {/* Section G: Consents */}
+                            {/* Section G: Cotisation et don */}
+                            <div className="space-y-4 border-t border-gray-200 pt-6">
+                                <h3 className="text-base font-bold text-gray-800">
+                                    G. Cotisation et don
+                                </h3>
+
+                                <div className="rounded-2xl border border-sna-green/20 bg-sna-green/5 p-4">
+                                    <p className="text-sm font-semibold text-gray-700">
+                                        Cotisation minimale obligatoire: {baseFeeEuros.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                                    </p>
+                                    <p className="mt-1 text-xs text-gray-600">
+                                        Vous pouvez ajouter un don libre en complement.
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label className={labelCls}>
+                                        Don complementaire (facultatif)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        inputMode="decimal"
+                                        value={data.don_amount}
+                                        onChange={(e) =>
+                                            setData('don_amount', e.target.value)
+                                        }
+                                        className={inputCls}
+                                        placeholder="0.00"
+                                    />
+                                    {errors.don_amount && (
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {errors.don_amount}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                                    <p className="text-xs text-gray-500">Total a payer</p>
+                                    <p className="text-2xl font-bold text-sna-green">
+                                        {totalEuros.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Section H: Consents */}
                             <div className="space-y-3 border-t border-gray-200 pt-6">
                                 <h3 className="text-base font-bold text-gray-800">
-                                    G. Consentements
+                                    H. Consentements
                                 </h3>
                                 <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-600">
                                     <input
@@ -644,8 +734,8 @@ export default function PartenairePage() {
                                 }}
                             >
                                 {processing
-                                    ? 'Envoi en cours…'
-                                    : 'Soumettre notre demande de partenariat'}
+                                    ? 'Redirection vers le paiement...'
+                                    : `Payer ${totalEuros.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })} et envoyer la demande`}
                             </button>
                         </form>
                     )}

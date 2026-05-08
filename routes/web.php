@@ -41,8 +41,8 @@ Route::get('/formulaire/adhesion', [AidantAdhesionFormController::class, 'show']
 Route::get('/formulaire/adhesion/validate-coupon', [AidantAdhesionFormController::class, 'validateCoupon'])->name('forms.adhesion.validate-coupon');
 Route::post('/formulaire/adhesion/draft', [AidantAdhesionFormController::class, 'saveDraft'])->name('forms.adhesion.draft.save');
 Route::get('/formulaire/adhesion/draft', [AidantAdhesionFormController::class, 'fetchDraft'])->name('forms.adhesion.draft.fetch');
-Route::inertia('/formulaire/soutien', 'forms/soutien')->name('forms.soutien.page');
-Route::inertia('/formulaire/partenaire', 'forms/partenaire')->name('forms.partenaire.page');
+Route::get('/formulaire/soutien', [SoutienFormController::class, 'show'])->name('forms.soutien.page');
+Route::get('/formulaire/partenaire', [PartenaireFormController::class, 'show'])->name('forms.partenaire.page');
 Route::inertia('/formulaire/moi-aussi', 'forms/moi-aussi')->name('forms.moi-aussi.page');
 Route::inertia('/formulaire/contact', 'forms/contact')->name('forms.contact.page');
 

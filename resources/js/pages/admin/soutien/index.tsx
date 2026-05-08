@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -27,6 +28,8 @@ type SoutienEntry = {
     email: string;
     phone: string | null;
     created_at: string;
+    payment_status: string | null;
+    payment_amount_cents: number | null;
 };
 
 type Paginated<T> = {
@@ -38,6 +41,14 @@ type Paginated<T> = {
     links: { url: string | null; label: string; active: boolean }[];
     prev_page_url: string | null;
     next_page_url: string | null;
+};
+
+const paymentStatusLabel: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+    captured: { label: 'Paye', variant: 'default' },
+    pending: { label: 'En attente', variant: 'secondary' },
+    authorized: { label: 'Autorise', variant: 'secondary' },
+    rejected: { label: 'Refuse', variant: 'destructive' },
+    cancelled: { label: 'Annule', variant: 'outline' },
 };
 
 export default function SoutienIndex({
@@ -66,6 +77,8 @@ export default function SoutienIndex({
                             <TableHead>Email</TableHead>
                             <TableHead>Adresse</TableHead>
                             <TableHead>Téléphone</TableHead>
+                            <TableHead>Paiement</TableHead>
+                            <TableHead>Montant</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead className="w-10" />
                         </TableRow>
@@ -74,7 +87,7 @@ export default function SoutienIndex({
                         {entries.data.length === 0 && (
                             <TableRow>
                                 <TableCell
-                                    colSpan={7}
+                                    colSpan={9}
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     Aucun résultat trouvé.
@@ -90,6 +103,20 @@ export default function SoutienIndex({
                                 <TableCell>{entry.email}</TableCell>
                                 <TableCell>{entry.address}</TableCell>
                                 <TableCell>{entry.phone ?? '—'}</TableCell>
+                                <TableCell>
+                                    {entry.payment_status ? (
+                                        <Badge variant={paymentStatusLabel[entry.payment_status]?.variant ?? 'outline'}>
+                                            {paymentStatusLabel[entry.payment_status]?.label ?? entry.payment_status}
+                                        </Badge>
+                                    ) : (
+                                        <span className="text-xs text-muted-foreground">—</span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="text-xs">
+                                    {entry.payment_amount_cents !== null
+                                        ? (entry.payment_amount_cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+                                        : '—'}
+                                </TableCell>
                                 <TableCell className="text-xs text-muted-foreground">
                                     {new Date(
                                         entry.created_at,

@@ -23,6 +23,8 @@ class StoreSoutienFormRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:2000'],
             'consents_email' => ['nullable', 'boolean'],
             'consents_rgpd' => ['accepted'],
+            'don_amount' => ['nullable', 'numeric', 'min:0', 'max:100000'],
+            'pending_form_id' => ['nullable', 'integer', 'exists:soutien_forms,id'],
         ];
     }
 

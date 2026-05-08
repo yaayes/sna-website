@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\AidantAdhesionForm;
+use App\Models\PartenaireForm;
 use App\Models\Payment;
+use App\Models\SoutienForm;
 use App\Services\CawlPaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use OnlinePayments\Sdk\Webhooks\SignatureValidationException;
@@ -53,12 +56,23 @@ class PaymentController extends Controller
         // Flash form prefill data so the user can retry with their data intact
         $submission = $payment->formSubmission()->with('formable')->first();
         $form = $submission?->formable;
+        $formType = $submission?->type;
 
-        if ($form) {
-            session()->flash('adhesion_prefill', array_merge(
-                $this->buildPrefillData($form),
-                ['pending_form_id' => $form->id],
-            ));
+        if ($form && $formType) {
+            $prefillData = $this->buildPrefillData($formType, $form);
+
+            if ($prefillData) {
+                session()->flash("{$formType}_prefill", array_merge(
+                    $prefillData,
+                    ['pending_form_id' => $form->id],
+                ));
+            }
+
+            $routeName = "forms.{$formType}.page";
+
+            if (Route::has($routeName)) {
+                return Inertia::location(route($routeName));
+            }
         }
 
         return Inertia::location(route('forms.adhesion.page'));
@@ -118,7 +132,23 @@ class PaymentController extends Controller
         };
     }
 
-    private function buildPrefillData(AidantAdhesionForm $form): array
+    private function buildPrefillData(string $formType, mixed $form): ?array
+    {
+        return match ($formType) {
+            'adhesion' => $form instanceof AidantAdhesionForm
+                ? $this->buildAdhesionPrefillData($form)
+                : null,
+            'soutien' => $form instanceof SoutienForm
+                ? $this->buildSoutienPrefillData($form)
+                : null,
+            'partenaire' => $form instanceof PartenaireForm
+                ? $this->buildPartenairePrefillData($form)
+                : null,
+            default => null,
+        };
+    }
+
+    private function buildAdhesionPrefillData(AidantAdhesionForm $form): array
     {
         return [
             'aidants' => $form->aidants ?? [],
@@ -148,6 +178,51 @@ class PaymentController extends Controller
                 : '',
             'coupon_code' => $form->coupon_code ?? '',
             'coupon_discount_cents' => $form->coupon_discount_cents ?? 0,
+        ];
+    }
+
+    private function buildSoutienPrefillData(SoutienForm $form): array
+    {
+        return [
+            'name' => $form->name,
+            'address' => $form->address,
+            'email' => $form->email,
+            'phone' => $form->phone ?? '',
+            'wants_events' => $form->wants_events,
+            'wants_participation' => $form->wants_participation,
+            'message' => $form->message ?? '',
+            'consents_email' => $form->consents_email,
+            'consents_rgpd' => $form->consents_rgpd,
+            'don_amount' => $form->don_amount_cents !== null && $form->don_amount_cents > 0
+                ? number_format($form->don_amount_cents / 100, 2, '.', '')
+                : '',
+        ];
+    }
+
+    private function buildPartenairePrefillData(PartenaireForm $form): array
+    {
+        return [
+            'organisation_name' => $form->organisation_name,
+            'legal_status' => $form->legal_status,
+            'address' => $form->address,
+            'phone' => $form->phone ?? '',
+            'email' => $form->email,
+            'contact_name' => $form->contact_name,
+            'partnership_moral' => $form->partnership_moral,
+            'partnership_moral_details' => $form->partnership_moral_details ?? '',
+            'partnership_technical' => $form->partnership_technical,
+            'partnership_technical_details' => $form->partnership_technical_details ?? '',
+            'partnership_financial' => $form->partnership_financial,
+            'objectives' => $form->objectives,
+            'comment_libre' => $form->comment_libre ?? '',
+            'commitment_projects' => $form->commitment_projects,
+            'commitment_communication' => $form->commitment_communication,
+            'commitment_expertise' => $form->commitment_expertise,
+            'consents_email' => $form->consents_email,
+            'consents_rgpd' => $form->consents_rgpd,
+            'don_amount' => $form->don_amount_cents !== null && $form->don_amount_cents > 0
+                ? number_format($form->don_amount_cents / 100, 2, '.', '')
+                : '',
         ];
     }
 }

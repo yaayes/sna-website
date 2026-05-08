@@ -27,6 +27,7 @@ class SoutienFormFactory extends Factory
             'message' => fake()->optional()->paragraph(),
             'consents_email' => fake()->boolean(),
             'consents_rgpd' => true,
+            'don_amount_cents' => fake()->optional()->numberBetween(100, 5000),
         ];
     }
 }

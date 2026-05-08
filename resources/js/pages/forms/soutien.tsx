@@ -1,30 +1,70 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
 import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
+type SoutienFormData = {
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+    wants_events: boolean | null;
+    wants_participation: boolean | null;
+    message: string;
+    consents_email: boolean | null;
+    consents_rgpd: boolean;
+    don_amount: string;
+    pending_form_id: number | null;
+};
+
+type PageProps = {
+    membershipFeeCents: number;
+    prefillData?: Partial<SoutienFormData> & { pending_form_id?: number } | null;
+};
+
 export default function SoutienPage() {
+    const { membershipFeeCents, prefillData } = usePage<PageProps>().props;
+
     const { data, setData, submit, processing, errors, wasSuccessful, reset } =
-        useForm({
-            name: '',
-            address: '',
-            email: '',
-            phone: '',
-            wants_events: null as boolean | null,
-            wants_participation: null as boolean | null,
-            message: '',
-            consents_email: null as boolean | null,
-            consents_rgpd: false,
+        useForm<SoutienFormData>({
+            name: prefillData?.name ?? '',
+            address: prefillData?.address ?? '',
+            email: prefillData?.email ?? '',
+            phone: prefillData?.phone ?? '',
+            wants_events: prefillData?.wants_events ?? null,
+            wants_participation: prefillData?.wants_participation ?? null,
+            message: prefillData?.message ?? '',
+            consents_email: prefillData?.consents_email ?? null,
+            consents_rgpd: prefillData?.consents_rgpd ?? false,
+            don_amount: prefillData?.don_amount ?? '',
+            pending_form_id: prefillData?.pending_form_id ?? null,
         });
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        submit(forms.soutien.store(), { onSuccess: () => reset() });
+
+        submit(forms.soutien.store(), {
+            onSuccess: () => {
+                reset();
+                setData('pending_form_id', null);
+            },
+            transform: (payload) => ({
+                ...payload,
+                don_amount: payload.don_amount.trim() === '' ? '' : payload.don_amount,
+            }),
+        });
     };
 
     const inputCls =
         'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/30 focus:outline-none placeholder:text-gray-300';
     const labelCls = 'mb-1.5 block text-sm font-semibold text-gray-700';
+
+    const baseFeeEuros = membershipFeeCents / 100;
+    const parsedDonation = Number.parseFloat(data.don_amount || '0');
+    const donationEuros = Number.isFinite(parsedDonation) && parsedDonation > 0
+        ? parsedDonation
+        : 0;
+    const totalEuros = baseFeeEuros + donationEuros;
 
     return (
         <>
@@ -402,6 +442,51 @@ export default function SoutienPage() {
                                 />
                             </div>
 
+                            <div className="space-y-4 border-t border-gray-100 pt-6">
+                                <h2 className="text-sm font-bold tracking-wide text-sna-teal-dark uppercase">
+                                    D. Cotisation et don
+                                </h2>
+
+                                <div className="rounded-2xl border border-sna-teal/20 bg-sna-teal/5 p-4">
+                                    <p className="text-sm font-semibold text-gray-700">
+                                        Cotisation minimale obligatoire: {baseFeeEuros.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                                    </p>
+                                    <p className="mt-1 text-xs text-gray-600">
+                                        Vous pouvez ajouter un don libre si vous le souhaitez.
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label className={labelCls}>
+                                        Don complementaire (facultatif)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        inputMode="decimal"
+                                        value={data.don_amount}
+                                        onChange={(e) =>
+                                            setData('don_amount', e.target.value)
+                                        }
+                                        className={inputCls}
+                                        placeholder="0.00"
+                                    />
+                                    {errors.don_amount && (
+                                        <p className="mt-1 text-xs text-red-500">
+                                            {errors.don_amount}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                                    <p className="text-xs text-gray-500">Total a payer</p>
+                                    <p className="text-2xl font-bold text-sna-teal-dark">
+                                        {totalEuros.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                                    </p>
+                                </div>
+                            </div>
+
                             <div className="space-y-2 border-t border-gray-50 pt-4">
                                 <h2 className="text-sm font-bold tracking-wide text-sna-teal-dark uppercase">
                                     E. Consentements
@@ -469,8 +554,8 @@ export default function SoutienPage() {
                                 className="w-full rounded-full bg-sna-teal py-3.5 text-sm font-bold text-white shadow-lg shadow-sna-teal/20 transition-all hover:-translate-y-0.5 hover:bg-sna-teal-dark disabled:opacity-60"
                             >
                                 {processing
-                                    ? 'Envoi en cours…'
-                                    : 'Envoyer ma demande de soutien'}
+                                    ? 'Redirection vers le paiement...'
+                                    : `Payer ${totalEuros.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })} et envoyer ma demande`}
                             </button>
                         </form>
                     )}

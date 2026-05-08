@@ -18,9 +18,17 @@ type SoutienEntry = {
     message: string | null;
     consents_email: boolean;
     consents_rgpd: boolean;
+    don_amount_cents: number | null;
     created_at: string;
     updated_at: string;
 };
+
+type PaymentData = {
+    status: string;
+    amount_cents: number | null;
+    merchant_reference: string;
+    created_at: string;
+} | null;
 
 const breadcrumbs = (ref: string): BreadcrumbItem[] => [
     { title: 'Admin', href: admin.dashboard() },
@@ -53,7 +61,15 @@ function BoolBadge({ value }: { value: boolean }) {
     );
 }
 
-export default function SoutienShow({ entry }: { entry: SoutienEntry }) {
+const paymentStatusLabel: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+    captured: { label: 'Paye', variant: 'default' },
+    pending: { label: 'En attente', variant: 'secondary' },
+    authorized: { label: 'Autorise', variant: 'secondary' },
+    rejected: { label: 'Refuse', variant: 'destructive' },
+    cancelled: { label: 'Annule', variant: 'outline' },
+};
+
+export default function SoutienShow({ entry, payment }: { entry: SoutienEntry; payment: PaymentData }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs(entry.ref)}>
             <Head title={`Admin — Soutien #${entry.ref}`} />
@@ -107,6 +123,34 @@ export default function SoutienShow({ entry }: { entry: SoutienEntry }) {
                                 </span>
                             </DetailRow>
                         )}
+                    </dl>
+                </div>
+
+                <div className="rounded-xl border p-6">
+                    <h2 className="mb-4 font-semibold">Paiement</h2>
+                    <dl>
+                        <DetailRow label="Montant total">
+                            {payment?.amount_cents !== null && payment?.amount_cents !== undefined
+                                ? (payment.amount_cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+                                : '—'}
+                        </DetailRow>
+                        <DetailRow label="Don complementaire">
+                            {entry.don_amount_cents !== null
+                                ? (entry.don_amount_cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+                                : '—'}
+                        </DetailRow>
+                        <DetailRow label="Statut paiement">
+                            {payment ? (
+                                <Badge variant={paymentStatusLabel[payment.status]?.variant ?? 'outline'}>
+                                    {paymentStatusLabel[payment.status]?.label ?? payment.status}
+                                </Badge>
+                            ) : (
+                                '—'
+                            )}
+                        </DetailRow>
+                        <DetailRow label="Reference paiement">
+                            {payment?.merchant_reference ?? '—'}
+                        </DetailRow>
                     </dl>
                 </div>
 
