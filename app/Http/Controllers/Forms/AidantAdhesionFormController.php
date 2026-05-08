@@ -190,6 +190,15 @@ class AidantAdhesionFormController extends Controller
 
         unset($payload['don_amount'], $payload['pending_form_id']);
 
+        // Draft fields must not be carried over to a completed submission.
+        // If the user triggered saveDraft() after a cancelled payment (creating a new
+        // orphaned draft record), resubmitting with the same pending_form_id would try
+        // to copy the new draft's token onto the existing form, violating the unique
+        // constraint on draft_token.
+        $payload['draft_token'] = null;
+        $payload['draft_step'] = null;
+        $payload['draft_saved_at'] = null;
+
         $membershipFeeCents = config('cawl.membership_fee_cents');
         $totalCents = max(0, $membershipFeeCents - $couponDiscountCents) + ($donAmountCents ?? 0);
 

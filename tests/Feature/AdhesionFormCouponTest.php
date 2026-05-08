@@ -86,6 +86,75 @@ class AdhesionFormCouponTest extends TestCase
         $this->assertNull($form->don_amount_cents);
     }
 
+    public function test_draft_token_conflict_does_not_occur_on_payment_retry(): void
+    {
+        Http::fake();
+
+        // Simulate first submission: user completed the form, was sent to payment,
+        // then cancelled. The form is already "completed" but payment not captured.
+        $form = AidantAdhesionForm::create([
+            'ref' => 'TEST-CONFLICT-001',
+            'email' => 'jean.dupont@example.com',
+            'nom' => 'Dupont',
+            'prenom' => 'Jean',
+            'aidant_type' => 'parent_handicap',
+            'soutient_sna' => false,
+            'wants_info' => false,
+            'consents_rgpd' => true,
+            'declaration_honneur' => true,
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
+            'draft_completed_at' => now()->subMinutes(5),
+        ]);
+
+        $submission = FormSubmission::create([
+            'email' => $form->email,
+            'type' => 'adhesion',
+            'formable_type' => AidantAdhesionForm::class,
+            'formable_id' => $form->id,
+            'ref' => 'TEST-REF-CONFLICT',
+        ]);
+
+        Payment::create([
+            'form_submission_id' => $submission->id,
+            'amount_cents' => 2000,
+            'status' => 'cancelled',
+            'merchant_reference' => 'REF-CONFLICT-001',
+            'hosted_checkout_id' => 'HCO-CONFLICT-001',
+        ]);
+
+        // Simulate user clicking "retour" in the form: saveDraft() creates a new
+        // orphaned draft record. The frontend then holds both pending_form_id (from the
+        // original completed record) and the new draft_token.
+        $draftResponse = $this->postJson(route('forms.adhesion.draft.save'), [
+            'step' => 4,
+            'aidants' => [[
+                'nom' => 'Dupont',
+                'prenom' => 'Jean',
+                'email' => 'jean.dupont@example.com',
+                'aidant_type' => 'parent_handicap',
+            ]],
+            'aides' => [[]],
+            'declaration_honneur' => true,
+        ]);
+
+        $newDraftToken = $draftResponse->json('draft_token');
+        $this->assertNotNull($newDraftToken);
+
+        // User now resubmits with pending_form_id pointing to the original form AND
+        // the new draft_token. This used to trigger a unique constraint violation.
+        $payload = $this->validFormPayload([
+            'pending_form_id' => $form->id,
+            'draft_token' => $newDraftToken,
+        ]);
+
+        $response = $this->post(route('forms.adhesion.store'), $payload);
+
+        // Should not throw; the original form should be reused and draft_token cleared.
+        $response->assertStatus(302);
+        $this->assertEquals(2, AidantAdhesionForm::count()); // original + orphaned draft
+        $this->assertNull($form->fresh()->draft_token);
+    }
+
     public function test_retry_with_pending_form_id_reuses_existing_record(): void
     {
         Http::fake();
