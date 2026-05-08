@@ -19,6 +19,7 @@ interface Coupon {
     uses_count: number;
     expires_at: string | null;
     is_active: boolean;
+    is_default: boolean;
 }
 
 interface Props {
@@ -73,6 +74,7 @@ export default function CouponEditPage({ coupon }: Props) {
         max_uses: coupon.max_uses !== null ? String(coupon.max_uses) : '',
         expires_at: toDisplayDate(coupon.expires_at),
         is_active: coupon.is_active,
+        is_default: coupon.is_default,
     });
     const [isDatePopoverOpen, setDatePopoverOpen] = useState(false);
 
@@ -201,6 +203,21 @@ export default function CouponEditPage({ coupon }: Props) {
                                 className="h-4 w-4 rounded"
                             />
                             Coupon actif
+                        </label>
+
+                        <label className="flex items-center gap-2 text-sm">
+                            <input
+                                type="checkbox"
+                                checked={data.is_default}
+                                onChange={(e) => setData('is_default', e.target.checked)}
+                                className="h-4 w-4 rounded"
+                            />
+                            <span>
+                                Coupon par défaut{' '}
+                                <span className="text-muted-foreground">
+                                    (pré-rempli automatiquement dans le formulaire d'adhésion)
+                                </span>
+                            </span>
                         </label>
                     </div>
 

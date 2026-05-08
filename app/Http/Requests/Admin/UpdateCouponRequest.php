@@ -21,6 +21,7 @@ class UpdateCouponRequest extends FormRequest
             'max_uses' => ['nullable', 'integer', 'min:1'],
             'expires_at' => ['nullable', 'date'],
             'is_active' => ['boolean'],
+            'is_default' => ['boolean'],
         ];
     }
 

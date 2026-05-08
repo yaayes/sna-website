@@ -19,6 +19,7 @@ class Coupon extends Model
         'uses_count',
         'expires_at',
         'is_active',
+        'is_default',
     ];
 
     protected function casts(): array
@@ -26,7 +27,18 @@ class Coupon extends Model
         return [
             'expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'is_default' => 'boolean',
         ];
+    }
+
+    /**
+     * Returns the default coupon only if it is currently valid, otherwise null.
+     */
+    public static function validDefault(): ?self
+    {
+        $coupon = self::where('is_default', true)->first();
+
+        return $coupon?->isValid() ? $coupon : null;
     }
 
     public function isValid(): bool

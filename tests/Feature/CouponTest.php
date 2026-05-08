@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Coupon;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -69,5 +70,81 @@ class CouponTest extends TestCase
         $response = $this->getJson(route('forms.adhesion.validate-coupon', ['code' => 'uppercase']));
 
         $response->assertOk()->assertJson(['valid' => true]);
+    }
+
+    public function test_setting_default_on_store_unsets_previous_default(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->actingAs($admin);
+
+        $existing = Coupon::factory()->asDefault()->create(['code' => 'FIRST']);
+
+        $this->assertTrue($existing->fresh()->is_default);
+
+        $response = $this->post(route('admin.coupons.store'), [
+            'code' => 'SECOND',
+            'discount_euros' => '20.00',
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.coupons.index'));
+
+        $this->assertFalse($existing->fresh()->is_default);
+        $this->assertTrue(Coupon::where('code', 'SECOND')->first()->is_default);
+    }
+
+    public function test_setting_default_on_update_unsets_previous_default(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->actingAs($admin);
+
+        $first = Coupon::factory()->asDefault()->create(['code' => 'ALPHA']);
+        $second = Coupon::factory()->create(['code' => 'BETA']);
+
+        $response = $this->patch(route('admin.coupons.update', $second), [
+            'code' => 'BETA',
+            'discount_euros' => '20.00',
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.coupons.index'));
+
+        $this->assertFalse($first->fresh()->is_default);
+        $this->assertTrue($second->fresh()->is_default);
+    }
+
+    public function test_unsetting_default_does_not_affect_other_coupons(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $this->actingAs($admin);
+
+        $coupon = Coupon::factory()->asDefault()->create(['code' => 'LONE']);
+
+        $this->patch(route('admin.coupons.update', $coupon), [
+            'code' => 'LONE',
+            'discount_euros' => '20.00',
+            'is_active' => true,
+            'is_default' => false,
+        ]);
+
+        $this->assertFalse($coupon->fresh()->is_default);
+        $this->assertDatabaseMissing('coupons', ['is_default' => true]);
+    }
+
+    public function test_valid_default_returns_model(): void
+    {
+        $coupon = Coupon::factory()->asDefault()->create(['code' => 'DEFCODE']);
+
+        $this->assertNotNull(Coupon::validDefault());
+        $this->assertEquals('DEFCODE', Coupon::validDefault()->code);
+    }
+
+    public function test_invalid_default_returns_null(): void
+    {
+        Coupon::factory()->asDefault()->inactive()->create(['code' => 'INACODE']);
+
+        $this->assertNull(Coupon::validDefault());
     }
 }

@@ -1,4 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
+import { Star } from 'lucide-react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +23,7 @@ type CouponItem = {
     uses_count: number;
     expires_at: string | null;
     is_active: boolean;
+    is_default: boolean;
     is_valid: boolean;
 };
 
@@ -90,7 +92,16 @@ export default function CouponsIndex({
                         )}
                         {coupons.data.map((coupon) => (
                             <TableRow key={coupon.id}>
-                                <TableCell className="font-mono font-semibold">{coupon.code}</TableCell>
+                                <TableCell className="font-mono font-semibold">
+                                    <span className="flex items-center gap-1.5">
+                                        {coupon.code}
+                                        {coupon.is_default && (
+                                            <span title="Coupon par défaut">
+                                                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                                            </span>
+                                        )}
+                                    </span>
+                                </TableCell>
                                 <TableCell className="text-sm text-muted-foreground">{coupon.description ?? '—'}</TableCell>
                                 <TableCell className="font-medium">{coupon.discount_euros} €</TableCell>
                                 <TableCell className="text-sm">

@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateCouponRequest;
 use App\Models\Coupon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -35,6 +36,7 @@ class CouponController extends Controller
                 'uses_count' => $coupon->uses_count,
                 'expires_at' => $coupon->expires_at?->format('d/m/Y'),
                 'is_active' => $coupon->is_active,
+                'is_default' => $coupon->is_default,
                 'is_valid' => $coupon->isValid(),
             ]),
             'filters' => ['search' => $request->string('search')->trim()->value()],
@@ -49,15 +51,23 @@ class CouponController extends Controller
     public function store(StoreCouponRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+        $isDefault = (bool) ($validated['is_default'] ?? false);
 
-        Coupon::create([
-            'code' => Str::upper($validated['code']),
-            'description' => $validated['description'] ?? null,
-            'discount_cents' => (int) round((float) $validated['discount_euros'] * 100),
-            'max_uses' => $validated['max_uses'] ?? null,
-            'expires_at' => $validated['expires_at'] ?? null,
-            'is_active' => (bool) ($validated['is_active'] ?? true),
-        ]);
+        DB::transaction(function () use ($validated, $isDefault): void {
+            if ($isDefault) {
+                Coupon::where('is_default', true)->update(['is_default' => false]);
+            }
+
+            Coupon::create([
+                'code' => Str::upper($validated['code']),
+                'description' => $validated['description'] ?? null,
+                'discount_cents' => (int) round((float) $validated['discount_euros'] * 100),
+                'max_uses' => $validated['max_uses'] ?? null,
+                'expires_at' => $validated['expires_at'] ?? null,
+                'is_active' => (bool) ($validated['is_active'] ?? true),
+                'is_default' => $isDefault,
+            ]);
+        });
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon créé avec succès.');
     }
@@ -74,6 +84,7 @@ class CouponController extends Controller
                 'uses_count' => $coupon->uses_count,
                 'expires_at' => $coupon->expires_at?->format('Y-m-d'),
                 'is_active' => $coupon->is_active,
+                'is_default' => $coupon->is_default,
             ],
         ]);
     }
@@ -81,15 +92,25 @@ class CouponController extends Controller
     public function update(UpdateCouponRequest $request, Coupon $coupon): RedirectResponse
     {
         $validated = $request->validated();
+        $isDefault = (bool) ($validated['is_default'] ?? false);
 
-        $coupon->update([
-            'code' => Str::upper($validated['code']),
-            'description' => $validated['description'] ?? null,
-            'discount_cents' => (int) round((float) $validated['discount_euros'] * 100),
-            'max_uses' => $validated['max_uses'] ?? null,
-            'expires_at' => $validated['expires_at'] ?? null,
-            'is_active' => (bool) ($validated['is_active'] ?? false),
-        ]);
+        DB::transaction(function () use ($validated, $coupon, $isDefault): void {
+            if ($isDefault) {
+                Coupon::where('is_default', true)
+                    ->where('id', '!=', $coupon->id)
+                    ->update(['is_default' => false]);
+            }
+
+            $coupon->update([
+                'code' => Str::upper($validated['code']),
+                'description' => $validated['description'] ?? null,
+                'discount_cents' => (int) round((float) $validated['discount_euros'] * 100),
+                'max_uses' => $validated['max_uses'] ?? null,
+                'expires_at' => $validated['expires_at'] ?? null,
+                'is_active' => (bool) ($validated['is_active'] ?? false),
+                'is_default' => $isDefault,
+            ]);
+        });
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon mis à jour.');
     }

@@ -25,7 +25,13 @@ class CouponFactory extends Factory
             'uses_count' => 0,
             'expires_at' => null,
             'is_active' => true,
+            'is_default' => false,
         ];
+    }
+
+    public function asDefault(): static
+    {
+        return $this->state(['is_default' => true]);
     }
 
     public function expired(): static

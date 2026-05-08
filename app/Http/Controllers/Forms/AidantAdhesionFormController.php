@@ -23,9 +23,12 @@ class AidantAdhesionFormController extends Controller
 {
     public function show(): Response
     {
+        $defaultCoupon = Coupon::validDefault();
+
         return Inertia::render('forms/adhesion', [
             'membershipFeeCents' => config('cawl.membership_fee_cents'),
             'prefillData' => session('adhesion_prefill'),
+            'defaultCouponCode' => $defaultCoupon?->code,
         ]);
     }
 

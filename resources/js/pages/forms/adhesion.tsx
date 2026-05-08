@@ -7,6 +7,7 @@ import forms from '@/routes/forms';
 type PageProps = {
     membershipFeeCents: number;
     prefillData?: AdhesionFormData & { pending_form_id?: number; coupon_discount_cents?: number } | null;
+    defaultCouponCode?: string | null;
 };
 
 type AidantData = {
@@ -277,7 +278,7 @@ function AdhesionStepper({
     );
 }
 
-function AdhesionForm({ membershipFeeCents, prefillData }: { membershipFeeCents: number; prefillData?: AdhesionFormData & { pending_form_id?: number } | null }) {
+function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { membershipFeeCents: number; prefillData?: AdhesionFormData & { pending_form_id?: number } | null; defaultCouponCode?: string | null }) {
     const [step, setStep] = useState(0);
     const totalSteps = ADHESION_STEPS.length;
     const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
@@ -352,10 +353,19 @@ function AdhesionForm({ membershipFeeCents, prefillData }: { membershipFeeCents:
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Default coupon auto-apply: pre-fill only when there is no prefill (payment retry) and no draft
+    // Runs only on initial mount, and only when the server provided a valid default coupon code.
+    useEffect(() => {
+        if (!prefillData && !draftToken && defaultCouponCode) {
+            setData('coupon_code', defaultCouponCode);
+            checkCoupon(defaultCouponCode);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Draft resume effect: when draft_token in URL and no payment-retry prefill, fetch and restore
     useEffect(() => {
-        if (!prefillData && draftToken) {
-            fetch(forms.adhesion.draft.fetch.url({ query: { draft_token: draftToken } }), {
+        if (!prefillData && draftToken) {            fetch(forms.adhesion.draft.fetch.url({ query: { draft_token: draftToken } }), {
                 headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             })
                 .then((res) => res.json())
@@ -2060,7 +2070,7 @@ function AdhesionForm({ membershipFeeCents, prefillData }: { membershipFeeCents:
     );
 }
 
-export default function AdhesionPage({ membershipFeeCents, prefillData }: PageProps) {
+export default function AdhesionPage({ membershipFeeCents, prefillData, defaultCouponCode }: PageProps) {
     return (
         <>
             <Head title="Adhesion - Syndicat National des Aidants">
@@ -2094,7 +2104,7 @@ export default function AdhesionPage({ membershipFeeCents, prefillData }: PagePr
                 </div>
 
                 <div className="mx-auto max-w-4xl px-6 pb-20">
-                    <AdhesionForm membershipFeeCents={membershipFeeCents} prefillData={prefillData} />
+                    <AdhesionForm membershipFeeCents={membershipFeeCents} prefillData={prefillData} defaultCouponCode={defaultCouponCode} />
 
                     <p className="mt-8 text-center text-xs text-gray-400">
                         Deja soumis un formulaire ?{' '}

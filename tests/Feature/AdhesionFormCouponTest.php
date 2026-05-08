@@ -409,4 +409,38 @@ class AdhesionFormCouponTest extends TestCase
             ->assertStatus(404)
             ->assertJson(['found' => false]);
     }
+
+    public function test_valid_default_coupon_is_passed_to_adhesion_page(): void
+    {
+        $coupon = Coupon::factory()->asDefault()->create(['code' => 'AUTO2026', 'discount_cents' => 2000]);
+
+        $response = $this->get(route('forms.adhesion.page'));
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('forms/adhesion')
+            ->where('defaultCouponCode', 'AUTO2026')
+        );
+    }
+
+    public function test_invalid_default_coupon_is_not_passed_to_adhesion_page(): void
+    {
+        Coupon::factory()->asDefault()->inactive()->create(['code' => 'EXPIRED']);
+
+        $response = $this->get(route('forms.adhesion.page'));
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('forms/adhesion')
+            ->where('defaultCouponCode', null)
+        );
+    }
+
+    public function test_no_default_coupon_passes_null_to_adhesion_page(): void
+    {
+        $response = $this->get(route('forms.adhesion.page'));
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('forms/adhesion')
+            ->where('defaultCouponCode', null)
+        );
+    }
 }

@@ -55,6 +55,7 @@ export default function CouponCreatePage() {
         max_uses: '',
         expires_at: '',
         is_active: true,
+        is_default: false,
     });
     const [isDatePopoverOpen, setDatePopoverOpen] = useState(false);
 
@@ -182,6 +183,21 @@ export default function CouponCreatePage() {
                                 className="h-4 w-4 rounded"
                             />
                             Coupon actif
+                        </label>
+
+                        <label className="flex items-center gap-2 text-sm">
+                            <input
+                                type="checkbox"
+                                checked={data.is_default}
+                                onChange={(e) => setData('is_default', e.target.checked)}
+                                className="h-4 w-4 rounded"
+                            />
+                            <span>
+                                Coupon par défaut{' '}
+                                <span className="text-muted-foreground">
+                                    (pré-rempli automatiquement dans le formulaire d'adhésion)
+                                </span>
+                            </span>
                         </label>
                     </div>
 
