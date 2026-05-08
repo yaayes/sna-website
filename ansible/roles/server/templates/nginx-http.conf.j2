@@ -5,6 +5,8 @@ server {
     server_tokens off;
     root {{ app_path }}/public;
 
+    client_max_body_size 50M;
+
     index index.html index.htm index.php;
     charset utf-8;
 

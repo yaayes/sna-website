@@ -21,3 +21,5 @@ php_admin_value[error_log] = /var/log/php{{ php_version }}-fpm-{{ app_user }}.lo
 php_admin_flag[log_errors] = on
 php_value[session.save_handler] = files
 php_value[session.save_path] = /var/lib/php/sessions
+php_value[upload_max_filesize] = 10M
+php_value[post_max_size] = 50M
