@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\AidantAdhesionForm;
+use App\Models\Coupon;
 use App\Models\MoiAussiForm;
 use App\Models\PartenaireForm;
 use App\Models\SoutienForm;
@@ -45,6 +47,7 @@ class AdminDashboardTest extends TestCase
         MoiAussiForm::factory()->count(3)->create();
         SoutienForm::factory()->count(5)->create();
         PartenaireForm::factory()->count(2)->create();
+        Coupon::factory()->count(4)->create();
 
         $response = $this->actingAs($admin)->get('/@');
 
@@ -54,6 +57,22 @@ class AdminDashboardTest extends TestCase
                 ->where('stats.moi_aussi', 3)
                 ->where('stats.soutien', 5)
                 ->where('stats.partenaire', 2)
+                ->where('stats.coupons', 4)
+        );
+    }
+
+    public function test_adhesion_stat_counts_only_completed_submissions(): void
+    {
+        $admin = User::factory()->admin()->create();
+        AidantAdhesionForm::factory()->count(2)->completed()->create();
+        AidantAdhesionForm::factory()->count(3)->draft()->create();
+
+        $response = $this->actingAs($admin)->get('/@');
+
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('admin/dashboard')
+                ->where('stats.adhesion', 2)
         );
     }
 }

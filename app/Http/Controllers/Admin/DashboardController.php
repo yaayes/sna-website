@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\ActionCategory;
 use App\Models\AidantAdhesionForm;
+use App\Models\Coupon;
 use App\Models\MoiAussiForm;
 use App\Models\PartenaireForm;
 use App\Models\PressArticle;
@@ -22,7 +23,8 @@ class DashboardController extends Controller
                 'moi_aussi' => MoiAussiForm::count(),
                 'soutien' => SoutienForm::count(),
                 'partenaire' => PartenaireForm::count(),
-                'adhesion' => AidantAdhesionForm::count(),
+                'adhesion' => AidantAdhesionForm::where('status', AidantAdhesionForm::STATUS_COMPLETED)->count(),
+                'coupons' => Coupon::count(),
                 'actions' => Action::count(),
                 'action_categories' => ActionCategory::count(),
                 'press_articles' => PressArticle::count(),

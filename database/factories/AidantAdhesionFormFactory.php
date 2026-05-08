@@ -18,7 +18,29 @@ class AidantAdhesionFormFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => $this->faker->lastName(),
+            'prenom' => $this->faker->firstName(),
+            'email' => $this->faker->safeEmail(),
+            'aidant_type' => 'parent',
+            'soutient_sna' => false,
+            'wants_info' => false,
+            'consents_rgpd' => true,
+            'declaration_honneur' => true,
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
         ];
+    }
+
+    public function draft(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => AidantAdhesionForm::STATUS_DRAFT,
+        ]);
+    }
+
+    public function completed(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => AidantAdhesionForm::STATUS_COMPLETED,
+        ]);
     }
 }

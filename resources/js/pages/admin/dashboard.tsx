@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ClipboardList, FileText, FolderTree, Handshake, Megaphone, Newspaper, Users } from 'lucide-react';
+import { ClipboardList, FileText, FolderTree, Handshake, Megaphone, Newspaper, Tag, Users } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
@@ -13,6 +13,7 @@ type Stats = {
     soutien: number;
     partenaire: number;
     adhesion: number;
+    coupons: number;
     actions: number;
     action_categories: number;
     press_articles: number;
@@ -50,6 +51,14 @@ const statCards = [
         href: admin.adhesion.index(),
         color: 'text-purple-500',
         bg: 'bg-purple-50 dark:bg-purple-950/30',
+    },
+    {
+        title: 'Coupons',
+        key: 'coupons' as const,
+        icon: Tag,
+        href: admin.coupons.index(),
+        color: 'text-orange-500',
+        bg: 'bg-orange-50 dark:bg-orange-950/30',
     },
     {
         title: 'Actions SNA',
@@ -91,7 +100,7 @@ export default function AdminDashboard({ stats }: { stats: Stats }) {
                     </p>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {statCards.map(
                         ({ title, key, icon: Icon, href, color, bg }) => (
                             <Link
@@ -115,23 +124,13 @@ export default function AdminDashboard({ stats }: { stats: Stats }) {
                                         ? 'categories disponibles'
                                         : key === 'press_articles'
                                           ? 'articles enregistres'
-                                          : 'entrees enregistrees'}
+                                          : key === 'coupons'
+                                            ? 'coupons disponibles'
+                                            : 'entrees enregistrees'}
                                 </p>
                             </Link>
                         ),
                     )}
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                    {statCards.map(({ title, key, href, color }) => (
-                        <Link
-                            key={key}
-                            href={href}
-                            className={`rounded-xl border px-5 py-4 text-sm font-medium transition-colors hover:underline ${color}`}
-                        >
-                            Voir les {title.toLowerCase()} →
-                        </Link>
-                    ))}
                 </div>
             </div>
         </AppLayout>
