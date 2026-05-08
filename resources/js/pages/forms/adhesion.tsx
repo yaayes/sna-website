@@ -734,39 +734,6 @@ function AdhesionForm({ membershipFeeCents, prefillData }: { membershipFeeCents:
                             Declaration et identite des aidants
                         </h3>
 
-                        <div className="space-y-3 rounded-2xl border border-sna-teal/25 bg-sna-teal-light p-5">
-                            <p className="text-sm text-gray-700">
-                                Les informations recueillies ne sont ni
-                                revendues ni transmises. Elles servent
-                                uniquement a des fins collectives et
-                                statistiques.
-                            </p>
-                            <label className="flex items-start gap-3 text-sm text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    checked={data.declaration_honneur}
-                                    onChange={(event) =>
-                                        setData(
-                                            'declaration_honneur',
-                                            event.target.checked,
-                                        )
-                                    }
-                                    className="mt-0.5 h-4 w-4 rounded accent-sna-teal"
-                                />
-                                Je declare sur l'honneur etre aidant(e),
-                                accompagner regulierement une personne de mon
-                                entourage et fournir des informations sinceres
-                                et exactes.
-                            </label>
-                            {(stepErrors.declaration_honneur ||
-                                errors.declaration_honneur) && (
-                                <p className="text-xs text-red-600">
-                                    {stepErrors.declaration_honneur ||
-                                        errors.declaration_honneur}
-                                </p>
-                            )}
-                        </div>
-
                         {data.aidants.map((aidant, index) => (
                             <div
                                 key={index}
@@ -1164,6 +1131,39 @@ function AdhesionForm({ membershipFeeCents, prefillData }: { membershipFeeCents:
                         >
                             Ajouter un aidant
                         </button>
+
+                        <div className="space-y-3 rounded-2xl border border-sna-teal/25 bg-sna-teal-light p-5">
+                            <p className="text-sm text-gray-700">
+                                Les informations recueillies ne sont ni
+                                revendues ni transmises. Elles servent
+                                uniquement a des fins collectives et
+                                statistiques.
+                            </p>
+                            <label className="flex items-start gap-3 text-sm text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={data.declaration_honneur}
+                                    onChange={(event) =>
+                                        setData(
+                                            'declaration_honneur',
+                                            event.target.checked,
+                                        )
+                                    }
+                                    className="mt-0.5 h-4 w-4 rounded accent-sna-teal"
+                                />
+                                Je declare sur l'honneur etre aidant(e),
+                                accompagner regulierement une personne de mon
+                                entourage et fournir des informations sinceres
+                                et exactes.
+                            </label>
+                            {(stepErrors.declaration_honneur ||
+                                errors.declaration_honneur) && (
+                                <p className="text-xs text-red-600">
+                                    {stepErrors.declaration_honneur ||
+                                        errors.declaration_honneur}
+                                </p>
+                            )}
+                        </div>
 
                         <NavButtons
                             step={step}
