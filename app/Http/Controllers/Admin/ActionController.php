@@ -22,6 +22,7 @@ class ActionController extends Controller
         $query = Action::query()
             ->with('actionCategory:id,name,sort_order')
             ->select('actions.*')
+            ->withCount('moiAussiForms')
             ->join('action_categories', 'action_categories.id', '=', 'actions.action_category_id')
             ->orderBy('action_categories.sort_order')
             ->orderBy('actions.sort_order')
@@ -46,6 +47,7 @@ class ActionController extends Controller
                 'sort_order' => $action->sort_order,
                 'is_published' => $action->is_published,
                 'updated_at' => $action->updated_at,
+                'moi_aussi_count' => $action->moi_aussi_forms_count,
             ])->values(),
             'filters' => ['search' => $request->string('search')->trim()->value()],
         ]);

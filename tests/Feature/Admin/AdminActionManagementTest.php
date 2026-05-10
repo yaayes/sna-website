@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\Action;
 use App\Models\ActionCategory;
+use App\Models\MoiAussiForm;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -89,5 +91,29 @@ class AdminActionManagementTest extends TestCase
             'id' => $first->id,
             'sort_order' => 2,
         ]);
+    }
+
+    public function test_admin_actions_index_includes_moi_aussi_count(): void
+    {
+        $this->withoutMiddleware(HandleInertiaRequests::class);
+
+        $admin = User::factory()->admin()->create();
+        $action = Action::factory()->create();
+        MoiAussiForm::factory()->count(3)->create(['action_id' => $action->id]);
+
+        $response = $this->actingAs($admin)
+            ->withHeaders([
+                'X-Inertia' => 'true',
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json',
+            ])
+            ->get('/@/actions');
+
+        $response->assertOk();
+        $payload = json_decode($response->getContent(), true);
+
+        $found = collect($payload['props']['actions'])->firstWhere('id', $action->id);
+        $this->assertNotNull($found);
+        $this->assertEquals(3, $found['moi_aussi_count']);
     }
 }

@@ -66,6 +66,19 @@ class ActionsPageTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('actions/show')
                 ->where('actionItem.slug', 'reforme-cdaph')
+                ->where('actionItem.moi_aussi_count', 0)
+            );
+    }
+
+    public function test_action_show_exposes_moi_aussi_submission_count(): void
+    {
+        $action = Action::factory()->create(['is_published' => true]);
+        MoiAussiForm::factory()->count(4)->create(['action_id' => $action->id]);
+
+        $this->get('/nos-actions/'.$action->slug)
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->where('actionItem.moi_aussi_count', 4)
             );
     }
 

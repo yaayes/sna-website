@@ -20,6 +20,7 @@ const historiqueObjectifs = [
     'Défendre les droits des aidants face aux discriminations indirectes',
     'Engager des actions stratégiques, y compris contentieuses',
     'Construire un dialogue exigeant mais constructif avec les institutions',
+    'Affirmer une indépendance totale : le SNA ne se réclame d’aucun parti politique ni d’aucun syndicat existant',
 ];
 
 const historiqueRepresentation = [
@@ -211,6 +212,15 @@ export default function AProposNousPage() {
 
                         <div className="mt-4">
                             <BulletList items={roleMissions} />
+                        </div>
+
+                        <div className="mt-8 rounded-xl border border-sna-teal/20 bg-sna-teal/5 p-6">
+                            <h3 className="text-lg font-semibold text-gray-900">Positionnement opérationnel</h3>
+                            <div className="mt-4 space-y-3 text-gray-700">
+                                <p>Le SNA agit à un niveau collectif et structurel.</p>
+                                <p>Il n’a pas vocation, à ce stade, à traiter les situations individuelles.</p>
+                                <p>Son rôle est de transformer les réalités individuelles en réponses collectives durables, en agissant sur les droits, les dispositifs et les politiques publiques.</p>
+                            </div>
                         </div>
                     </section>
 

@@ -8,6 +8,7 @@ type ActionItem = {
     slug: string;
     category: string;
     content: string;
+    moi_aussi_count: number;
 };
 
 type RelatedAction = {
@@ -59,6 +60,16 @@ export default function ActionShowPage({
                             <p className="mt-1 text-sm text-gray-500">
                                 Partagez votre témoignage lié à cette action pour nourrir notre plaidoyer.
                             </p>
+                            {actionItem.moi_aussi_count > 0 && (
+                                <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-sna-teal/10 px-4 py-2 text-sm font-semibold text-sna-teal-dark">
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sna-teal text-xs font-bold text-white">
+                                        {actionItem.moi_aussi_count}
+                                    </span>
+                                    {actionItem.moi_aussi_count === 1
+                                        ? 'personne a déjà témoigné'
+                                        : `${actionItem.moi_aussi_count} personnes ont déjà témoigné`}
+                                </div>
+                            )}
                             <div className="mt-6">
                                 <MoiAussiForm actionId={actionItem.id} />
                             </div>

@@ -16,6 +16,7 @@ type ActionItem = {
     sort_order: number;
     is_published: boolean;
     updated_at: string;
+    moi_aussi_count: number;
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -189,7 +190,10 @@ export default function ActionAdminIndex({
                                     </div>
                                     <p className="mt-1 text-xs text-muted-foreground">
                                         /nos-actions/{action.slug} • Maj le{' '}
-                                        {new Date(action.updated_at).toLocaleDateString('fr-FR')}
+                                        {new Date(action.updated_at).toLocaleDateString('fr-FR')} •{' '}
+                                        <span className="font-medium text-rose-600">
+                                            {action.moi_aussi_count} témoignage{action.moi_aussi_count !== 1 ? 's' : ''}
+                                        </span>
                                     </p>
                                 </div>
 

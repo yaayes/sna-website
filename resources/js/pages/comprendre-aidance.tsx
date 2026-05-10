@@ -298,7 +298,7 @@ export default function ComprendreAidancePage() {
 
                         <div className="mt-8">
                             <img
-                                src="/images/Aidantométre.pdf"
+                                src="/images/aidantometre.jpg"
                                 alt="Aidantomètre - Les niveaux d'aidance"
                                 className="w-full rounded-lg"
                             />
@@ -415,7 +415,7 @@ export default function ComprendreAidancePage() {
 
                         <div className="mt-6 rounded-xl bg-gradient-to-br from-green-50 to-green-100/50 p-6">
                             <p className="text-gray-700">
-                                Être aidant ne signifie pas se sacrifier.
+                                Être aidant ne doit pas signifier se sacrifier.
                             </p>
                             <p className="mt-3 text-gray-700">
                                 Un équilibre est nécessaire entre :

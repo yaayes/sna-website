@@ -46,6 +46,7 @@ class ActionController extends Controller
                 'slug' => $action->slug,
                 'category' => $action->actionCategory->name,
                 'content' => $action->content,
+                'moi_aussi_count' => $action->moiAussiForms()->count(),
             ],
             'relatedActions' => Action::query()
                 ->published()

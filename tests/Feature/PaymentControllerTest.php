@@ -417,12 +417,12 @@ class PaymentControllerTest extends TestCase
 
     public function test_partenaire_store_redirects_to_cawl_with_minimum_fee_and_donation(): void
     {
-        config(['cawl.membership_fee_cents' => 2000]);
+        config(['cawl.partenaire_fee_cents' => 10000]);
 
         $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
             $mock->shouldReceive('createHostedCheckout')
                 ->once()
-                ->with(3000, \Mockery::type('string'), route('payment.return'), route('payment.webhook'))
+                ->with(11000, \Mockery::type('string'), route('payment.return'), route('payment.webhook'))
                 ->andReturn([
                     'hosted_checkout_id' => 'hco_par_don',
                     'redirect_url' => 'https://payment.preprod.cawl-solutions.fr/hostedcheckout/par-don',
@@ -442,7 +442,7 @@ class PaymentControllerTest extends TestCase
         ]);
         $this->assertDatabaseHas('payments', [
             'hosted_checkout_id' => 'hco_par_don',
-            'amount_cents' => 3000,
+            'amount_cents' => 11000,
             'status' => 'pending',
         ]);
     }

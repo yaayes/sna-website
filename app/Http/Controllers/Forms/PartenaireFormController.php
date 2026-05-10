@@ -22,7 +22,7 @@ class PartenaireFormController extends Controller
     public function show(): Response
     {
         return Inertia::render('forms/partenaire', [
-            'membershipFeeCents' => config('cawl.membership_fee_cents'),
+            'membershipFeeCents' => config('cawl.partenaire_fee_cents'),
             'prefillData' => session('partenaire_prefill'),
         ]);
     }
@@ -37,7 +37,7 @@ class PartenaireFormController extends Controller
         unset($validated['attachments'], $validated['don_amount'], $validated['pending_form_id']);
         $validated['don_amount_cents'] = $donAmountCents;
 
-        $membershipFeeCents = (int) config('cawl.membership_fee_cents');
+        $membershipFeeCents = (int) config('cawl.partenaire_fee_cents');
         $totalCents = $membershipFeeCents + ($donAmountCents ?? 0);
 
         return DB::transaction(function () use ($validated, $pendingFormId, $attachments, $totalCents) {
