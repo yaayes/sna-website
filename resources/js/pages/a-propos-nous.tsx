@@ -249,6 +249,16 @@ export default function AProposNousPage() {
                         <div className="mt-4">
                             <BulletList items={gouvernance} />
                         </div>
+                        <div className="mt-6 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+                            <img
+                                src="/images/bureau-SNA.png"
+                                alt="Le bureau du Syndicat National des Aidants"
+                                className="w-full object-cover"
+                            />
+                            <p className="bg-gray-50 px-6 py-3 text-sm font-medium text-gray-600">
+                                Le bureau du Syndicat National des Aidants
+                            </p>
+                        </div>
                     </section>
                 </main>
             </div>

@@ -425,16 +425,6 @@ export default function Welcome() {
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-10 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
-                            <img
-                                src="/images/bureau-SNA.png"
-                                alt="Le bureau du Syndicat National des Aidants"
-                                className="w-full object-cover"
-                            />
-                            <p className="bg-gray-50 px-6 py-3 text-sm font-medium text-gray-600">
-                                Le bureau du Syndicat National des Aidants
-                            </p>
-                        </div>
                     </div>
                 </section>
 
@@ -700,11 +690,22 @@ export default function Welcome() {
                                 alt="Syndicat National des Aidants"
                                 className="h-12 w-auto brightness-0 invert"
                             />
-                            <p className="text-sm leading-relaxed text-gray-400">
-                                Le SNA défend les droits et améliore la vie des
-                                familles qui accompagnent un enfant en situation
-                                de handicap en France.
-                            </p>
+                            <div className="space-y-3 text-sm leading-relaxed text-gray-400">
+                                <p>
+                                    Le SNA défend les intérêts des aidants
+                                    familiaux qui accompagnent un proche touché
+                                    par la maladie, le handicap ou la perte
+                                    d’autonomie.
+                                </p>
+                                <p>
+                                    Il porte une parole collective issue du
+                                    vécu afin de faire évoluer les politiques
+                                    publiques, améliorer la reconnaissance des
+                                    aidants et contribuer à des réponses plus
+                                    justes, plus cohérentes et plus adaptées aux
+                                    réalités du terrain.
+                                </p>
+                            </div>
                         </div>
 
                         <div className="flex flex-col gap-12 sm:flex-row">
