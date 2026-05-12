@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\NotifyOnFormSubmissionCreated;
 use App\Models\AidantAdhesionForm;
 use App\Models\PartenaireForm;
 use App\Models\Payment;
@@ -47,6 +48,12 @@ class PaymentController extends Controller
         }
 
         if ($payment->isSuccessful()) {
+            $submission = $payment->formSubmission()->with('formable')->first();
+
+            if ($submission) {
+                (new NotifyOnFormSubmissionCreated)($submission);
+            }
+
             return Inertia::render('payment/success', [
                 'amountEuros' => $payment->amountEuros(),
                 'merchantReference' => $payment->merchant_reference,

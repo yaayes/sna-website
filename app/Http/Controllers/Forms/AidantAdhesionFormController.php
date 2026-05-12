@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Forms;
 
+use App\Actions\NotifyOnFormSubmissionCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Forms\SaveAidantAdhesionDraftRequest;
 use App\Http\Requests\Forms\StoreAidantAdhesionFormRequest;
@@ -286,6 +287,8 @@ class AidantAdhesionFormController extends Controller
 
             return Inertia::location($checkout['redirect_url']);
         }
+
+        (new NotifyOnFormSubmissionCreated)($submission);
 
         return back()->with('success', 'Votre adhesion a bien ete enregistree. Merci de soutenir le SNA !');
     }

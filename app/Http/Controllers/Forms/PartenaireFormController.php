@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Forms;
 
+use App\Actions\NotifyOnFormSubmissionCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePartenaireFormRequest;
 use App\Models\FormSubmission;
@@ -128,6 +129,8 @@ class PartenaireFormController extends Controller
 
             return Inertia::location($checkout['redirect_url']);
         }
+
+        (new NotifyOnFormSubmissionCreated)($submission);
 
         return back()->with('success', 'Votre demande de partenariat a bien ete enregistree. Un email de confirmation vous a ete envoye.');
     }

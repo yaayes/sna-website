@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Forms;
 
+use App\Actions\NotifyOnFormSubmissionCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSoutienFormRequest;
 use App\Models\FormSubmission;
@@ -110,6 +111,8 @@ class SoutienFormController extends Controller
 
             return Inertia::location($checkout['redirect_url']);
         }
+
+        (new NotifyOnFormSubmissionCreated)($submission);
 
         return back()->with('success', 'Votre demande de soutien a bien ete enregistree.');
     }

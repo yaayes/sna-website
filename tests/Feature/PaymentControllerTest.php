@@ -2,12 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Models\FormAccessToken;
 use App\Models\FormSubmission;
 use App\Models\PartenaireForm;
 use App\Models\Payment;
 use App\Models\SoutienForm;
+use App\Models\User;
+use App\Notifications\FormSubmissionAdminNotification;
 use App\Services\CawlPaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Mockery\MockInterface;
 use OnlinePayments\Sdk\Webhooks\SignatureValidationException;
 use Tests\TestCase;
@@ -20,9 +24,19 @@ class PaymentControllerTest extends TestCase
 
     public function test_return_updates_payment_and_renders_success_page_when_captured(): void
     {
+        Notification::fake();
+
+        $admin = User::factory()->admin()->create();
+
+        $submission = FormSubmission::factory()->create([
+            'email' => 'submitter@example.com',
+            'type' => 'adhesion',
+        ]);
+
         $payment = Payment::factory()->create([
             'hosted_checkout_id' => 'hco_abc123',
             'status' => 'pending',
+            'form_submission_id' => $submission->id,
         ]);
 
         $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
@@ -47,6 +61,9 @@ class PaymentControllerTest extends TestCase
             'cawl_payment_id' => '9000001234_1',
             'status_code' => 9,
         ]);
+
+        Notification::assertSentTo($admin, FormSubmissionAdminNotification::class);
+        $this->assertSame(1, FormAccessToken::where('email', 'submitter@example.com')->count());
     }
 
     public function test_return_updates_payment_and_renders_success_page_when_pending_capture(): void

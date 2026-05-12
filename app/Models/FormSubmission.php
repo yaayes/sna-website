@@ -26,6 +26,7 @@ class FormSubmission extends Model
     protected function casts(): array
     {
         return [
+            'notified_at' => 'datetime',
             'token_expires_at' => 'datetime',
             'last_accessed_at' => 'datetime',
         ];
@@ -46,5 +47,28 @@ class FormSubmission extends Model
         return $this->access_token !== null
             && $this->token_expires_at !== null
             && $this->token_expires_at->isFuture();
+    }
+
+    public function getSubmitterName(): ?string
+    {
+        $formable = $this->formable;
+
+        if ($formable === null) {
+            return null;
+        }
+
+        if (isset($formable->prenom, $formable->nom)) {
+            return trim($formable->prenom.' '.$formable->nom) ?: null;
+        }
+
+        if (isset($formable->contact_name) && $formable->contact_name !== '') {
+            return $formable->contact_name;
+        }
+
+        if (isset($formable->name) && $formable->name !== '') {
+            return $formable->name;
+        }
+
+        return null;
     }
 }

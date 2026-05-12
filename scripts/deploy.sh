@@ -33,8 +33,11 @@ npm ci --prefer-offline --quiet
 echo "▶ Building frontend assets..."
 npm run build
 
-echo "▶ Restarting queue workers..."
-php artisan queue:restart
+echo "▶ Terminating Horizon gracefully..."
+php artisan horizon:terminate || true
+
+echo "▶ Waiting for Horizon to shutdown..."
+sleep 10
 
 echo "▶ Reloading PHP-FPM..."
 sudo systemctl reload php8.4-fpm

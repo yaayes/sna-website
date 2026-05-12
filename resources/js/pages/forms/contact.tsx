@@ -36,7 +36,7 @@ export default function ContactForm() {
     };
 
     const inputCls =
-        'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/30 focus:outline-none placeholder:text-gray-300';
+        'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition focus:border-sna-teal focus:ring-2 focus:ring-sna-teal/30 focus:outline-none placeholder:text-gray-400';
     const labelCls = 'mb-1.5 block text-sm font-semibold text-gray-700';
 
     return (

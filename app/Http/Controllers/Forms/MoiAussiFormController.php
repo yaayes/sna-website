@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Forms;
 
+use App\Actions\NotifyOnFormSubmissionCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMoiAussiFormRequest;
 use App\Models\FormSubmission;
@@ -18,7 +19,7 @@ class MoiAussiFormController extends Controller
         $email = $form->email;
 
         if ($email) {
-            FormSubmission::create([
+            $submission = FormSubmission::create([
                 'email' => $email,
                 'type' => 'moi_aussi',
                 'formable_type' => MoiAussiForm::class,
@@ -26,6 +27,8 @@ class MoiAussiFormController extends Controller
                 'access_token' => Str::random(64),
                 'token_expires_at' => now()->addDays(30),
             ]);
+
+            (new NotifyOnFormSubmissionCreated)($submission);
         }
 
         return back()->with('success', 'Votre témoignage a bien été enregistré. Merci pour votre contribution.');

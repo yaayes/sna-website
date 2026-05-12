@@ -12,5 +12,15 @@ repo_url: 'git@github.com:yaayes/sna-website.git'
 # PostgreSQL (shared)
 db_user: 'forge'
 
+# Redis (shared)
+redis_bind_addresses:
+  - '127.0.0.1'
+  - '::1'
+redis_port: 6379
+redis_protected_mode: 'yes'
+redis_databases: 16
+redis_maxmemory: '256mb'
+redis_maxmemory_policy: 'allkeys-lru'
+
 # PHP-FPM socket
 php_fpm_socket: '/var/run/php/php{{ php_version }}-fpm.sock'

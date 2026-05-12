@@ -9,6 +9,7 @@
     "nightwatch_mcp": false,
     "sail": false,
     "skills": [
+        "configuring-horizon",
         "wayfinder-development",
         "inertia-react-development",
         "tailwindcss-development"
