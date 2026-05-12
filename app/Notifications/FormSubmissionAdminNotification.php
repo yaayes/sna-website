@@ -5,10 +5,11 @@ namespace App\Notifications;
 use App\Models\FormSubmission;
 use App\Models\Payment;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class FormSubmissionAdminNotification extends Notification
+class FormSubmissionAdminNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
