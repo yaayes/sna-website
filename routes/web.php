@@ -4,6 +4,7 @@ use App\Http\Controllers\ActionController;
 use App\Http\Controllers\Admin\ActionCategoryController as AdminActionCategoryController;
 use App\Http\Controllers\Admin\ActionController as AdminActionController;
 use App\Http\Controllers\Admin\AidantAdhesionFormController as AdminAidantAdhesionFormController;
+use App\Http\Controllers\Admin\ContactFormController as AdminContactFormController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ImageUploadController as AdminImageUploadController;
@@ -91,6 +92,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->g
     Route::get('/soutien/{soutienForm}', [AdminSoutienFormController::class, 'show'])->name('soutien.show');
     Route::get('/partenaire', [AdminPartenaireFormController::class, 'index'])->name('partenaire.index');
     Route::get('/partenaire/{partenaireForm}', [AdminPartenaireFormController::class, 'show'])->name('partenaire.show');
+    Route::get('/contact', [AdminContactFormController::class, 'index'])->name('contact.index');
+    Route::get('/contact/{contactForm}', [AdminContactFormController::class, 'show'])->name('contact.show');
     Route::post('/wysiwyg/images', [AdminImageUploadController::class, 'store'])
         ->name('wysiwyg.images.store')
         ->withoutMiddleware(VerifyCsrfToken::class);

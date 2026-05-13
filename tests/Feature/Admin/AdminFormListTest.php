@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\AidantAdhesionForm;
+use App\Models\ContactForm;
 use App\Models\FormSubmission;
 use App\Models\MoiAussiForm;
 use App\Models\PartenaireForm;
@@ -16,6 +17,42 @@ use Tests\TestCase;
 class AdminFormListTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_contact_index_is_accessible_by_admin(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)
+            ->get('/@/contact')
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('admin/contact/index'));
+    }
+
+    public function test_contact_index_search_filters_by_email(): void
+    {
+        $admin = User::factory()->admin()->create();
+        ContactForm::factory()->create(['email' => 'alice@example.com']);
+        ContactForm::factory()->create(['email' => 'bob@example.com']);
+
+        $this->actingAs($admin)
+            ->get('/@/contact?search=alice')
+            ->assertInertia(
+                fn ($page) => $page
+                    ->component('admin/contact/index')
+                    ->where('entries.total', 1)
+            );
+    }
+
+    public function test_contact_show_is_accessible_by_admin(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = ContactForm::factory()->create();
+
+        $this->actingAs($admin)
+            ->get('/@/contact/'.$form->id)
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('admin/contact/show'));
+    }
 
     // ── Moi Aussi ──────────────────────────────────────────────────────────────
 

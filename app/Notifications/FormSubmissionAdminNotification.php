@@ -25,6 +25,7 @@ class FormSubmissionAdminNotification extends Notification implements ShouldQueu
         $url = url('/').'/@/'.$this->getAdminPath();
 
         return (new MailMessage)
+            ->replyTo($this->submission->email)
             ->subject('Nouvelle soumission de formulaire SNA')
             ->view('emails.form-submission-admin', [
                 'formTypeLabel' => $this->getFormTypeLabel($this->submission->type),

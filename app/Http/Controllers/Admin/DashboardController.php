@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\ActionCategory;
 use App\Models\AidantAdhesionForm;
+use App\Models\ContactForm;
 use App\Models\Coupon;
 use App\Models\MoiAussiForm;
 use App\Models\PartenaireForm;
@@ -27,6 +28,7 @@ class DashboardController extends Controller
                 'partenaire' => PartenaireForm::whereHas('submission.payments', function ($q): void {
                     $q->whereIn('status', ['captured', 'authorized']);
                 })->count(),
+                'contact' => ContactForm::count(),
                 'adhesion' => AidantAdhesionForm::where('status', AidantAdhesionForm::STATUS_COMPLETED)->count(),
                 'coupons' => Coupon::count(),
                 'actions' => Action::count(),

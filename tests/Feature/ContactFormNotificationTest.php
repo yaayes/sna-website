@@ -33,7 +33,11 @@ class ContactFormNotificationTest extends TestCase
         $response->assertRedirect(route('forms.contact.page'));
         $response->assertSessionHas('success');
 
-        Notification::assertSentTo($admin, FormSubmissionAdminNotification::class);
+        Notification::assertSentTo($admin, FormSubmissionAdminNotification::class, function (FormSubmissionAdminNotification $notification, array $channels) use ($admin): bool {
+            $mail = $notification->toMail($admin);
+
+            return ($mail->replyTo[0][0] ?? null) === 'marie@example.com';
+        });
         $this->assertSame(1, FormAccessToken::where('email', 'marie@example.com')->count());
     }
 }
