@@ -30,7 +30,7 @@
             }
         </style>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>Syndicat National des Aidants</title>
 
         {{-- Favicon --}}
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -40,17 +40,17 @@
         {{-- Open Graph / Social Media --}}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="{{ url()->current() }}" />
-        <meta property="og:title" content="{{ config('app.name') }}" />
-        <meta property="og:description" content="Syndicat national de l'audiovisuel — défendre les droits et les intérêts des professionnels de l'audiovisuel." />
+        <meta property="og:title" content="Syndicat National des Aidants" />
+        <meta property="og:description" content="Le SNA défend les intérêts des aidants familiaux qui accompagnent un proche touché par la maladie, le handicap ou la perte d'autonomie." />
         <meta property="og:image" content="{{ asset('images/og-image.png') }}" />
-        <meta property="og:site_name" content="{{ config('app.name') }}" />
+        <meta property="og:site_name" content="Syndicat National des Aidants" />
         <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
 
         {{-- Twitter / X Card --}}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="{{ url()->current() }}" />
-        <meta name="twitter:title" content="{{ config('app.name') }}" />
-        <meta name="twitter:description" content="Syndicat national de l'audiovisuel — défendre les droits et les intérêts des professionnels de l'audiovisuel." />
+        <meta name="twitter:title" content="Syndicat National des Aidants" />
+        <meta name="twitter:description" content="Le SNA défend les intérêts des aidants familiaux qui accompagnent un proche touché par la maladie, le handicap ou la perte d'autonomie." />
         <meta name="twitter:image" content="{{ asset('images/og-image.png') }}" />
 
         <link rel="preconnect" href="https://fonts.bunny.net">
