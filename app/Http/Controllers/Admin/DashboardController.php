@@ -21,8 +21,12 @@ class DashboardController extends Controller
         return Inertia::render('admin/dashboard', [
             'stats' => [
                 'moi_aussi' => MoiAussiForm::count(),
-                'soutien' => SoutienForm::count(),
-                'partenaire' => PartenaireForm::count(),
+                'soutien' => SoutienForm::whereHas('submission.payments', function ($q): void {
+                    $q->whereIn('status', ['captured', 'authorized']);
+                })->count(),
+                'partenaire' => PartenaireForm::whereHas('submission.payments', function ($q): void {
+                    $q->whereIn('status', ['captured', 'authorized']);
+                })->count(),
                 'adhesion' => AidantAdhesionForm::where('status', AidantAdhesionForm::STATUS_COMPLETED)->count(),
                 'coupons' => Coupon::count(),
                 'actions' => Action::count(),

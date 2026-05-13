@@ -83,8 +83,28 @@ class AdminFormListTest extends TestCase
     public function test_soutien_index_search_filters_by_email(): void
     {
         $admin = User::factory()->admin()->create();
-        SoutienForm::factory()->create(['email' => 'alice@example.com']);
-        SoutienForm::factory()->create(['email' => 'bob@example.com']);
+        $alice = SoutienForm::factory()->create(['email' => 'alice@example.com']);
+        $bob = SoutienForm::factory()->create(['email' => 'bob@example.com']);
+
+        $aliceSubmission = FormSubmission::factory()->create([
+            'email' => $alice->email,
+            'type' => 'soutien',
+            'formable_type' => SoutienForm::class,
+            'formable_id' => $alice->id,
+        ]);
+
+        FormSubmission::factory()->create([
+            'email' => $bob->email,
+            'type' => 'soutien',
+            'formable_type' => SoutienForm::class,
+            'formable_id' => $bob->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $aliceSubmission->id,
+            'status' => 'captured',
+            'amount_cents' => 2000,
+        ]);
 
         $this->actingAs($admin)
             ->get('/@/soutien?search=alice')
@@ -124,6 +144,29 @@ class AdminFormListTest extends TestCase
 
         $this->assertEquals('captured', $payload['props']['entries']['data'][0]['payment_status']);
         $this->assertEquals(2400, $payload['props']['entries']['data'][0]['payment_amount_cents']);
+    }
+
+    public function test_soutien_index_hides_pending_payments(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = SoutienForm::factory()->create(['email' => 'soutien-pending@example.com']);
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'soutien',
+            'formable_type' => SoutienForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'status' => 'pending',
+            'amount_cents' => 2400,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/@/soutien?search=soutien-pending@example.com')
+            ->assertInertia(fn ($page) => $page->where('entries.total', 0));
     }
 
     public function test_soutien_show_exposes_payment_summary(): void
@@ -169,8 +212,21 @@ class AdminFormListTest extends TestCase
     public function test_partenaire_index_search_filters_by_organisation(): void
     {
         $admin = User::factory()->admin()->create();
-        PartenaireForm::factory()->create(['organisation_name' => 'Greenpeace']);
+        $greenpeace = PartenaireForm::factory()->create(['organisation_name' => 'Greenpeace']);
         PartenaireForm::factory()->create(['organisation_name' => 'Amnesty']);
+
+        $greenpeaceSubmission = FormSubmission::factory()->create([
+            'email' => $greenpeace->email,
+            'type' => 'partenaire',
+            'formable_type' => PartenaireForm::class,
+            'formable_id' => $greenpeace->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $greenpeaceSubmission->id,
+            'status' => 'captured',
+            'amount_cents' => 10000,
+        ]);
 
         $this->actingAs($admin)
             ->get('/@/partenaire?search=green')
@@ -210,6 +266,29 @@ class AdminFormListTest extends TestCase
 
         $this->assertEquals('captured', $payload['props']['entries']['data'][0]['payment_status']);
         $this->assertEquals(3600, $payload['props']['entries']['data'][0]['payment_amount_cents']);
+    }
+
+    public function test_partenaire_index_hides_pending_payments(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = PartenaireForm::factory()->create(['email' => 'partenaire-pending@example.com']);
+
+        $submission = FormSubmission::factory()->create([
+            'email' => $form->email,
+            'type' => 'partenaire',
+            'formable_type' => PartenaireForm::class,
+            'formable_id' => $form->id,
+        ]);
+
+        Payment::factory()->create([
+            'form_submission_id' => $submission->id,
+            'status' => 'pending',
+            'amount_cents' => 3600,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/@/partenaire?search=partenaire-pending@example.com')
+            ->assertInertia(fn ($page) => $page->where('entries.total', 0));
     }
 
     public function test_partenaire_show_exposes_payment_summary(): void

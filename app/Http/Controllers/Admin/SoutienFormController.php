@@ -13,8 +13,12 @@ class SoutienFormController extends Controller
     public function index(Request $request): Response
     {
         $query = SoutienForm::query()
+            ->whereHas('submission.payments', function ($q): void {
+                $q->whereIn('status', ['captured', 'authorized']);
+            })
             ->with(['submission.payments' => function ($q) {
-                $q->latest();
+                $q->whereIn('status', ['captured', 'authorized'])
+                    ->latest();
             }])
             ->latest();
 
