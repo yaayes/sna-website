@@ -62,16 +62,17 @@ class CaptureAuthorisedPayments extends Command
 
         $captured = 0;
         $skipped = 0;
+        $synced = 0;
         $failed = 0;
         $expired = 0;
 
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $query->chunk($chunk, function ($payments) use (&$captured, &$skipped, &$failed, &$expired, $bar): void {
+        $query->chunkById($chunk, function ($payments) use (&$captured, &$skipped, &$synced, &$failed, &$expired, $bar): void {
             foreach ($payments as $payment) {
                 /** @var Payment $payment */
-                $this->processPayment($payment, $captured, $skipped, $failed, $expired);
+                $this->processPayment($payment, $captured, $skipped, $synced, $failed, $expired);
                 $bar->advance();
             }
         });
@@ -84,6 +85,7 @@ class CaptureAuthorisedPayments extends Command
             [
                 ['Captured successfully', $captured],
                 ['Already captured / in progress (skipped)', $skipped],
+                ['DB status corrected (was stale)', $synced],
                 ['Authorisation expired or rejected', $expired],
                 ['Errors', $failed],
             ],
@@ -96,6 +98,7 @@ class CaptureAuthorisedPayments extends Command
         Payment $payment,
         int &$captured,
         int &$skipped,
+        int &$synced,
         int &$failed,
         int &$expired,
     ): void {
@@ -111,6 +114,7 @@ class CaptureAuthorisedPayments extends Command
 
                 if ($localStatus !== $payment->status) {
                     $payment->update(['status' => $localStatus, 'status_code' => $result['status_code']]);
+                    $synced++;
                 }
 
                 if (in_array($remoteStatus, ['CAPTURED', 'CAPTURE_REQUESTED'])) {
@@ -132,7 +136,7 @@ class CaptureAuthorisedPayments extends Command
             }
 
             $this->cawlPaymentService->capturePayment($payment->cawl_payment_id, $payment->amount_cents);
-            $payment->update(['status_code' => $result['status_code']]);
+            $payment->update(['status' => 'captured', 'status_code' => $result['status_code']]);
             $captured++;
         } catch (Throwable $e) {
             $failed++;

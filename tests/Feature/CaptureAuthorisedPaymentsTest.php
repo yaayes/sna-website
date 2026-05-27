@@ -67,9 +67,7 @@ class CaptureAuthorisedPaymentsTest extends TestCase
 
         $this->artisan('payments:capture-authorised')->assertSuccessful();
 
-        // Status should still be 'authorized' (CAPTURE_REQUESTED is transient;
-        // the webhook will update it to 'captured' once CAWL confirms).
-        $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'authorized']);
+        $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'captured']);
     }
 
     public function test_skips_payment_already_captured_on_cawl(): void
@@ -91,7 +89,8 @@ class CaptureAuthorisedPaymentsTest extends TestCase
 
         $this->artisan('payments:capture-authorised')->assertSuccessful();
 
-        $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'captured']);
+        // DB was stale (authorized) — should now be corrected to captured.
+        $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'captured', 'status_code' => 9]);
     }
 
     public function test_skips_payment_with_capture_already_requested(): void
@@ -113,8 +112,33 @@ class CaptureAuthorisedPaymentsTest extends TestCase
 
         $this->artisan('payments:capture-authorised')->assertSuccessful();
 
-        // Local status remains 'authorized'; webhook will update it to 'captured'.
+        // CAPTURE_REQUESTED is in-flight; DB stays as authorized until webhook confirms.
         $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'authorized']);
+    }
+
+    public function test_syncs_stale_db_status_when_already_captured_on_cawl(): void
+    {
+        // Simulates the scenario where capture succeeded on CAWL in a previous run
+        // but the local DB status was never updated (e.g. due to the old chunk() bug).
+        $payment = Payment::factory()->create([
+            'status' => 'authorized',
+            'cawl_payment_id' => '9000009_1',
+            'amount_cents' => 3000,
+            'status_code' => null,
+        ]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('getPaymentStatus')
+                ->once()
+                ->with('9000009_1')
+                ->andReturn(['status' => 'CAPTURED', 'status_code' => 9]);
+
+            $mock->shouldNotReceive('capturePayment');
+        });
+
+        $this->artisan('payments:capture-authorised')->assertSuccessful();
+
+        $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'captured', 'status_code' => 9]);
     }
 
     // ─── Expired / voided authorisations ─────────────────────────────────────
@@ -197,7 +221,7 @@ class CaptureAuthorisedPaymentsTest extends TestCase
         $this->artisan('payments:capture-authorised')->assertFailed();
 
         // The succeeding payment was still processed.
-        $this->assertDatabaseHas('payments', ['id' => $succeeding->id, 'status' => 'authorized']);
+        $this->assertDatabaseHas('payments', ['id' => $succeeding->id, 'status' => 'captured']);
     }
 
     public function test_does_not_process_payments_without_cawl_payment_id(): void
