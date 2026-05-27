@@ -44,6 +44,12 @@ class PaymentController extends Controller
                 'raw_response' => $result['raw'],
             ]);
 
+            // PENDING_CAPTURE means the authorisation succeeded but the funds have not yet
+            // been transferred. We must explicitly request capture to collect the money.
+            if (strtoupper($result['status'] ?? '') === 'PENDING_CAPTURE' && $result['cawl_payment_id']) {
+                $this->cawlPaymentService->capturePayment($result['cawl_payment_id'], $payment->amount_cents);
+            }
+
             $payment->refresh();
         }
 
@@ -109,7 +115,8 @@ class PaymentController extends Controller
 
         $paymentId = $payment->getId();
         $statusCode = $payment->getStatusOutput()?->getStatusCode();
-        $status = $this->mapStatus($payment->getStatus() ?? '');
+        $rawStatus = $payment->getStatus() ?? '';
+        $status = $this->mapStatus($rawStatus);
 
         // Update by cawl_payment_id or hosted_checkout_id from the merchant reference.
         $record = Payment::where('cawl_payment_id', $paymentId)
@@ -122,6 +129,13 @@ class PaymentController extends Controller
                 'cawl_payment_id' => $paymentId,
                 'status_code' => $statusCode,
             ]);
+
+            // PENDING_CAPTURE means the authorisation succeeded but capture was not yet
+            // triggered (e.g. the customer never reached the returnUrl). Capture now so
+            // the merchant can retrieve the funds.
+            if (strtoupper($rawStatus) === 'PENDING_CAPTURE' && $paymentId) {
+                $this->cawlPaymentService->capturePayment($paymentId, $record->amount_cents);
+            }
         }
 
         return response()->noContent();

@@ -70,6 +70,7 @@ class PaymentControllerTest extends TestCase
     {
         $payment = Payment::factory()->create([
             'hosted_checkout_id' => 'hco_pending_capture',
+            'amount_cents' => 1000,
             'status' => 'pending',
         ]);
 
@@ -83,6 +84,10 @@ class PaymentControllerTest extends TestCase
                     'cawl_payment_id' => '9000005678_1',
                     'raw' => ['status' => 'PENDING_CAPTURE'],
                 ]);
+
+            $mock->shouldReceive('capturePayment')
+                ->once()
+                ->with('9000005678_1', 1000);
         });
 
         $response = $this->get('/payment/return?hostedCheckoutId=hco_pending_capture');
@@ -102,6 +107,7 @@ class PaymentControllerTest extends TestCase
         // payment-level status so we show the success page rather than retrying.
         $payment = Payment::factory()->create([
             'hosted_checkout_id' => 'hco_real_world',
+            'amount_cents' => 2000,
             'status' => 'pending',
         ]);
 
@@ -117,6 +123,10 @@ class PaymentControllerTest extends TestCase
                     'cawl_payment_id' => '9000009999_1',
                     'raw' => ['status' => 'PAYMENT_CREATED'],
                 ]);
+
+            $mock->shouldReceive('capturePayment')
+                ->once()
+                ->with('9000009999_1', 2000);
         });
 
         $response = $this->get('/payment/return?hostedCheckoutId=hco_real_world');
@@ -305,6 +315,57 @@ class PaymentControllerTest extends TestCase
         });
 
         $this->postJson('/payment/webhook')->assertStatus(401);
+    }
+
+    public function test_webhook_triggers_capture_when_status_is_pending_capture(): void
+    {
+        $payment = Payment::factory()->create([
+            'merchant_reference' => 'ADH-PENDCAP001',
+            'amount_cents' => 1500,
+            'status' => 'pending',
+        ]);
+
+        $fakeEvent = $this->buildFakeWebhookEvent('ADH-PENDCAP001', '9000002_1', 'PENDING_CAPTURE', 5);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock) use ($fakeEvent): void {
+            $mock->shouldReceive('unmarshalWebhook')->once()->andReturn($fakeEvent);
+
+            $mock->shouldReceive('capturePayment')
+                ->once()
+                ->with('9000002_1', 1500);
+        });
+
+        $this->postJson('/payment/webhook', [], ['Content-Type' => 'application/json'])
+            ->assertNoContent();
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'authorized',
+        ]);
+    }
+
+    public function test_webhook_does_not_trigger_capture_for_capture_requested_status(): void
+    {
+        $payment = Payment::factory()->create([
+            'merchant_reference' => 'ADH-CAPREQ001',
+            'amount_cents' => 1500,
+            'status' => 'pending',
+        ]);
+
+        $fakeEvent = $this->buildFakeWebhookEvent('ADH-CAPREQ001', '9000003_1', 'CAPTURE_REQUESTED', 91);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock) use ($fakeEvent): void {
+            $mock->shouldReceive('unmarshalWebhook')->once()->andReturn($fakeEvent);
+            $mock->shouldNotReceive('capturePayment');
+        });
+
+        $this->postJson('/payment/webhook', [], ['Content-Type' => 'application/json'])
+            ->assertNoContent();
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'authorized',
+        ]);
     }
 
     public function test_webhook_does_not_update_already_captured_payment(): void

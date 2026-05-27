@@ -7,6 +7,7 @@ use OnlinePayments\Sdk\Client;
 use OnlinePayments\Sdk\Communicator;
 use OnlinePayments\Sdk\CommunicatorConfiguration;
 use OnlinePayments\Sdk\Domain\AmountOfMoney;
+use OnlinePayments\Sdk\Domain\CapturePaymentRequest;
 use OnlinePayments\Sdk\Domain\CreateHostedCheckoutRequest;
 use OnlinePayments\Sdk\Domain\Feedbacks;
 use OnlinePayments\Sdk\Domain\HostedCheckoutSpecificInput;
@@ -105,6 +106,41 @@ class CawlPaymentService
             'cawl_payment_id' => $payment?->getId(),
             'raw' => json_decode(json_encode($response), true),
         ];
+    }
+
+    /**
+     * Retrieve the current status of a payment directly by its payment ID.
+     *
+     * Returns ['status' => string, 'status_code' => int|null].
+     */
+    public function getPaymentStatus(string $paymentId): array
+    {
+        $response = $this->client
+            ->merchant($this->merchantId)
+            ->payments()
+            ->getPaymentDetails($paymentId);
+
+        return [
+            'status' => $response->getStatus() ?? '',
+            'status_code' => $response->getStatusOutput()?->getStatusCode(),
+        ];
+    }
+
+    /**
+     * Capture a previously authorised payment to transfer the funds.
+     *
+     * Must be called when the payment status is PENDING_CAPTURE.
+     */
+    public function capturePayment(string $paymentId, int $amountCents): void
+    {
+        $body = new CapturePaymentRequest;
+        $body->setAmount($amountCents);
+        $body->setIsFinal(true);
+
+        $this->client
+            ->merchant($this->merchantId)
+            ->payments()
+            ->capturePayment($paymentId, $body);
     }
 
     /**
