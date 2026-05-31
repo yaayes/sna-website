@@ -433,6 +433,29 @@ class PaymentControllerTest extends TestCase
         $this->assertDatabaseCount('payments', 0);
     }
 
+    public function test_adhesion_with_retire_situation_is_accepted(): void
+    {
+        config(['cawl.membership_fee_cents' => 1100]);
+
+        $this->mock(CawlPaymentService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('createHostedCheckout')
+                ->once()
+                ->andReturn([
+                    'hosted_checkout_id' => 'hco_adhesion_retire',
+                    'redirect_url' => 'https://payment.preprod.cawl-solutions.fr/hostedcheckout/adhesion',
+                    'returnmac' => 'mac123',
+                ]);
+        });
+
+        $response = $this->withHeaders(['X-Inertia' => 'true'])
+            ->post('/formulaire/adhesion', $this->validAdhesionPayload(['situation_professionnelle' => 'retire']));
+
+        $response->assertStatus(409);
+        $this->assertDatabaseHas('aidant_adhesion_forms', [
+            'situation_professionnelle' => 'retire',
+        ]);
+    }
+
     public function test_soutien_store_redirects_to_cawl_with_minimum_fee_only(): void
     {
         config(['cawl.membership_fee_cents' => 2000]);

@@ -5,6 +5,8 @@ namespace Tests\Feature\Admin;
 use App\Models\Representant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AdminRepresentantManagementTest extends TestCase
@@ -129,5 +131,68 @@ class AdminRepresentantManagementTest extends TestCase
         $response = $this->actingAs($admin)->post('/@/representants', []);
 
         $response->assertSessionHasErrors(['department_code', 'department_name', 'first_name', 'last_name', 'role', 'short_bio']);
+    }
+
+    public function test_admin_can_store_representant_with_photo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->admin()->create();
+        $file = UploadedFile::fake()->image('portrait.jpg', 800, 600);
+
+        $response = $this->actingAs($admin)->post('/@/representants', [
+            'department_code' => '13',
+            'department_name' => 'Bouches-du-Rhône',
+            'first_name' => 'Sophie',
+            'last_name' => 'MARTIN',
+            'role' => 'Représentante départementale',
+            'short_bio' => 'Engagée dans le secteur médico-social.',
+            'is_active' => true,
+            'photo' => $file,
+        ]);
+
+        $response->assertRedirect('/@/representants');
+
+        $representant = Representant::where('first_name', 'Sophie')->firstOrFail();
+        $this->assertNotNull($representant->photo_path);
+        $this->assertStringStartsWith('/storage/representants/', $representant->photo_path);
+
+        Storage::disk('public')->assertExists('representants/'.basename($representant->photo_path));
+    }
+
+    public function test_admin_can_update_representant_with_photo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->admin()->create();
+        $representant = Representant::factory()->create([
+            'first_name' => 'Éric',
+            'last_name' => 'DURAND',
+            'department_code' => '33',
+            'department_name' => 'Gironde',
+            'role' => 'Représentant départemental',
+            'short_bio' => 'Bio initiale.',
+            'is_active' => true,
+        ]);
+
+        $newPhoto = UploadedFile::fake()->image('headshot.jpg', 800, 600);
+
+        $response = $this->actingAs($admin)->patch('/@/representants/'.$representant->id, [
+            'department_code' => '33',
+            'department_name' => 'Gironde',
+            'first_name' => 'Éric',
+            'last_name' => 'DURAND',
+            'role' => 'Représentant départemental',
+            'short_bio' => 'Bio mise à jour.',
+            'is_active' => true,
+            'photo' => $newPhoto,
+        ]);
+
+        $response->assertRedirect('/@/representants');
+
+        $representant->refresh();
+        $this->assertNotNull($representant->photo_path);
+        $this->assertStringStartsWith('/storage/representants/', $representant->photo_path);
+        Storage::disk('public')->assertExists('representants/'.basename($representant->photo_path));
     }
 }

@@ -78,7 +78,7 @@ class StoreAidantAdhesionFormRequest extends FormRequest
             'impacts' => ['nullable', 'array'],
             'impacts.*' => ['string', 'max:100'],
             'impacts_autre_precisions' => ['nullable', 'string', 'max:255'],
-            'situation_professionnelle' => ['nullable', 'string', 'max:100'],
+            'situation_professionnelle' => ['nullable', 'in:cdi_temps_plein,cdi_temps_partiel,cdd_interim,independant,sans_emploi,conge_proche_aidant,arret_maladie,cessation_activite,retire'],
             'expression_libre' => ['nullable', 'string', 'max:3000'],
             'soutient_sna' => ['boolean'],
             'wants_info' => ['boolean'],

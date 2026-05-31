@@ -103,6 +103,42 @@ const IMPACT_OPTIONS = [
     'Autre',
 ];
 
+const PROFESSIONAL_SITUATION_OPTIONS = [
+    {
+        value: 'cdi_temps_plein',
+        label: 'CDI temps plein',
+    },
+    {
+        value: 'cdi_temps_partiel',
+        label: 'CDI temps partiel',
+    },
+    {
+        value: 'cdd_interim',
+        label: 'CDD / Interim',
+    },
+    {
+        value: 'independant',
+        label: 'Travailleur(se) independant(e)',
+    },
+    { value: 'sans_emploi', label: 'Sans emploi' },
+    {
+        value: 'conge_proche_aidant',
+        label: 'Conge proche aidant / AJPP',
+    },
+    {
+        value: 'arret_maladie',
+        label: 'Arret maladie longue duree',
+    },
+    {
+        value: 'cessation_activite',
+        label: "Cessation d'activite pour vous occuper de votre proche",
+    },
+    {
+        value: 'retire',
+        label: 'Retraité(e)',
+    },
+];
+
 const emptyAidant = (): AidantData => ({
     genre: '',
     nom: '',
@@ -1783,37 +1819,7 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                         </h3>
 
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            {[
-                                {
-                                    value: 'cdi_temps_plein',
-                                    label: 'CDI temps plein',
-                                },
-                                {
-                                    value: 'cdi_temps_partiel',
-                                    label: 'CDI temps partiel',
-                                },
-                                {
-                                    value: 'cdd_interim',
-                                    label: 'CDD / Interim',
-                                },
-                                {
-                                    value: 'independant',
-                                    label: 'Travailleur(se) independant(e)',
-                                },
-                                { value: 'sans_emploi', label: 'Sans emploi' },
-                                {
-                                    value: 'conge_proche_aidant',
-                                    label: 'Conge proche aidant / AJPP',
-                                },
-                                {
-                                    value: 'arret_maladie',
-                                    label: 'Arret maladie longue duree',
-                                },
-                                {
-                                    value: 'cessation_activite',
-                                    label: "Cessation d'activite pour vous occuper de votre proche",
-                                },
-                            ].map((option) => (
+                            {PROFESSIONAL_SITUATION_OPTIONS.map((option) => (
                                 <label
                                     key={option.value}
                                     className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-600 transition hover:border-sna-teal/50 hover:bg-sna-teal/5"

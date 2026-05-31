@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useState } from 'react';
+import PhotoCropModal from '@/components/photo-crop-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -54,15 +55,33 @@ export default function RepresentantEditPage({ representant }: { representant: R
     });
 
     const [photoPreview, setPhotoPreview] = useState<string | null>(representant.photo_path);
+    const [cropSrc, setCropSrc] = useState<string | null>(null);
+    const [pendingFileName, setPendingFileName] = useState<string>('');
+    const [showCrop, setShowCrop] = useState(false);
 
     const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] ?? null;
-        setData('photo', file);
-        if (file) {
-            setPhotoPreview(URL.createObjectURL(file));
-        } else {
-            setPhotoPreview(representant.photo_path);
+
+        if (!file) {
+            return;
         }
+
+        setPendingFileName(file.name);
+        setCropSrc(URL.createObjectURL(file));
+        setShowCrop(true);
+        // Reset input so re-selecting the same file triggers the modal again
+        e.target.value = '';
+    };
+
+    const handleCropConfirm = (croppedFile: File) => {
+        setData('photo', croppedFile);
+        setPhotoPreview(URL.createObjectURL(croppedFile));
+        setShowCrop(false);
+    };
+
+    const handleCropClose = () => {
+        setShowCrop(false);
+        setCropSrc(null);
     };
 
     const onSubmit = (event: FormEvent) => {
@@ -73,6 +92,16 @@ export default function RepresentantEditPage({ representant }: { representant: R
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Admin — Modifier ${representant.first_name} ${representant.last_name}`} />
+
+            {cropSrc && (
+                <PhotoCropModal
+                    imageSrc={cropSrc}
+                    open={showCrop}
+                    onClose={handleCropClose}
+                    onConfirm={handleCropConfirm}
+                    originalFileName={pendingFileName}
+                />
+            )}
 
             <div className="mx-auto w-full max-w-2xl p-6">
                 <form onSubmit={onSubmit} className="space-y-6 rounded-2xl border bg-white p-6">
@@ -158,13 +187,16 @@ export default function RepresentantEditPage({ representant }: { representant: R
                     <div className="space-y-2">
                         <Label htmlFor="photo">Photo</Label>
                         <div className="flex items-start gap-4">
-                            {photoPreview && (
-                                <img
-                                    src={photoPreview}
-                                    alt="Aperçu"
-                                    className="h-20 w-20 flex-shrink-0 rounded-xl object-cover ring-1 ring-gray-200"
-                                />
-                            )}
+                            {photoPreview ? (
+                                <div className="relative flex-shrink-0">
+                                    <img
+                                        src={photoPreview}
+                                        alt="Aperçu recadré"
+                                        className="h-20 w-[107px] rounded-xl object-cover ring-1 ring-sna-teal/30"
+                                    />
+                                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-sna-teal px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">4:3</span>
+                                </div>
+                            ) : null}
                             <div className="flex-1 space-y-1">
                                 <input
                                     id="photo"
@@ -175,8 +207,8 @@ export default function RepresentantEditPage({ representant }: { representant: R
                                 />
                                 <p className="text-xs text-gray-400">
                                     {representant.photo_path
-                                        ? 'Choisir un nouveau fichier pour remplacer la photo actuelle'
-                                        : 'JPEG, PNG ou WebP — max 3 Mo'}
+                                        ? 'Choisir un nouveau fichier ouvrira le recadrage 4:3'
+                                        : 'JPEG, PNG ou WebP — max 3 Mo. Le recadrage 4:3 sera appliqué après sélection.'}
                                 </p>
                             </div>
                         </div>

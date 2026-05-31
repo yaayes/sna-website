@@ -251,4 +251,23 @@ class AidantAdhesionFormTest extends TestCase
         $this->assertInstanceOf(FormSubmission::class, $form->submission);
         $this->assertSame('adhesion', $form->submission->type);
     }
+
+    public function test_retire_situation_professionnelle_is_accepted(): void
+    {
+        $response = $this->post('/formulaire/adhesion', $this->validPayload(['situation_professionnelle' => 'retire']));
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('aidant_adhesion_forms', [
+            'email' => 'marie@exemple.fr',
+            'situation_professionnelle' => 'retire',
+        ]);
+    }
+
+    public function test_invalid_situation_professionnelle_is_rejected(): void
+    {
+        $response = $this->post('/formulaire/adhesion', $this->validPayload(['situation_professionnelle' => 'invalid_value']));
+
+        $response->assertSessionHasErrors('situation_professionnelle');
+        $this->assertDatabaseCount('aidant_adhesion_forms', 0);
+    }
 }

@@ -88,7 +88,17 @@ const aidantTypeLabels: Record<string, string> = {
     proche: 'Proche',
     autre: 'Autre',
 };
-
+const professionalSituationLabels: Record<string, string> = {
+    cdi_temps_plein: 'CDI temps plein',
+    cdi_temps_partiel: 'CDI temps partiel',
+    cdd_interim: 'CDD / Interim',
+    independant: 'Travailleur(se) indépendant(e)',
+    sans_emploi: 'Sans emploi',
+    conge_proche_aidant: 'Congé proche aidant / AJPP',
+    arret_maladie: 'Arrêt maladie longue durée',
+    cessation_activite: 'Cessation d\'activité pour vous occuper de votre proche',
+    retire: 'Retraité(e)',
+};
 function AdhesionDetails({ data }: { data: AdhesionData }) {
     return (
         <dl className="space-y-2 text-sm text-gray-600">
@@ -138,7 +148,9 @@ function AdhesionDetails({ data }: { data: AdhesionData }) {
                     <dt className="min-w-32 font-semibold text-gray-700">
                         Situation professionnelle :
                     </dt>
-                    <dd>{data.situation_professionnelle}</dd>
+                    <dd>
+                        {professionalSituationLabels[data.situation_professionnelle] ?? data.situation_professionnelle}
+                    </dd>
                 </div>
             )}
             <div className="flex gap-2">
