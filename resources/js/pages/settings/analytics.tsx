@@ -19,13 +19,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Analytics({
-    ga_measurement_id,
+    gtm_container_id,
 }: {
-    ga_measurement_id: string | null;
+    gtm_container_id: string | null;
 }) {
     const { auth } = usePage().props;
     const isAdmin = auth.user.is_admin;
-    const isActive = !!ga_measurement_id;
+    const isActive = !!gtm_container_id;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -37,8 +37,8 @@ export default function Analytics({
                 <div className="space-y-6">
                     <Heading
                         variant="small"
-                        title="Google Analytics"
-                        description="Connect Google Analytics 4 to track visits and user behaviour on the site"
+                        title="Google Tag Manager"
+                        description="Connect Google Tag Manager to track visits and user behaviour on the site"
                     />
 
                     <div className="flex items-center gap-2 text-sm">
@@ -47,8 +47,8 @@ export default function Analytics({
                         />
                         <span className="text-muted-foreground">
                             {isActive
-                                ? `Tracking active — ${ga_measurement_id}`
-                                : 'Tracking inactive — no Measurement ID configured'}
+                                ? `Tracking active — ${gtm_container_id}`
+                                : 'Tracking inactive — no GTM container configured'}
                         </span>
                     </div>
 
@@ -61,33 +61,33 @@ export default function Analytics({
                             {({ processing, recentlySuccessful, errors }) => (
                                 <>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="ga_measurement_id">
-                                            GA4 Measurement ID
+                                        <Label htmlFor="gtm_container_id">
+                                            GTM Container ID
                                         </Label>
 
                                         <Input
-                                            id="ga_measurement_id"
-                                            name="ga_measurement_id"
+                                            id="gtm_container_id"
+                                            name="gtm_container_id"
                                             className="mt-1 block w-full max-w-sm font-mono"
                                             defaultValue={
-                                                ga_measurement_id ?? ''
+                                                gtm_container_id ?? ''
                                             }
-                                            placeholder="G-XXXXXXXXXX"
+                                            placeholder="GTM-XXXXXXX"
                                             autoComplete="off"
                                         />
 
                                         <p className="text-sm text-muted-foreground">
-                                            Find your Measurement ID in{' '}
+                                            Find your Container ID in{' '}
                                             <span className="font-medium">
-                                                Google Analytics → Admin →
-                                                Property → Data Streams
+                                                Google Tag Manager → Admin →
+                                                Container Settings
                                             </span>
                                             . Leave blank to disable tracking.
                                         </p>
 
                                         <InputError
                                             className="mt-2"
-                                            message={errors.ga_measurement_id}
+                                            message={errors.gtm_container_id}
                                         />
                                     </div>
 

@@ -23,7 +23,7 @@ class UpdateAnalyticsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ga_measurement_id' => ['nullable', 'string', 'regex:/^G-[A-Z0-9]{4,20}$/'],
+            'gtm_container_id' => ['nullable', 'string', 'regex:/^GTM-[A-Z0-9]{4,12}$/'],
         ];
     }
 
@@ -33,7 +33,7 @@ class UpdateAnalyticsRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'ga_measurement_id.regex' => "L'identifiant Google Analytics doit être au format G-XXXXXXXX.",
+            'gtm_container_id.regex' => "L'identifiant Google Tag Manager doit être au format GTM-XXXXXXX.",
         ];
     }
 }

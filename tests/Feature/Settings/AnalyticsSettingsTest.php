@@ -26,24 +26,24 @@ class AnalyticsSettingsTest extends TestCase
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->put('/settings/analytics', [
-            'ga_measurement_id' => 'G-ABC123XYZ9',
+            'gtm_container_id' => 'GTM-KSSD4SK4',
         ]);
 
         $response->assertRedirectToRoute('analytics.edit');
-        $this->assertSame('G-ABC123XYZ9', AppSetting::get('ga_measurement_id'));
+        $this->assertSame('GTM-KSSD4SK4', AppSetting::get('gtm_container_id'));
     }
 
     public function test_admin_can_clear_ga_measurement_id(): void
     {
-        AppSetting::set('ga_measurement_id', 'G-EXISTING1');
+        AppSetting::set('gtm_container_id', 'GTM-EXISTING');
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->put('/settings/analytics', [
-            'ga_measurement_id' => '',
+            'gtm_container_id' => '',
         ]);
 
         $response->assertRedirectToRoute('analytics.edit');
-        $this->assertSame('', AppSetting::get('ga_measurement_id'));
+        $this->assertSame('', AppSetting::get('gtm_container_id'));
     }
 
     public function test_non_admin_cannot_update_analytics_settings(): void
@@ -51,11 +51,11 @@ class AnalyticsSettingsTest extends TestCase
         $user = User::factory()->create(['is_admin' => false]);
 
         $response = $this->actingAs($user)->put('/settings/analytics', [
-            'ga_measurement_id' => 'G-ABC123XYZ9',
+            'gtm_container_id' => 'GTM-KSSD4SK4',
         ]);
 
         $response->assertForbidden();
-        $this->assertNull(AppSetting::get('ga_measurement_id'));
+        $this->assertNull(AppSetting::get('gtm_container_id'));
     }
 
     public function test_invalid_ga_measurement_id_format_is_rejected(): void
@@ -63,16 +63,16 @@ class AnalyticsSettingsTest extends TestCase
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->put('/settings/analytics', [
-            'ga_measurement_id' => 'UA-12345-1',
+            'gtm_container_id' => 'G-12345',
         ]);
 
-        $response->assertSessionHasErrors(['ga_measurement_id']);
-        $this->assertNull(AppSetting::get('ga_measurement_id'));
+        $response->assertSessionHasErrors(['gtm_container_id']);
+        $this->assertNull(AppSetting::get('gtm_container_id'));
     }
 
     public function test_ga_measurement_id_is_shared_as_inertia_prop(): void
     {
-        AppSetting::set('ga_measurement_id', 'G-TESTID1234');
+        AppSetting::set('gtm_container_id', 'GTM-TESTID12');
         $user = User::factory()->create();
 
         $response = $this->withoutVite()->actingAs($user)->get('/settings/analytics');
@@ -80,7 +80,7 @@ class AnalyticsSettingsTest extends TestCase
         $response->assertInertia(
             fn ($page) => $page
                 ->component('settings/analytics')
-                ->where('ga_measurement_id', 'G-TESTID1234')
+                ->where('gtm_container_id', 'GTM-TESTID12')
         );
     }
 

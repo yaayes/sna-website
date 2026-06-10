@@ -14,13 +14,13 @@ class AnalyticsController extends Controller
     public function edit(): Response
     {
         return Inertia::render('settings/analytics', [
-            'ga_measurement_id' => AppSetting::get('ga_measurement_id'),
+            'gtm_container_id' => AppSetting::get('gtm_container_id'),
         ]);
     }
 
     public function update(UpdateAnalyticsRequest $request): RedirectResponse
     {
-        AppSetting::set('ga_measurement_id', $request->input('ga_measurement_id') ?? '');
+        AppSetting::set('gtm_container_id', $request->input('gtm_container_id') ?? '');
 
         return to_route('analytics.edit');
     }

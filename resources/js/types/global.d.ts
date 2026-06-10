@@ -2,9 +2,7 @@ import type { Auth } from '@/types/auth';
 
 declare global {
     interface Window {
-        gtag: (...args: unknown[]) => void;
-        dataLayer: unknown[];
-        __ga_measurement_id?: string;
+        dataLayer: Record<string, unknown>[];
     }
 }
 
@@ -15,7 +13,7 @@ declare module '@inertiajs/core' {
             auth: Auth;
             sidebarOpen: boolean;
             analytics: {
-                ga_measurement_id: string | null;
+                gtm_container_id: string | null;
             };
             [key: string]: unknown;
         };

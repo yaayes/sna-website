@@ -44,7 +44,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'analytics' => [
-                'ga_measurement_id' => AppSetting::get('ga_measurement_id'),
+                'gtm_container_id' => AppSetting::get('gtm_container_id'),
             ],
         ];
     }

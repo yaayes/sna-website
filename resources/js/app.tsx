@@ -7,18 +7,6 @@ import { initializeTheme } from '@/hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-function trackPageView(url: string): void {
-    const measurementId =
-        (window as { __ga_measurement_id?: string }).__ga_measurement_id;
-    if (!measurementId || typeof window.gtag !== 'function') {
-        return;
-    }
-    window.gtag('event', 'page_view', {
-        page_location: url,
-        send_to: measurementId,
-    });
-}
-
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     resolve: (name) =>
@@ -40,8 +28,15 @@ createInertiaApp({
     },
 });
 
+// Push virtual pageviews to the dataLayer on every Inertia navigation
+// so GTM's History Change trigger picks them up automatically.
 router.on('navigate', (event) => {
-    trackPageView(event.detail.page.url);
+    if (Array.isArray(window.dataLayer)) {
+        window.dataLayer.push({
+            event: 'pageview',
+            page_path: event.detail.page.url,
+        });
+    }
 });
 
 // This will set light / dark mode on load...
