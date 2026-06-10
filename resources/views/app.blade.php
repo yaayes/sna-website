@@ -59,6 +59,21 @@
         @viteReactRefresh
         @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         @inertiaHead
+
+        @php
+            $gaMeasurementId = \App\Models\AppSetting::get('ga_measurement_id');
+        @endphp
+
+        @if($gaMeasurementId)
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaMeasurementId }}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '{{ $gaMeasurementId }}', { send_page_view: false });
+                window.__ga_measurement_id = '{{ $gaMeasurementId }}';
+            </script>
+        @endif
     </head>
     <body class="font-sans antialiased">
         @inertia

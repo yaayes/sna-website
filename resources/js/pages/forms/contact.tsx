@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
+import { trackEvent } from '@/lib/analytics';
 import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
@@ -32,7 +33,12 @@ export default function ContactForm() {
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        submit(forms.contact.store(), { onSuccess: () => reset() });
+        submit(forms.contact.store(), {
+            onSuccess: () => {
+                trackEvent('form_submit', { form_type: 'contact' });
+                reset();
+            },
+        });
     };
 
     const inputCls =

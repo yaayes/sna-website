@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { trackEvent } from '@/lib/analytics';
 import PublicSiteHeader from '@/components/public-site-header';
 import forms from '@/routes/forms';
 
@@ -683,6 +684,7 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                 don_amount: normalizedDonationAmount,
             },
             onSuccess: () => {
+                trackEvent('form_submit', { form_type: 'adhesion' });
                 reset();
                 setStep(0);
                 setStepErrors({});
