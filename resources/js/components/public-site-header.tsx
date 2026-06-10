@@ -18,6 +18,7 @@ type PublicSiteHeaderProps = {
 const navLinks = [
     { href: '/comprendre-laidance', label: "Comprendre l'aidance", isRoute: true },
     { href: '/nos-actions', label: 'Nos actions', isRoute: true },
+    { href: '/representants', label: 'Nos représentants', isRoute: true },
     {
         href: '/a-propos-nous',
         label: 'Qui sommes nous',
@@ -25,7 +26,6 @@ const navLinks = [
         children: [
             { href: '/a-propos-nous', label: 'À propos de nous', isRoute: true },
             { href: '/rejoindre-le-sna', label: 'Rejoindre le SNA', isRoute: true },
-            { href: '/representants', label: 'Représentants', isRoute: true },
             { href: '/revue-de-presse', label: 'Revue de presse', isRoute: true },
         ],
     },
