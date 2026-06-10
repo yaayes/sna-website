@@ -35,6 +35,10 @@ type AideData = {
     situation_adulte_autre_precisions: string | null;
     lieu_habitation: string | null;
     lieu_habitation_autre_precisions: string | null;
+    aidant_type?: string | null;
+    aidant_type_autre_precisions?: string | null;
+    situation_familiale?: string | null;
+    situation_familiale_autre_precisions?: string | null;
 };
 
 type AdhesionEntry = {
@@ -360,6 +364,18 @@ export default function AdhesionShow({ entry, payment }: { entry: AdhesionEntry;
                                             {displayValue(aide.lieu_habitation)}
                                             {renderPrecisions(aide.lieu_habitation_autre_precisions)}
                                         </DetailRow>
+                                        <DetailRow label="Relation avec l'aidant">
+                                            {aide.aidant_type
+                                                ? (aidantTypeLabels[aide.aidant_type] ?? aide.aidant_type)
+                                                : '—'}
+                                            {renderPrecisions(aide.aidant_type_autre_precisions)}
+                                        </DetailRow>
+                                        {aide.situation_familiale && (
+                                            <DetailRow label="Situation familiale">
+                                                {displayValue(aide.situation_familiale)}
+                                                {renderPrecisions(aide.situation_familiale_autre_precisions)}
+                                            </DetailRow>
+                                        )}
                                     </dl>
                                 </div>
                             ))}

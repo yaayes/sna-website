@@ -20,10 +20,6 @@ type AidantData = {
     phone: string;
     departement: string;
     commune: string;
-    aidant_type: string;
-    aidant_type_autre_precisions: string;
-    situation_familiale: string;
-    situation_familiale_autre_precisions: string;
 };
 
 type AideData = {
@@ -35,6 +31,10 @@ type AideData = {
     situation_adulte_autre_precisions: string;
     lieu_habitation: string;
     lieu_habitation_autre_precisions: string;
+    aidant_type: string;
+    aidant_type_autre_precisions: string;
+    situation_familiale: string;
+    situation_familiale_autre_precisions: string;
 };
 
 type AdhesionFormData = {
@@ -149,10 +149,6 @@ const emptyAidant = (): AidantData => ({
     phone: '',
     departement: '',
     commune: '',
-    aidant_type: '',
-    aidant_type_autre_precisions: '',
-    situation_familiale: '',
-    situation_familiale_autre_precisions: '',
 });
 
 const emptyAide = (): AideData => ({
@@ -164,6 +160,10 @@ const emptyAide = (): AideData => ({
     situation_adulte_autre_precisions: '',
     lieu_habitation: '',
     lieu_habitation_autre_precisions: '',
+    aidant_type: '',
+    aidant_type_autre_precisions: '',
+    situation_familiale: '',
+    situation_familiale_autre_precisions: '',
 });
 
 const normalizeDonationInputValue = (value: string): string => {
@@ -372,6 +372,41 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
             pending_form_id: null,
         });
 
+    const hydrateAideRelationships = (formData: AdhesionFormData): AdhesionFormData => {
+        const fallbackAidant = formData.aidants[0] as
+            | (AidantData & {
+                  aidant_type?: string;
+                  aidant_type_autre_precisions?: string;
+                  situation_familiale?: string;
+                  situation_familiale_autre_precisions?: string;
+              })
+            | undefined;
+
+        if (!fallbackAidant) {
+            return formData;
+        }
+
+        const nextAides = formData.aides.map((aide) => ({
+            ...aide,
+            aidant_type: aide.aidant_type || fallbackAidant.aidant_type || '',
+            aidant_type_autre_precisions:
+                aide.aidant_type_autre_precisions ||
+                fallbackAidant.aidant_type_autre_precisions ||
+                '',
+            situation_familiale:
+                aide.situation_familiale || fallbackAidant.situation_familiale || '',
+            situation_familiale_autre_precisions:
+                aide.situation_familiale_autre_precisions ||
+                fallbackAidant.situation_familiale_autre_precisions ||
+                '',
+        }));
+
+        return {
+            ...formData,
+            aides: nextAides,
+        };
+    };
+
     const getError = (path: string): string | undefined => {
         return (errors as Record<string, string>)[path];
     };
@@ -380,7 +415,8 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
     useEffect(() => {
         if (prefillData) {
             const { pending_form_id: pfid, coupon_discount_cents: _cdc, ...formFields } = prefillData;
-            setData({ ...formFields, draft_token: null, pending_form_id: pfid ?? null });
+            const hydratedData = hydrateAideRelationships(formFields);
+            setData({ ...hydratedData, draft_token: null, pending_form_id: pfid ?? null });
             setStep(5);
 
             if (prefillData.coupon_code && !(prefillData.coupon_discount_cents && prefillData.coupon_discount_cents > 0)) {
@@ -409,9 +445,23 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                 .then((json: { found: boolean; step?: number; draft_token?: string; draft_id?: number; data?: Partial<AdhesionFormData> & { coupon_discount_cents?: number } }) => {
                     if (json.found && json.data) {
                         const { coupon_discount_cents: draftCouponDiscount, ...formFields } = json.data;
+                        const normalizedAides = (formFields.aides ?? [emptyAide()]).map((aide) => ({
+                            ...emptyAide(),
+                            ...aide,
+                        }));
+                        const normalizedAidants = (formFields.aidants ?? [emptyAidant()]).map((aidant) => ({
+                            ...emptyAidant(),
+                            ...aidant,
+                        }));
+                        const hydratedFields = hydrateAideRelationships({
+                            ...data,
+                            ...formFields,
+                            aidants: normalizedAidants,
+                            aides: normalizedAides,
+                        });
                         setData((prev) => ({
                             ...prev,
-                            ...formFields,
+                            ...hydratedFields,
                             draft_token: draftToken,
                             pending_form_id: json.draft_id ?? prev.pending_form_id,
                         }));
@@ -523,10 +573,6 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
         setData('aidants', nextAidants);
     };
 
-    const addAidant = () => {
-        setData('aidants', [...data.aidants, emptyAidant()]);
-    };
-
     const removeAidant = (index: number) => {
         if (data.aidants.length === 1) {
             return;
@@ -609,11 +655,6 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                     nextErrors[`aidants.${index}.email`] =
                         "L'adresse e-mail est invalide.";
                 }
-
-                if (!aidant.aidant_type) {
-                    nextErrors[`aidants.${index}.aidant_type`] =
-                        "Veuillez préciser votre type d'aidant.";
-                }
             });
         }
 
@@ -639,6 +680,11 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                 if (!aide.aide_profile) {
                     nextErrors[`aides.${index}.aide_profile`] =
                         'Veuillez indiquer si la personne aidée est un enfant ou un adulte.';
+                }
+
+                if (!aide.aidant_type) {
+                    nextErrors[`aides.${index}.aidant_type`] =
+                        "Veuillez préciser votre relation avec cette personne aidée.";
                 }
             });
         }
@@ -1004,181 +1050,8 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                     />
                                 </div>
 
-                                <div>
-                                    <label className={labelCls}>
-                                        Vous etes... *
-                                    </label>
-                                    <div className="space-y-2">
-                                        {[
-                                            {
-                                                value: 'parent_handicap',
-                                                label: "Parent d'un enfant en situation de handicap ou de maladie",
-                                            },
-                                            {
-                                                value: 'conjoint',
-                                                label: "Aidant(e) d'un conjoint / partenaire",
-                                            },
-                                            {
-                                                value: 'parent_aine',
-                                                label: "Aidant(e) d'un parent",
-                                            },
-                                            {
-                                                value: 'proche',
-                                                label: "Aidant(e) d'un proche (frere, soeur, autre)",
-                                            },
-                                            { value: 'autre', label: 'Autre' },
-                                        ].map((option) => (
-                                            <label
-                                                key={option.value}
-                                                className="flex items-center gap-3 text-sm text-gray-600"
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name={`aidant-type-${index}`}
-                                                    checked={
-                                                        aidant.aidant_type ===
-                                                        option.value
-                                                    }
-                                                    onChange={() =>
-                                                        setAidantField(
-                                                            index,
-                                                            'aidant_type',
-                                                            option.value,
-                                                        )
-                                                    }
-                                                    className="accent-sna-teal"
-                                                />
-                                                {option.label}
-                                            </label>
-                                        ))}
-                                    </div>
-                                    {(stepErrors[
-                                        `aidants.${index}.aidant_type`
-                                    ] ||
-                                        getError(
-                                            `aidants.${index}.aidant_type`,
-                                        )) && (
-                                        <p className="mt-1 text-xs text-red-600">
-                                            {stepErrors[
-                                                `aidants.${index}.aidant_type`
-                                            ] ||
-                                                getError(
-                                                    `aidants.${index}.aidant_type`,
-                                                )}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {aidant.aidant_type === 'autre' && (
-                                    <div>
-                                        <label className={labelCls}>
-                                            Autre: a preciser
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={
-                                                aidant.aidant_type_autre_precisions
-                                            }
-                                            onChange={(event) =>
-                                                setAidantField(
-                                                    index,
-                                                    'aidant_type_autre_precisions',
-                                                    event.target.value,
-                                                )
-                                            }
-                                            className={inputCls}
-                                        />
-                                    </div>
-                                )}
-
-                                {aidant.aidant_type === 'parent_handicap' && (
-                                    <div>
-                                        <label className={labelCls}>
-                                            Situation familiale avec l'autre
-                                            parent
-                                        </label>
-                                        <div className="flex flex-wrap gap-3">
-                                            {[
-                                                {
-                                                    value: 'en_couple',
-                                                    label: 'En couple',
-                                                },
-                                                {
-                                                    value: 'separe',
-                                                    label: 'Separe(e)',
-                                                },
-                                                {
-                                                    value: 'divorce',
-                                                    label: 'Divorce(e)',
-                                                },
-                                                {
-                                                    value: 'veuf',
-                                                    label: 'Veuf(ve)',
-                                                },
-                                                {
-                                                    value: 'autre',
-                                                    label: 'Autre',
-                                                },
-                                            ].map((option) => (
-                                                <label
-                                                    key={option.value}
-                                                    className="flex items-center gap-2 text-sm text-gray-600"
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name={`aidant-family-${index}`}
-                                                        checked={
-                                                            aidant.situation_familiale ===
-                                                            option.value
-                                                        }
-                                                        onChange={() =>
-                                                            setAidantField(
-                                                                index,
-                                                                'situation_familiale',
-                                                                option.value,
-                                                            )
-                                                        }
-                                                        className="accent-sna-teal"
-                                                    />
-                                                    {option.label}
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {aidant.situation_familiale === 'autre' && (
-                                    <div>
-                                        <label className={labelCls}>
-                                            Autre situation familiale: a
-                                            preciser
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={
-                                                aidant.situation_familiale_autre_precisions
-                                            }
-                                            onChange={(event) =>
-                                                setAidantField(
-                                                    index,
-                                                    'situation_familiale_autre_precisions',
-                                                    event.target.value,
-                                                )
-                                            }
-                                            className={inputCls}
-                                        />
-                                    </div>
-                                )}
                             </div>
                         ))}
-
-                        <button
-                            type="button"
-                            onClick={addAidant}
-                            className="rounded-full border border-sna-teal/30 px-5 py-2 text-sm font-semibold text-sna-teal transition hover:bg-sna-teal/10"
-                        >
-                            Ajouter un aidant
-                        </button>
 
                         <div className="space-y-3 rounded-2xl border border-sna-teal/25 bg-sna-teal-light p-5">
                             <p className="text-sm text-gray-700">
@@ -1720,6 +1593,172 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                                     setAideField(
                                                         aideIndex,
                                                         'lieu_habitation_autre_precisions',
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                className={inputCls}
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className={labelCls}>
+                                            Vous etes... *
+                                        </label>
+                                        <div className="space-y-2">
+                                            {[
+                                                {
+                                                    value: 'parent_handicap',
+                                                    label: "Parent d'un enfant en situation de handicap ou de maladie",
+                                                },
+                                                {
+                                                    value: 'conjoint',
+                                                    label: "Aidant(e) d'un conjoint / partenaire",
+                                                },
+                                                {
+                                                    value: 'parent_aine',
+                                                    label: "Aidant(e) d'un parent",
+                                                },
+                                                {
+                                                    value: 'proche',
+                                                    label: "Aidant(e) d'un proche (frere, soeur, autre)",
+                                                },
+                                                { value: 'autre', label: 'Autre' },
+                                            ].map((option) => (
+                                                <label
+                                                    key={option.value}
+                                                    className="flex items-center gap-3 text-sm text-gray-600"
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name={`aide-aidant-type-${aideIndex}`}
+                                                        checked={
+                                                            aide.aidant_type ===
+                                                            option.value
+                                                        }
+                                                        onChange={() =>
+                                                            setAideField(
+                                                                aideIndex,
+                                                                'aidant_type',
+                                                                option.value,
+                                                            )
+                                                        }
+                                                        className="accent-sna-teal"
+                                                    />
+                                                    {option.label}
+                                                </label>
+                                            ))}
+                                        </div>
+                                        {(stepErrors[
+                                            `aides.${aideIndex}.aidant_type`
+                                        ] ||
+                                            getError(
+                                                `aides.${aideIndex}.aidant_type`,
+                                            )) && (
+                                            <p className="mt-1 text-xs text-red-600">
+                                                {stepErrors[
+                                                    `aides.${aideIndex}.aidant_type`
+                                                ] ||
+                                                    getError(
+                                                        `aides.${aideIndex}.aidant_type`,
+                                                    )}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {aide.aidant_type === 'autre' && (
+                                        <div>
+                                            <label className={labelCls}>
+                                                Autre: a preciser
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={
+                                                    aide.aidant_type_autre_precisions
+                                                }
+                                                onChange={(event) =>
+                                                    setAideField(
+                                                        aideIndex,
+                                                        'aidant_type_autre_precisions',
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                className={inputCls}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {aide.aidant_type === 'parent_handicap' && (
+                                        <div>
+                                            <label className={labelCls}>
+                                                Situation familiale avec l'autre
+                                                parent
+                                            </label>
+                                            <div className="flex flex-wrap gap-3">
+                                                {[
+                                                    {
+                                                        value: 'en_couple',
+                                                        label: 'En couple',
+                                                    },
+                                                    {
+                                                        value: 'separe',
+                                                        label: 'Separe(e)',
+                                                    },
+                                                    {
+                                                        value: 'divorce',
+                                                        label: 'Divorce(e)',
+                                                    },
+                                                    {
+                                                        value: 'veuf',
+                                                        label: 'Veuf(ve)',
+                                                    },
+                                                    {
+                                                        value: 'autre',
+                                                        label: 'Autre',
+                                                    },
+                                                ].map((option) => (
+                                                    <label
+                                                        key={option.value}
+                                                        className="flex items-center gap-2 text-sm text-gray-600"
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name={`aide-family-${aideIndex}`}
+                                                            checked={
+                                                                aide.situation_familiale ===
+                                                                option.value
+                                                            }
+                                                            onChange={() =>
+                                                                setAideField(
+                                                                    aideIndex,
+                                                                    'situation_familiale',
+                                                                    option.value,
+                                                                )
+                                                            }
+                                                            className="accent-sna-teal"
+                                                        />
+                                                        {option.label}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {aide.situation_familiale === 'autre' && (
+                                        <div>
+                                            <label className={labelCls}>
+                                                Autre situation familiale: a
+                                                preciser
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={
+                                                    aide.situation_familiale_autre_precisions
+                                                }
+                                                onChange={(event) =>
+                                                    setAideField(
+                                                        aideIndex,
+                                                        'situation_familiale_autre_precisions',
                                                         event.target.value,
                                                     )
                                                 }

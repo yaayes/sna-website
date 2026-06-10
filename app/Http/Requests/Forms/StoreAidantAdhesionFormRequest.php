@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Forms;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreAidantAdhesionFormRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class StoreAidantAdhesionFormRequest extends FormRequest
             'aidants.*.phone' => ['nullable', 'string', 'max:50'],
             'aidants.*.departement' => ['nullable', 'string', 'max:100'],
             'aidants.*.commune' => ['nullable', 'string', 'max:255'],
-            'aidants.*.aidant_type' => ['required', 'in:parent_handicap,conjoint,parent_aine,proche,autre'],
+            'aidants.*.aidant_type' => ['nullable', 'in:parent_handicap,conjoint,parent_aine,proche,autre'],
             'aidants.*.aidant_type_autre_precisions' => ['nullable', 'string', 'max:255'],
             'aidants.*.situation_familiale' => ['nullable', 'string', 'max:50'],
             'aidants.*.situation_familiale_autre_precisions' => ['nullable', 'string', 'max:255'],
@@ -49,6 +50,10 @@ class StoreAidantAdhesionFormRequest extends FormRequest
             'aides.*.situation_adulte_autre_precisions' => ['nullable', 'string', 'max:255'],
             'aides.*.lieu_habitation' => ['nullable', 'string', 'max:100'],
             'aides.*.lieu_habitation_autre_precisions' => ['nullable', 'string', 'max:255'],
+            'aides.*.aidant_type' => ['nullable', 'in:parent_handicap,conjoint,parent_aine,proche,autre'],
+            'aides.*.aidant_type_autre_precisions' => ['nullable', 'string', 'max:255'],
+            'aides.*.situation_familiale' => ['nullable', 'string', 'max:50'],
+            'aides.*.situation_familiale_autre_precisions' => ['nullable', 'string', 'max:255'],
 
             'genre' => ['nullable', 'in:homme,femme,non_renseigne'],
             'nom' => ['nullable', 'string', 'max:255'],
@@ -106,5 +111,26 @@ class StoreAidantAdhesionFormRequest extends FormRequest
             'declaration_honneur.accepted' => "Vous devez confirmer la déclaration sur l'honneur.",
             'consents_rgpd.accepted' => 'Vous devez accepter le traitement de vos données conformément au RGPD.',
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $aides = $this->input('aides', []);
+            $aidants = $this->input('aidants', []);
+            $legacyAidantType = data_get($aidants, '0.aidant_type');
+
+            if (! is_array($aides)) {
+                return;
+            }
+
+            foreach ($aides as $index => $aide) {
+                $aideType = data_get($aide, 'aidant_type');
+
+                if (blank($aideType) && blank($legacyAidantType)) {
+                    $validator->errors()->add("aides.$index.aidant_type", 'Veuillez indiquer la situation de chaque aidant.');
+                }
+            }
+        });
     }
 }

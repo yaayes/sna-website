@@ -86,7 +86,7 @@ class AidantAdhesionFormController extends Controller
             'status' => AidantAdhesionForm::STATUS_DRAFT,
             'nom' => $aidants[0]['nom'] ?? '',
             'prenom' => $aidants[0]['prenom'] ?? '',
-            'aidant_type' => $aidants[0]['aidant_type'] ?? 'autre',
+            'aidant_type' => $aides[0]['aidant_type'] ?? ($aidants[0]['aidant_type'] ?? 'autre'),
             'email' => $aidants[0]['email'] ?? '',
         ]));
 
@@ -141,6 +141,7 @@ class AidantAdhesionFormController extends Controller
 
         $aidants = $validated['aidants'] ?? [];
         $primaryAidant = $aidants[0] ?? [];
+        $primaryAide = $aides[0] ?? [];
         $aides = $validated['aides'] ?? [];
         $primaryAide = $aides[0] ?? [];
 
@@ -172,10 +173,10 @@ class AidantAdhesionFormController extends Controller
             'phone' => $validated['phone'] ?? ($primaryAidant['phone'] ?? null),
             'departement' => $validated['departement'] ?? ($primaryAidant['departement'] ?? null),
             'commune' => $validated['commune'] ?? ($primaryAidant['commune'] ?? null),
-            'aidant_type' => $validated['aidant_type'] ?? ($primaryAidant['aidant_type'] ?? null),
-            'aidant_type_autre_precisions' => $validated['aidant_type_autre_precisions'] ?? ($primaryAidant['aidant_type_autre_precisions'] ?? null),
-            'situation_familiale' => $validated['situation_familiale'] ?? ($primaryAidant['situation_familiale'] ?? null),
-            'situation_familiale_autre_precisions' => $validated['situation_familiale_autre_precisions'] ?? ($primaryAidant['situation_familiale_autre_precisions'] ?? null),
+            'aidant_type' => $validated['aidant_type'] ?? ($primaryAide['aidant_type'] ?? ($primaryAidant['aidant_type'] ?? null)),
+            'aidant_type_autre_precisions' => $validated['aidant_type_autre_precisions'] ?? ($primaryAide['aidant_type_autre_precisions'] ?? ($primaryAidant['aidant_type_autre_precisions'] ?? null)),
+            'situation_familiale' => $validated['situation_familiale'] ?? ($primaryAide['situation_familiale'] ?? ($primaryAidant['situation_familiale'] ?? null)),
+            'situation_familiale_autre_precisions' => $validated['situation_familiale_autre_precisions'] ?? ($primaryAide['situation_familiale_autre_precisions'] ?? ($primaryAidant['situation_familiale_autre_precisions'] ?? null)),
             'aide_tranche_age' => $validated['aide_tranche_age'] ?? ($primaryAide['aide_tranche_age'] ?? null),
             'aide_age' => $validated['aide_age'] ?? ($primaryAide['aide_age'] ?? null),
             'type_situation' => $validated['type_situation'] ?? ($primaryAide['type_situation'] ?? []),

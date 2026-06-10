@@ -24,10 +24,6 @@ class AidantAdhesionFormTest extends TestCase
                     'phone' => '+33600000000',
                     'departement' => '75',
                     'commune' => 'Paris',
-                    'aidant_type' => 'parent_handicap',
-                    'aidant_type_autre_precisions' => '',
-                    'situation_familiale' => 'en_couple',
-                    'situation_familiale_autre_precisions' => '',
                 ],
             ],
             'aides' => [
@@ -40,6 +36,10 @@ class AidantAdhesionFormTest extends TestCase
                     'situation_adulte_autre_precisions' => '',
                     'lieu_habitation' => 'domicile_familial',
                     'lieu_habitation_autre_precisions' => '',
+                    'aidant_type' => 'parent_handicap',
+                    'aidant_type_autre_precisions' => '',
+                    'situation_familiale' => 'en_couple',
+                    'situation_familiale_autre_precisions' => '',
                 ],
             ],
             'aide_tranche_age' => 'moins_18',
@@ -96,10 +96,6 @@ class AidantAdhesionFormTest extends TestCase
                     'phone' => '+33600000000',
                     'departement' => '75',
                     'commune' => 'Paris',
-                    'aidant_type' => 'parent_handicap',
-                    'aidant_type_autre_precisions' => '',
-                    'situation_familiale' => 'en_couple',
-                    'situation_familiale_autre_precisions' => '',
                 ],
                 [
                     'genre' => 'homme',
@@ -110,10 +106,6 @@ class AidantAdhesionFormTest extends TestCase
                     'phone' => '+33700000000',
                     'departement' => '69',
                     'commune' => 'Lyon',
-                    'aidant_type' => 'proche',
-                    'aidant_type_autre_precisions' => '',
-                    'situation_familiale' => 'celibataire',
-                    'situation_familiale_autre_precisions' => '',
                 ],
             ],
             'aides' => [
@@ -131,6 +123,10 @@ class AidantAdhesionFormTest extends TestCase
                     'situation_adulte_autre_precisions' => '',
                     'lieu_habitation' => 'domicile_familial',
                     'lieu_habitation_autre_precisions' => '',
+                    'aidant_type' => 'parent_handicap',
+                    'aidant_type_autre_precisions' => '',
+                    'situation_familiale' => 'en_couple',
+                    'situation_familiale_autre_precisions' => '',
                 ],
                 [
                     'aide_tranche_age' => '18_65',
@@ -146,6 +142,10 @@ class AidantAdhesionFormTest extends TestCase
                     'situation_adulte_autre_precisions' => '',
                     'lieu_habitation' => 'domicile_autonome',
                     'lieu_habitation_autre_precisions' => '',
+                    'aidant_type' => 'proche',
+                    'aidant_type_autre_precisions' => '',
+                    'situation_familiale' => '',
+                    'situation_familiale_autre_precisions' => '',
                 ],
             ],
         ]);
@@ -167,6 +167,14 @@ class AidantAdhesionFormTest extends TestCase
     {
         $payload = $this->validPayload();
         $payload['aidants'][0][$field] = $value;
+
+        return $payload;
+    }
+
+    private function withAideOverride(string $field, mixed $value): array
+    {
+        $payload = $this->validPayload();
+        $payload['aides'][0][$field] = $value;
 
         return $payload;
     }
@@ -198,14 +206,14 @@ class AidantAdhesionFormTest extends TestCase
 
     public function test_aidant_type_is_required(): void
     {
-        $response = $this->post('/formulaire/adhesion', $this->withAidantOverride('aidant_type', ''));
-        $response->assertSessionHasErrors('aidants.0.aidant_type');
+        $response = $this->post('/formulaire/adhesion', $this->withAideOverride('aidant_type', ''));
+        $response->assertSessionHasErrors('aides.0.aidant_type');
     }
 
     public function test_invalid_aidant_type_is_rejected(): void
     {
-        $response = $this->post('/formulaire/adhesion', $this->withAidantOverride('aidant_type', 'invalid_value'));
-        $response->assertSessionHasErrors('aidants.0.aidant_type');
+        $response = $this->post('/formulaire/adhesion', $this->withAideOverride('aidant_type', 'invalid_value'));
+        $response->assertSessionHasErrors('aides.0.aidant_type');
     }
 
     public function test_consents_rgpd_must_be_accepted(): void

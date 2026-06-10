@@ -41,6 +41,10 @@ class SaveAidantAdhesionDraftRequest extends FormRequest
             'aides.*.situation_adulte_autre_precisions' => ['nullable', 'string', 'max:255'],
             'aides.*.lieu_habitation' => ['nullable', 'string', 'max:100'],
             'aides.*.lieu_habitation_autre_precisions' => ['nullable', 'string', 'max:255'],
+            'aides.*.aidant_type' => ['nullable', 'in:parent_handicap,conjoint,parent_aine,proche,autre'],
+            'aides.*.aidant_type_autre_precisions' => ['nullable', 'string', 'max:255'],
+            'aides.*.situation_familiale' => ['nullable', 'string', 'max:50'],
+            'aides.*.situation_familiale_autre_precisions' => ['nullable', 'string', 'max:255'],
 
             'aide_tranche_age' => ['nullable', 'in:moins_18,18_65,plus_65'],
             'aide_age' => ['nullable', 'string', 'max:10'],
