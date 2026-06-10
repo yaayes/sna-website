@@ -1,5 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { ChevronLeft } from 'lucide-react';
+import SeoHead from '@/components/seo-head';
 import PublicSiteHeader from '@/components/public-site-header';
 import { Button } from '@/components/ui/button';
 
@@ -16,13 +17,7 @@ type PressArticleItem = {
 export default function RevueDePresseShowPage({ article }: { article: PressArticleItem }) {
     return (
         <>
-            <Head title={`${article.title} — Revue de presse SNA`}>
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
-                    rel="stylesheet"
-                />
-            </Head>
+            <SeoHead title={`${article.title} — Revue de presse SNA`} />
 
             <div className="min-h-screen bg-[#f8fcfc] text-gray-800">
                 <PublicSiteHeader />

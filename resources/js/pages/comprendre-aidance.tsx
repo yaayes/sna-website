@@ -1,17 +1,15 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import SeoHead from '@/components/seo-head';
 import PublicSiteHeader from '@/components/public-site-header';
 import { CheckCircle2 } from 'lucide-react';
 
 export default function ComprendreAidancePage() {
     return (
         <>
-            <Head title="Comprendre l'aidance — SNA">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
-                    rel="stylesheet"
-                />
-            </Head>
+            <SeoHead
+                title="Comprendre l'aidance — Syndicat National des Aidants"
+                description="Qu'est-ce qu'un aidant ? Découvrez les différentes formes d'aidance, leur impact sur la vie quotidienne et les ressources pour vous accompagner."
+            />
 
             <div className="min-h-screen bg-white text-gray-800">
                 <PublicSiteHeader />

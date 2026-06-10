@@ -37,21 +37,54 @@
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
 
+        @php
+            $sna_name    = 'Syndicat National des Aidants';
+            $sna_desc    = 'Le SNA défend les intérêts des aidants familiaux qui accompagnent un proche touché par la maladie, le handicap ou la perte d\'autonomie.';
+            $sna_image   = asset('images/hero/page-accueil-hero.webp');
+            $sna_url     = url()->current();
+            $sna_locale  = str_replace('_', '-', app()->getLocale());
+
+            $seo         = $page['props']['seo'] ?? [];
+            $seo_title   = $seo['title']       ?? $sna_name;
+            $seo_desc    = $seo['description'] ?? $sna_desc;
+            $seo_image   = isset($seo['image']) ? asset($seo['image']) : $sna_image;
+            $seo_type    = $seo['type']        ?? 'website';
+            $seo_robots  = $seo['robots']      ?? 'index, follow';
+            $seo_canon   = $seo['canonical']   ?? $sna_url;
+            $seo_pub     = $seo['published_time'] ?? null;
+            $seo_jsonld  = $seo['jsonld']      ?? null;
+        @endphp
+
+        {{-- SEO fundamentals --}}
+        <meta name="description" content="{{ $seo_desc }}" />
+        <meta name="robots" content="{{ $seo_robots }}" />
+        <link rel="canonical" href="{{ $seo_canon }}" />
+
         {{-- Open Graph / Social Media --}}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="{{ url()->current() }}" />
-        <meta property="og:title" content="Syndicat National des Aidants" />
-        <meta property="og:description" content="Le SNA défend les intérêts des aidants familiaux qui accompagnent un proche touché par la maladie, le handicap ou la perte d'autonomie." />
-        <meta property="og:image" content="{{ asset('images/og-image.png') }}" />
-        <meta property="og:site_name" content="Syndicat National des Aidants" />
-        <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
+        <meta property="og:type" content="{{ $seo_type }}" />
+        <meta property="og:url" content="{{ $seo_canon }}" />
+        <meta property="og:title" content="{{ $seo_title }}" />
+        <meta property="og:description" content="{{ $seo_desc }}" />
+        <meta property="og:image" content="{{ $seo_image }}" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="{{ $sna_name }}" />
+        <meta property="og:locale" content="{{ $sna_locale }}" />
+        @if($seo_type === 'article' && $seo_pub)
+            <meta property="article:published_time" content="{{ $seo_pub }}" />
+        @endif
 
         {{-- Twitter / X Card --}}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="{{ url()->current() }}" />
-        <meta name="twitter:title" content="Syndicat National des Aidants" />
-        <meta name="twitter:description" content="Le SNA défend les intérêts des aidants familiaux qui accompagnent un proche touché par la maladie, le handicap ou la perte d'autonomie." />
-        <meta name="twitter:image" content="{{ asset('images/og-image.png') }}" />
+        <meta name="twitter:url" content="{{ $seo_canon }}" />
+        <meta name="twitter:title" content="{{ $seo_title }}" />
+        <meta name="twitter:description" content="{{ $seo_desc }}" />
+        <meta name="twitter:image" content="{{ $seo_image }}" />
+
+        {{-- JSON-LD Structured Data --}}
+        @if($seo_jsonld)
+            <script type="application/ld+json">{!! json_encode($seo_jsonld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+        @endif
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

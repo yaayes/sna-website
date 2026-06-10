@@ -1,5 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import React from 'react';
+import SeoHead from '@/components/seo-head';
 import PublicSiteHeader from '@/components/public-site-header';
 
 /* ─────────────────────────────────────────────
@@ -163,23 +164,10 @@ function SectionHeader({
 export default function Welcome() {
     return (
         <>
-            <Head title="SNA – Familles d'enfants en situation de handicap">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
-                    rel="stylesheet"
-                />
-                <link
-                    rel="preload"
-                    as="image"
-                    href="/images/hero/page-accueil-hero.webp"
-                    type="image/webp"
-                />
-                <meta
-                    name="description"
-                    content="Le Syndicat National des Aidants défend les droits des familles qui accompagnent un enfant en situation de handicap. Rejoignez le mouvement."
-                />
-            </Head>
+            <SeoHead
+                title="SNA – Défendre les droits des aidants familiaux"
+                description="Le Syndicat National des Aidants (SNA) est la première organisation syndicale 100 % dédiée aux aidants familiaux en France. Défense des droits, représentation collective, actions concrètes."
+            />
 
             <div className="min-h-screen bg-white font-sans text-gray-800">
                 <PublicSiteHeader />

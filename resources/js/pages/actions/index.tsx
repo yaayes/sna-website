@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import SeoHead from '@/components/seo-head';
 import PublicSiteHeader from '@/components/public-site-header';
 
 type ActionItem = {
@@ -19,13 +20,10 @@ export default function ActionsIndexPage({
 
     return (
         <>
-            <Head title="Nos Actions — Syndicat National des Aidants">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
-                    rel="stylesheet"
-                />
-            </Head>
+            <SeoHead
+                title="Nos Actions — Syndicat National des Aidants"
+                description="Découvrez toutes les actions du Syndicat National des Aidants pour défendre les droits des aidants familiaux en France et faire évoluer les politiques publiques."
+            />
 
             <div className="min-h-screen bg-[#f7fbfb] text-gray-800">
                 <PublicSiteHeader />

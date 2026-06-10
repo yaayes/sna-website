@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Action;
 use App\Models\ActionCategory;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,6 +13,11 @@ class ActionController extends Controller
     public function index(): Response
     {
         return Inertia::render('actions/index', [
+            'seo' => [
+                'title' => 'Nos Actions — Syndicat National des Aidants',
+                'description' => 'Découvrez toutes les actions du Syndicat National des Aidants pour défendre les droits des aidants familiaux en France et faire évoluer les politiques publiques.',
+                'canonical' => route('actions.index'),
+            ],
             'categories' => ActionCategory::query()
                 ->with(['actions' => fn ($query) => $query
                     ->published()
@@ -39,7 +45,26 @@ class ActionController extends Controller
     {
         abort_unless($action->is_published, 404);
 
+        $description = Str::limit(strip_tags($action->content), 155);
+
         return Inertia::render('actions/show', [
+            'seo' => [
+                'title' => $action->title.' — Nos Actions SNA',
+                'description' => $description,
+                'canonical' => route('actions.show', $action),
+                'type' => 'article',
+                'jsonld' => [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'Article',
+                    'headline' => $action->title,
+                    'description' => $description,
+                    'publisher' => [
+                        '@type' => 'Organization',
+                        'name' => 'Syndicat National des Aidants',
+                        'url' => config('app.url'),
+                    ],
+                ],
+            ],
             'actionItem' => [
                 'id' => $action->id,
                 'title' => $action->title,

@@ -21,6 +21,7 @@ class SoutienFormController extends Controller
     public function show(): Response
     {
         return Inertia::render('forms/soutien', [
+            'seo' => ['robots' => 'noindex, nofollow'],
             'membershipFeeCents' => config('cawl.membership_fee_cents'),
             'prefillData' => session('soutien_prefill'),
         ]);

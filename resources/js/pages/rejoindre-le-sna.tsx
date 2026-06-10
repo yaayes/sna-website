@@ -1,4 +1,5 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
+import SeoHead from '@/components/seo-head';
 import type { FormEventHandler } from 'react';
 import PublicSiteHeader from '@/components/public-site-header';
 
@@ -174,7 +175,10 @@ export default function RejoindreLeSnaPage() {
 
     return (
         <>
-            <Head title="Rejoindre le SNA — SNA" />
+            <SeoHead
+                title="Rejoindre le SNA — Bénévoles et militants aidants"
+                description="Rejoignez le mouvement du Syndicat National des Aidants en tant que bénévole ou militant. Ensemble, faisons évoluer les droits des aidants en France."
+            />
 
             <div className="min-h-screen bg-[#f8fbfb] text-gray-800">
                 <PublicSiteHeader />

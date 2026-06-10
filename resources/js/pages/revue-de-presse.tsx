@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
+import SeoHead from '@/components/seo-head';
 import {
     ArrowRight,
     Building2,
@@ -56,13 +57,10 @@ export default function RevueDePressePage({
 
     return (
         <>
-            <Head title="Revue de presse — Syndicat National des Aidants">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700"
-                    rel="stylesheet"
-                />
-            </Head>
+            <SeoHead
+                title="Revue de presse — Syndicat National des Aidants"
+                description="Retrouvez toute l'actualité et les articles de presse sur les aidants familiaux et les actions du Syndicat National des Aidants."
+            />
 
             <div className="min-h-screen bg-[#f7fbfb] text-gray-800">
                 <PublicSiteHeader />

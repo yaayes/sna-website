@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import SeoHead from '@/components/seo-head';
 import FranceDepartmentsMap from '@/components/france-departments-map';
 import PublicSiteHeader from '@/components/public-site-header';
 
@@ -35,7 +35,10 @@ function Avatar({ representant }: { representant: Representant }) {
 export default function RepresentantsPage({ representants }: { representants: Representant[] }) {
     return (
         <>
-            <Head title="Représentants départementaux — SNA" />
+            <SeoHead
+                title="Représentants départementaux — Syndicat National des Aidants"
+                description="Retrouvez les représentants départementaux du Syndicat National des Aidants dans toute la France. Contactez le représentant de votre département."
+            />
 
             <div className="min-h-screen bg-[#f8fbfb] text-gray-800">
                 <PublicSiteHeader />

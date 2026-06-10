@@ -11,6 +11,11 @@ class RepresentantController extends Controller
     public function index(): Response
     {
         return Inertia::render('representants', [
+            'seo' => [
+                'title' => 'Représentants départementaux — Syndicat National des Aidants',
+                'description' => 'Retrouvez les représentants départementaux du Syndicat National des Aidants dans toute la France. Contactez le représentant de votre département.',
+                'canonical' => route('representants.index'),
+            ],
             'representants' => Representant::query()
                 ->active()
                 ->orderBy('sort_order')

@@ -26,11 +26,58 @@ use App\Http\Controllers\RepresentantController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
-Route::inertia('/comprendre-laidance', 'comprendre-aidance')->name('comprendre-aidance');
-Route::inertia('/a-propos-nous', 'a-propos-nous')->name('a-propos-nous');
-Route::inertia('/rejoindre-le-sna', 'rejoindre-le-sna')->name('rejoindre-sna.page');
-Route::inertia('/rejoindre', 'rejoindre')->name('rejoindre');
+Route::get('/', fn () => inertia('welcome', [
+    'seo' => [
+        'title' => 'Syndicat National des Aidants — Défendre les droits des aidants familiaux',
+        'description' => 'Le Syndicat National des Aidants (SNA) est la première organisation syndicale 100 % dédiée aux aidants familiaux en France. Défense des droits, représentation collective, actions concrètes.',
+        'canonical' => route('home'),
+        'jsonld' => [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => 'Syndicat National des Aidants',
+            'url' => config('app.url'),
+            'logo' => asset('images/logo.png'),
+            'description' => 'Le SNA défend les intérêts des aidants familiaux qui accompagnent un proche touché par la maladie, le handicap ou la perte d\'autonomie.',
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'contactType' => 'customer service',
+                'email' => 'contact@syndicat-national-aidants.fr',
+            ],
+        ],
+    ],
+]))->name('home');
+
+Route::get('/comprendre-laidance', fn () => inertia('comprendre-aidance', [
+    'seo' => [
+        'title' => 'Comprendre l\'aidance — Syndicat National des Aidants',
+        'description' => 'Qu\'est-ce qu\'un aidant ? Découvrez les différentes formes d\'aidance, leur impact sur la vie quotidienne et les ressources pour vous accompagner.',
+        'canonical' => route('comprendre-aidance'),
+    ],
+]))->name('comprendre-aidance');
+
+Route::get('/a-propos-nous', fn () => inertia('a-propos-nous', [
+    'seo' => [
+        'title' => 'À propos du SNA — Notre histoire, nos valeurs, notre gouvernance',
+        'description' => 'Découvrez l\'histoire, les valeurs et la gouvernance du Syndicat National des Aidants, première organisation syndicale entièrement dédiée aux aidants familiaux.',
+        'canonical' => route('a-propos-nous'),
+    ],
+]))->name('a-propos-nous');
+
+Route::get('/rejoindre-le-sna', fn () => inertia('rejoindre-le-sna', [
+    'seo' => [
+        'title' => 'Rejoindre le SNA — Bénévoles et militants aidants',
+        'description' => 'Rejoignez le mouvement du Syndicat National des Aidants en tant que bénévole ou militant. Ensemble, faisons évoluer les droits des aidants en France.',
+        'canonical' => route('rejoindre-sna.page'),
+    ],
+]))->name('rejoindre-sna.page');
+
+Route::get('/rejoindre', fn () => inertia('rejoindre', [
+    'seo' => [
+        'title' => 'Adhérer au SNA — Syndicat National des Aidants',
+        'description' => 'Adhérez au Syndicat National des Aidants et rejoignez des milliers d\'aidants familiaux qui agissent ensemble pour faire reconnaître leurs droits.',
+        'canonical' => route('rejoindre'),
+    ],
+]))->name('rejoindre');
 Route::get('/nos-actions', [ActionController::class, 'index'])->name('actions.index');
 Route::get('/nos-actions/{action:slug}', [ActionController::class, 'show'])->name('actions.show');
 Route::get('/representants', [RepresentantController::class, 'index'])->name('representants.index');

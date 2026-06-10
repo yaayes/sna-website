@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PressArticle;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,6 +18,11 @@ class PressArticleController extends Controller
             ->paginate(12);
 
         return Inertia::render('revue-de-presse', [
+            'seo' => [
+                'title' => 'Revue de presse — Syndicat National des Aidants',
+                'description' => 'Retrouvez toute l\'actualité et les articles de presse sur les aidants familiaux et les actions du Syndicat National des Aidants.',
+                'canonical' => route('press-articles.index'),
+            ],
             'articles' => $articles->map(fn (PressArticle $article) => [
                 'id' => $article->id,
                 'title' => $article->title,
@@ -45,7 +51,29 @@ class PressArticleController extends Controller
             abort(404);
         }
 
+        $description = $pressArticle->excerpt ?: Str::limit(strip_tags($pressArticle->content), 155);
+        $publishedIso = $pressArticle->publication_date?->toIso8601String();
+
         return Inertia::render('revue-de-presse/show', [
+            'seo' => [
+                'title' => $pressArticle->title.' — Revue de presse SNA',
+                'description' => $description,
+                'canonical' => route('press-articles.show', $pressArticle),
+                'type' => 'article',
+                'published_time' => $publishedIso,
+                'jsonld' => [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'NewsArticle',
+                    'headline' => $pressArticle->title,
+                    'description' => $description,
+                    'datePublished' => $publishedIso,
+                    'publisher' => [
+                        '@type' => 'Organization',
+                        'name' => 'Syndicat National des Aidants',
+                        'url' => config('app.url'),
+                    ],
+                ],
+            ],
             'article' => [
                 'id' => $pressArticle->id,
                 'title' => $pressArticle->title,

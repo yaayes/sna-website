@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import SeoHead from '@/components/seo-head';
 import PublicSiteHeader from '@/components/public-site-header';
 
 const historiqueContexte = [
@@ -82,7 +82,10 @@ function BulletList({ items }: { items: string[] }) {
 export default function AProposNousPage() {
     return (
         <>
-            <Head title="A propos nous — SNA" />
+            <SeoHead
+                title="À propos du SNA — Notre histoire, nos valeurs, notre gouvernance"
+                description="Découvrez l'histoire, les valeurs et la gouvernance du Syndicat National des Aidants, première organisation syndicale entièrement dédiée aux aidants familiaux."
+            />
 
             <div className="min-h-screen bg-[#f8fbfb] text-gray-800">
                 <PublicSiteHeader />

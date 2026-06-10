@@ -23,6 +23,7 @@ class PartenaireFormController extends Controller
     public function show(): Response
     {
         return Inertia::render('forms/partenaire', [
+            'seo' => ['robots' => 'noindex, nofollow'],
             'membershipFeeCents' => config('cawl.partenaire_fee_cents'),
             'prefillData' => session('partenaire_prefill'),
         ]);
