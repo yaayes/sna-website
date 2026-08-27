@@ -22,7 +22,7 @@ export default function RevueDePresseShowPage({ article }: { article: PressArtic
             <div className="min-h-screen bg-[#f8fcfc] text-gray-800">
                 <PublicSiteHeader />
 
-                <main className="mx-auto max-w-3xl px-6 py-10">
+                <main className="mx-auto max-w-6xl px-6 py-10">
                     {/* Back Link */}
                     <div className="mb-6">
                         <Button variant="outline" size="sm" asChild>
@@ -34,7 +34,7 @@ export default function RevueDePresseShowPage({ article }: { article: PressArtic
                     </div>
 
                     {/* Article */}
-                    <article className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm">
+                    <article className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm sm:p-10">
                         <div className="mb-4 flex flex-wrap items-center gap-3 text-sm text-gray-600">
                             <time dateTime={article.publication_date}>{article.publication_date}</time>
                         </div>
@@ -50,7 +50,7 @@ export default function RevueDePresseShowPage({ article }: { article: PressArtic
                         )}
 
                         <div
-                            className="prose prose-lg prose-headings:text-gray-900 prose-headings:mt-6 prose-headings:mb-3 prose-p:my-4 prose-li:my-1 prose-a:text-sna-teal prose-a:hover:text-sna-teal/80 prose-strong:text-gray-900 mt-8 max-w-none"
+                            className="prose prose-lg prose-headings:text-gray-900 prose-headings:mt-6 prose-headings:mb-3 prose-p:my-4 prose-li:my-1 prose-a:text-sna-teal prose-a:hover:text-sna-teal/80 prose-strong:text-gray-900 mt-8 max-w-none wrap-break-word [&_a]:wrap-anywhere"
                             dangerouslySetInnerHTML={{
                                 __html: article.content,
                             }}
