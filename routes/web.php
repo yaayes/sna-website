@@ -140,7 +140,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->g
     Route::get('/partenaire', [AdminPartenaireFormController::class, 'index'])->name('partenaire.index');
     Route::get('/partenaire/{partenaireForm}', [AdminPartenaireFormController::class, 'show'])->name('partenaire.show');
     Route::get('/contact', [AdminContactFormController::class, 'index'])->name('contact.index');
+    Route::patch('/contact/bulk-respond', [AdminContactFormController::class, 'bulkRespond'])->name('contact.bulk-respond');
     Route::get('/contact/{contactForm}', [AdminContactFormController::class, 'show'])->name('contact.show');
+    Route::patch('/contact/{contactForm}/toggle-responded', [AdminContactFormController::class, 'toggleResponded'])
+        ->name('contact.toggle-responded');
     Route::post('/wysiwyg/images', [AdminImageUploadController::class, 'store'])
         ->name('wysiwyg.images.store')
         ->withoutMiddleware(VerifyCsrfToken::class);

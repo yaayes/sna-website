@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
 import { Badge } from '@/components/ui/badge';
@@ -97,11 +97,22 @@ export default function MoiAussiIndex({
                             </TableRow>
                         )}
                         {entries.data.map((entry) => (
-                            <TableRow key={entry.id}>
+                            <TableRow
+                                key={entry.id}
+                                className="cursor-pointer"
+                                onClick={() =>
+                                    router.visit(
+                                        admin.moiAussi.show(entry.id).url,
+                                    )
+                                }
+                            >
                                 <TableCell className="font-mono text-xs">
                                     {entry.ref}
                                 </TableCell>
-                                <TableCell className="max-w-[180px]">
+                                <TableCell
+                                    className="max-w-[180px]"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
                                     {entry.action ? (
                                         <Link
                                             href={`/nos-actions/${entry.action.slug}`}
@@ -111,7 +122,9 @@ export default function MoiAussiIndex({
                                             {entry.action.title}
                                         </Link>
                                     ) : (
-                                        <span className="text-muted-foreground">—</span>
+                                        <span className="text-muted-foreground">
+                                            —
+                                        </span>
                                     )}
                                 </TableCell>
                                 <TableCell>
@@ -146,7 +159,7 @@ export default function MoiAussiIndex({
                                         entry.created_at,
                                     ).toLocaleDateString('fr-FR')}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell onClick={(e) => e.stopPropagation()}>
                                     <Button variant="ghost" size="icon" asChild>
                                         <Link
                                             href={admin.moiAussi.show(entry.id)}

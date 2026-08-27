@@ -54,6 +54,83 @@ class AdminFormListTest extends TestCase
             ->assertInertia(fn ($page) => $page->component('admin/contact/show'));
     }
 
+    public function test_contact_toggle_responded_marks_form_as_responded(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = ContactForm::factory()->create();
+
+        $this->assertNull($form->responded_at);
+
+        $this->actingAs($admin)
+            ->patch('/@/contact/'.$form->id.'/toggle-responded')
+            ->assertRedirect();
+
+        $this->assertNotNull($form->fresh()->responded_at);
+    }
+
+    public function test_contact_toggle_responded_reverts_to_not_responded(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $form = ContactForm::factory()->create(['responded_at' => now()]);
+
+        $this->actingAs($admin)
+            ->patch('/@/contact/'.$form->id.'/toggle-responded')
+            ->assertRedirect();
+
+        $this->assertNull($form->fresh()->responded_at);
+    }
+
+    public function test_contact_toggle_responded_requires_admin(): void
+    {
+        $user = User::factory()->create();
+        $form = ContactForm::factory()->create();
+
+        $this->actingAs($user)
+            ->patch('/@/contact/'.$form->id.'/toggle-responded')
+            ->assertStatus(403);
+
+        $this->assertNull($form->fresh()->responded_at);
+    }
+
+    public function test_contact_bulk_respond_marks_selected_forms_as_responded(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $formA = ContactForm::factory()->create();
+        $formB = ContactForm::factory()->create();
+        $untouched = ContactForm::factory()->create();
+
+        $this->actingAs($admin)
+            ->patch('/@/contact/bulk-respond', [
+                'ids' => [$formA->id, $formB->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertNotNull($formA->fresh()->responded_at);
+        $this->assertNotNull($formB->fresh()->responded_at);
+        $this->assertNull($untouched->fresh()->responded_at);
+    }
+
+    public function test_contact_bulk_respond_requires_ids(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)
+            ->patch('/@/contact/bulk-respond', ['ids' => []])
+            ->assertSessionHasErrors('ids');
+    }
+
+    public function test_contact_bulk_respond_requires_admin(): void
+    {
+        $user = User::factory()->create();
+        $form = ContactForm::factory()->create();
+
+        $this->actingAs($user)
+            ->patch('/@/contact/bulk-respond', ['ids' => [$form->id]])
+            ->assertStatus(403);
+
+        $this->assertNull($form->fresh()->responded_at);
+    }
+
     // ── Moi Aussi ──────────────────────────────────────────────────────────────
 
     public function test_moi_aussi_index_is_accessible_by_admin(): void

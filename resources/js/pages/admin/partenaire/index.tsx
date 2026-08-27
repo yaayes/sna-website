@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +46,13 @@ type Paginated<T> = {
     next_page_url: string | null;
 };
 
-const paymentStatusLabel: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+const paymentStatusLabel: Record<
+    string,
+    {
+        label: string;
+        variant: 'default' | 'secondary' | 'outline' | 'destructive';
+    }
+> = {
     captured: { label: 'Paye', variant: 'default' },
     pending: { label: 'En attente', variant: 'secondary' },
     authorized: { label: 'Autorise', variant: 'secondary' },
@@ -98,7 +104,15 @@ export default function PartenaireIndex({
                             </TableRow>
                         )}
                         {entries.data.map((entry) => (
-                            <TableRow key={entry.id}>
+                            <TableRow
+                                key={entry.id}
+                                className="cursor-pointer"
+                                onClick={() =>
+                                    router.visit(
+                                        admin.partenaire.show(entry.id).url,
+                                    )
+                                }
+                            >
                                 <TableCell className="font-mono text-xs">
                                     {entry.ref}
                                 </TableCell>
@@ -112,16 +126,31 @@ export default function PartenaireIndex({
                                 </TableCell>
                                 <TableCell>
                                     {entry.payment_status ? (
-                                        <Badge variant={paymentStatusLabel[entry.payment_status]?.variant ?? 'outline'}>
-                                            {paymentStatusLabel[entry.payment_status]?.label ?? entry.payment_status}
+                                        <Badge
+                                            variant={
+                                                paymentStatusLabel[
+                                                    entry.payment_status
+                                                ]?.variant ?? 'outline'
+                                            }
+                                        >
+                                            {paymentStatusLabel[
+                                                entry.payment_status
+                                            ]?.label ?? entry.payment_status}
                                         </Badge>
                                     ) : (
-                                        <span className="text-xs text-muted-foreground">—</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            —
+                                        </span>
                                     )}
                                 </TableCell>
                                 <TableCell className="text-xs">
                                     {entry.payment_amount_cents !== null
-                                        ? (entry.payment_amount_cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+                                        ? (
+                                              entry.payment_amount_cents / 100
+                                          ).toLocaleString('fr-FR', {
+                                              style: 'currency',
+                                              currency: 'EUR',
+                                          })
                                         : '—'}
                                 </TableCell>
                                 <TableCell className="text-xs text-muted-foreground">
@@ -129,7 +158,7 @@ export default function PartenaireIndex({
                                         entry.created_at,
                                     ).toLocaleDateString('fr-FR')}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell onClick={(e) => e.stopPropagation()}>
                                     <Button variant="ghost" size="icon" asChild>
                                         <Link
                                             href={admin.partenaire.show(

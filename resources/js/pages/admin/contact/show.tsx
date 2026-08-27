@@ -1,8 +1,9 @@
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle2, Circle, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
+import { buildGmailReplyUrl } from '@/lib/gmail';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
 
@@ -18,6 +19,7 @@ type ContactEntry = {
     profile: string;
     contact_preference: string;
     created_at: string;
+    responded_at: string | null;
 };
 
 const breadcrumbs = (ref: string): BreadcrumbItem[] => [
@@ -59,6 +61,14 @@ const contactPreferenceLabel: Record<string, string> = {
 };
 
 export default function ContactShow({ entry }: { entry: ContactEntry }) {
+    const toggleResponded = () => {
+        router.patch(
+            admin.contact.toggleResponded(entry.id).url,
+            {},
+            { preserveScroll: true },
+        );
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs(entry.ref)}>
             <Head title={`Admin — Contact #${entry.ref}`} />
@@ -69,14 +79,47 @@ export default function ContactShow({ entry }: { entry: ContactEntry }) {
                             <ArrowLeft className="h-4 w-4" />
                         </Link>
                     </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">
-                            Formulaire Contact
-                        </h1>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                Formulaire Contact
+                            </h1>
+                            <Badge
+                                variant={
+                                    entry.responded_at ? 'default' : 'secondary'
+                                }
+                            >
+                                {entry.responded_at ? 'Répondu' : 'Nouveau'}
+                            </Badge>
+                        </div>
                         <p className="font-mono text-sm text-muted-foreground">
                             Ref. {entry.ref}
                         </p>
                     </div>
+                    <Button variant="outline" size="sm" asChild>
+                        <a
+                            href={buildGmailReplyUrl(entry)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Mail className="h-4 w-4" />
+                            Répondre
+                        </a>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={toggleResponded}
+                    >
+                        {entry.responded_at ? (
+                            <Circle className="h-4 w-4" />
+                        ) : (
+                            <CheckCircle2 className="h-4 w-4" />
+                        )}
+                        {entry.responded_at
+                            ? 'Marquer comme non répondu'
+                            : 'Marquer comme répondu'}
+                    </Button>
                 </div>
 
                 <div className="rounded-xl border p-6">
@@ -84,7 +127,9 @@ export default function ContactShow({ entry }: { entry: ContactEntry }) {
                     <dl>
                         <DetailRow label="Nom">{entry.name}</DetailRow>
                         <DetailRow label="Email">{entry.email}</DetailRow>
-                        <DetailRow label="Telephone">{entry.phone ?? '—'}</DetailRow>
+                        <DetailRow label="Telephone">
+                            {entry.phone ?? '—'}
+                        </DetailRow>
                         <DetailRow label="Ville">{entry.city}</DetailRow>
                         <DetailRow label="Date de soumission">
                             {new Date(entry.created_at).toLocaleString('fr-FR')}
@@ -103,7 +148,9 @@ export default function ContactShow({ entry }: { entry: ContactEntry }) {
                         </DetailRow>
                         <DetailRow label="Preference de recontact">
                             <Badge variant="outline">
-                                {contactPreferenceLabel[entry.contact_preference] ?? entry.contact_preference}
+                                {contactPreferenceLabel[
+                                    entry.contact_preference
+                                ] ?? entry.contact_preference}
                             </Badge>
                         </DetailRow>
                         <DetailRow label="Message">

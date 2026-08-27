@@ -25,7 +25,9 @@ class ContactForm extends Model
 
     protected function casts(): array
     {
-        return [];
+        return [
+            'responded_at' => 'datetime',
+        ];
     }
 
     public function submission(): MorphOne
