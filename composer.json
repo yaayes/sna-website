@@ -17,6 +17,7 @@
         "laravel/horizon": "^5.46",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "maatwebsite/excel": "^4.0",
         "online-payments/sdk-php": "^8.4"
     },
     "require-dev": {

@@ -131,8 +131,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('@')->name('admin.')->g
     Route::patch('/press-articles/reorder', [AdminPressArticleController::class, 'reorder'])->name('press-articles.reorder');
     Route::resource('/press-articles', AdminPressArticleController::class)->except('show');
     Route::get('/moi-aussi', [AdminMoiAussiFormController::class, 'index'])->name('moi-aussi.index');
+    Route::get('/moi-aussi/export', [AdminMoiAussiFormController::class, 'export'])->name('moi-aussi.export');
     Route::get('/moi-aussi/{moiAussiForm}', [AdminMoiAussiFormController::class, 'show'])->name('moi-aussi.show');
     Route::get('/adhesion', [AdminAidantAdhesionFormController::class, 'index'])->name('adhesion.index');
+    Route::get('/adhesion/export', [AdminAidantAdhesionFormController::class, 'export'])->name('adhesion.export');
     Route::get('/adhesion/{aidantAdhesionForm}', [AdminAidantAdhesionFormController::class, 'show'])->name('adhesion.show');
     Route::resource('/coupons', AdminCouponController::class)->except('show');
     Route::get('/soutien', [AdminSoutienFormController::class, 'index'])->name('soutien.index');

@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
+import FieldGroupExportDialog from '@/components/field-group-export-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,9 +58,11 @@ const situationLabels: Record<string, string> = {
 export default function MoiAussiIndex({
     entries,
     filters,
+    fieldGroups,
 }: {
     entries: Paginated<MoiAussiEntry>;
     filters: { search: string };
+    fieldGroups: { key: string; label: string }[];
 }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -71,6 +74,14 @@ export default function MoiAussiIndex({
                 searchPlaceholder="Rechercher par email, ref, nom…"
                 searchUrl={admin.moiAussi.index}
                 pagination={entries}
+                actions={
+                    <FieldGroupExportDialog
+                        fieldGroups={fieldGroups}
+                        exportUrl={admin.moiAussi.export.url}
+                        search={filters.search ?? ''}
+                        title="Exporter les formulaires Moi Aussi"
+                    />
+                }
             >
                 <Table>
                     <TableHeader>

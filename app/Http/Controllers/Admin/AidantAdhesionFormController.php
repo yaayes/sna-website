@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\ExportsFieldGroups;
+use App\Exports\AidantAdhesionExportGroups;
+use App\Exports\AidantAdhesionFormsExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ExportAidantAdhesionRequest;
 use App\Models\AidantAdhesionForm;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AidantAdhesionFormController extends Controller
 {
+    use ExportsFieldGroups;
+
     public function index(Request $request): Response
     {
         $query = AidantAdhesionForm::query()
@@ -45,7 +52,17 @@ class AidantAdhesionFormController extends Controller
                 'payment_amount_cents' => $form->submission?->payments->first(fn ($p) => $p->isSuccessful())?->amount_cents,
             ]),
             'filters' => ['search' => $request->string('search')->trim()->value()],
+            'fieldGroups' => AidantAdhesionExportGroups::metadata(),
         ]);
+    }
+
+    public function export(ExportAidantAdhesionRequest $request): BinaryFileResponse
+    {
+        return $this->downloadFieldGroupExport(
+            AidantAdhesionFormsExport::class,
+            $request->validated(),
+            'adhesions-aidant',
+        );
     }
 
     public function show(AidantAdhesionForm $aidantAdhesionForm): Response

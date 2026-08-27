@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import AdminTableWrapper from '@/components/admin-table-wrapper';
+import FieldGroupExportDialog from '@/components/field-group-export-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -63,9 +64,11 @@ type Paginated<T> = {
 export default function AdhesionIndex({
     entries,
     filters,
+    fieldGroups,
 }: {
     entries: Paginated<AdhesionEntry>;
     filters: { search: string };
+    fieldGroups: { key: string; label: string }[];
 }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -77,6 +80,15 @@ export default function AdhesionIndex({
                 searchPlaceholder="Rechercher par email, réf, nom, prénom, téléphone…"
                 searchUrl={admin.adhesion.index}
                 pagination={entries}
+                actions={
+                    <FieldGroupExportDialog
+                        fieldGroups={fieldGroups}
+                        exportUrl={admin.adhesion.export.url}
+                        search={filters.search ?? ''}
+                        title="Exporter les formulaires d'adhésion"
+                        paymentStatusFilter
+                    />
+                }
             >
                 <Table>
                     <TableHeader>

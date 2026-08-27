@@ -31,6 +31,7 @@ type AdminTableWrapperProps = {
         prev_page_url: string | null;
         next_page_url: string | null;
     };
+    actions?: React.ReactNode;
     children: React.ReactNode;
 };
 
@@ -41,6 +42,7 @@ export default function AdminTableWrapper({
     searchPlaceholder = 'Rechercher par email, ref…',
     searchUrl,
     pagination,
+    actions,
     children,
 }: AdminTableWrapperProps) {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -60,12 +62,21 @@ export default function AdminTableWrapper({
 
     return (
         <div className="flex h-full flex-1 flex-col gap-4 p-6">
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-                {description && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        {description}
-                    </p>
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        {title}
+                    </h1>
+                    {description && (
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            {description}
+                        </p>
+                    )}
+                </div>
+                {actions && (
+                    <div className="flex shrink-0 items-center gap-2">
+                        {actions}
+                    </div>
                 )}
             </div>
 
