@@ -2088,7 +2088,7 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                     </div>
                                     {totalCents > 0 && (
                                         <p className="text-xs text-gray-500 pt-1">
-                                            Vous serez redirige(e) vers la page de paiement securisee apres soumission.
+                                            Vous serez redirigé(e) vers la page de paiement sécurisée après votre adhésion.
                                         </p>
                                     )}
                                 </div>
@@ -2174,12 +2174,12 @@ export default function AdhesionPage({ membershipFeeCents, prefillData, defaultC
                     <AdhesionForm membershipFeeCents={membershipFeeCents} prefillData={prefillData} defaultCouponCode={defaultCouponCode} />
 
                     <p className="mt-8 text-center text-xs text-gray-400">
-                        Deja soumis un formulaire ?{' '}
+                        Déjà adhérent(e) ?{' '}
                         <Link
                             href="/mes-formulaires"
                             className="font-medium text-sna-teal underline-offset-2 hover:underline"
                         >
-                            Acceder a mes soumissions
+                            Accéder à mes adhésions
                         </Link>
                     </p>
                 </div>

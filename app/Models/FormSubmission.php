@@ -49,6 +49,11 @@ class FormSubmission extends Model
             && $this->token_expires_at->isFuture();
     }
 
+    public function isAdhesion(): bool
+    {
+        return $this->formable_type === AidantAdhesionForm::class;
+    }
+
     public function getSubmitterName(): ?string
     {
         $formable = $this->formable;

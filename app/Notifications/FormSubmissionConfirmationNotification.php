@@ -28,9 +28,10 @@ class FormSubmissionConfirmationNotification extends Notification implements Sho
         $url = route('forms.access.show', ['token' => $this->accessToken]);
 
         $name = $this->submission->getSubmitterName();
+        $isAdhesion = $this->submission->isAdhesion();
         $subject = $name
             ? 'Merci '.$name.' - Accusé de réception SNA'
-            : 'Accusé de réception - Votre soumission SNA';
+            : 'Accusé de réception - Votre '.($isAdhesion ? 'adhésion' : 'soumission').' SNA';
 
         return (new MailMessage)
             ->subject($subject)
@@ -38,6 +39,8 @@ class FormSubmissionConfirmationNotification extends Notification implements Sho
                 'accessUrl' => $url,
                 'submitterName' => $name,
                 'paymentInfo' => $this->getPaymentInfo(),
+                'submissionNoun' => $isAdhesion ? 'adhésion' : 'soumission',
+                'submissionNounPlural' => $isAdhesion ? 'adhésions' : 'soumissions',
             ]);
     }
 

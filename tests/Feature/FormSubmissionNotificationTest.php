@@ -281,4 +281,43 @@ class FormSubmissionNotificationTest extends TestCase
             return ($mail->viewData['paymentInfo'] ?? null) === null;
         });
     }
+
+    public function test_confirmation_email_uses_adhesion_wording_for_adhesion_submissions(): void
+    {
+        $submission = FormSubmission::create([
+            'email' => 'adherent@example.com',
+            'type' => 'adhesion',
+            'formable_type' => 'App\Models\AidantAdhesionForm',
+            'formable_id' => 12,
+            'access_token' => 'token123',
+            'token_expires_at' => now()->addDays(30),
+        ]);
+
+        $mail = (new FormSubmissionConfirmationNotification($submission, 'access-token'))->toMail($submission);
+        $html = (string) $mail->render();
+
+        $this->assertSame('Accusé de réception - Votre adhésion SNA', $mail->subject);
+        $this->assertStringContainsString('Votre adhésion a bien été enregistrée', $html);
+        $this->assertStringContainsString('Merci pour votre adhésion !', $html);
+        $this->assertStringNotContainsString('soumission', $html);
+    }
+
+    public function test_confirmation_email_keeps_submission_wording_for_other_forms(): void
+    {
+        $submission = FormSubmission::create([
+            'email' => 'contact@example.com',
+            'type' => 'contact',
+            'formable_type' => 'App\Models\ContactForm',
+            'formable_id' => 13,
+            'access_token' => 'token123',
+            'token_expires_at' => now()->addDays(30),
+        ]);
+
+        $mail = (new FormSubmissionConfirmationNotification($submission, 'access-token'))->toMail($submission);
+        $html = (string) $mail->render();
+
+        $this->assertSame('Accusé de réception - Votre soumission SNA', $mail->subject);
+        $this->assertStringContainsString('Votre soumission a bien été enregistrée', $html);
+        $this->assertStringNotContainsString('adhésion', $html);
+    }
 }

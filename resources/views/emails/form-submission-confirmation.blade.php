@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accusé de réception - Soumission SNA</title>
+    <title>Accusé de réception - {{ ucfirst($submissionNoun ?? 'soumission') }} SNA</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -109,22 +109,22 @@
         </div>
 
         <div class="content">
-            <h2>{{ isset($submitterName) && $submitterName ? 'Merci '.$submitterName.' !' : 'Votre soumission a bien été enregistrée' }}</h2>
+            <h2>{{ isset($submitterName) && $submitterName ? 'Merci '.$submitterName.' !' : 'Votre '.($submissionNoun ?? 'soumission').' a bien été enregistrée' }}</h2>
 
             <div class="success-box">
-                <strong>✓ {{ isset($submitterName) && $submitterName ? 'Merci '.$submitterName.' pour votre soumission !' : 'Merci pour votre soumission !' }}</strong>
+                <strong>✓ {{ isset($submitterName) && $submitterName ? 'Merci '.$submitterName.' pour votre '.($submissionNoun ?? 'soumission').' !' : 'Merci pour votre '.($submissionNoun ?? 'soumission').' !' }}</strong>
                 <p style="margin: 8px 0 0 0; font-size: 14px;">
                     Votre formulaire a bien été reçu et enregistré sur le site du SNA.
                 </p>
             </div>
 
             <p>
-                Nous avons sauvegardé votre soumission et vous pouvez y accéder à tout moment en utilisant le lien ci-dessous.
+                Nous avons sauvegardé votre {{ $submissionNoun ?? 'soumission' }} et vous pouvez y accéder à tout moment en utilisant le lien ci-dessous.
             </p>
 
             <div class="info-section">
                 <p style="margin-top: 0;">
-                    <strong>👉 Accédez à votre soumission :</strong>
+                    <strong>👉 Accédez à votre {{ $submissionNoun ?? 'soumission' }} :</strong>
                 </p>
                 <p>
                     <a href="{{ $accessUrl }}" class="cta-button">Voir mes formulaires</a>
@@ -132,7 +132,7 @@
                 <p class="text-muted">
                     Ce lien expire dans <span class="highlight">1 heure</span>.
                     <br>
-                    Si vous avez plusieurs soumissions, vous les retrouverez toutes une fois connecté.
+                    Si vous avez plusieurs {{ $submissionNounPlural ?? 'soumissions' }}, vous les retrouverez toutes une fois connecté.
                 </p>
             </div>
 
@@ -152,7 +152,7 @@
             <p>
                 <strong>Questions ou problème ?</strong>
                 <br>
-                Si vous avez besoin d'aide ou si vous n'avez pas effectué cette soumission, vous pouvez
+                Si vous avez besoin d'aide ou si vous n'avez pas effectué cette {{ $submissionNoun ?? 'soumission' }}, vous pouvez
                 <a href="{{ route('forms.access.request') }}" style="color: #0066cc; text-decoration: none;">demander un nouveau lien d'accès</a>
                 ou nous contacter via le formulaire de contact du site.
             </p>
