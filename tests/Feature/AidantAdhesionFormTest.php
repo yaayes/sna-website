@@ -186,6 +186,15 @@ class AidantAdhesionFormTest extends TestCase
         $this->assertDatabaseCount('aidant_adhesion_forms', 0);
     }
 
+    public function test_departement_is_required(): void
+    {
+        $response = $this->post('/formulaire/adhesion', $this->withAidantOverride('departement', ''));
+        $response->assertSessionHasErrors([
+            'aidants.0.departement' => 'Le département de chaque aidant est obligatoire.',
+        ]);
+        $this->assertDatabaseCount('aidant_adhesion_forms', 0);
+    }
+
     public function test_prenom_is_required(): void
     {
         $response = $this->post('/formulaire/adhesion', $this->withAidantOverride('prenom', ''));
@@ -230,6 +239,7 @@ class AidantAdhesionFormTest extends TestCase
                 'nom' => 'Martin',
                 'prenom' => 'Jean',
                 'email' => 'jean@exemple.fr',
+                'departement' => '75',
                 'aidant_type' => 'proche',
             ]],
             'aides' => [[

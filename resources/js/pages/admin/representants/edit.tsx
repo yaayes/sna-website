@@ -225,6 +225,7 @@ export default function RepresentantEditPage({ representant }: { representant: R
                                 value={data.sort_order}
                                 onChange={(e) => setData('sort_order', e.target.value)}
                             />
+                            {errors.sort_order && <p className="text-xs text-red-600">{errors.sort_order}</p>}
                         </div>
 
                         <div className="flex items-center gap-3 pt-6">

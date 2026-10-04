@@ -655,6 +655,11 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                     nextErrors[`aidants.${index}.email`] =
                         "L'adresse e-mail est invalide.";
                 }
+
+                if (!(aidant.departement ?? '').trim()) {
+                    nextErrors[`aidants.${index}.departement`] =
+                        'Le département est obligatoire.';
+                }
             });
         }
 
@@ -1014,7 +1019,7 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                     </div>
                                     <div>
                                         <label className={labelCls}>
-                                            Departement
+                                            Département *
                                         </label>
                                         <input
                                             type="text"
@@ -1029,6 +1034,21 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                             className={inputCls}
                                             placeholder="75"
                                         />
+                                        {(stepErrors[
+                                            `aidants.${index}.departement`
+                                        ] ||
+                                            getError(
+                                                `aidants.${index}.departement`,
+                                            )) && (
+                                            <p className="mt-1 text-xs text-red-600">
+                                                {stepErrors[
+                                                    `aidants.${index}.departement`
+                                                ] ||
+                                                    getError(
+                                                        `aidants.${index}.departement`,
+                                                    )}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -2068,7 +2088,7 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                     </div>
                                     {totalCents > 0 && (
                                         <p className="text-xs text-gray-500 pt-1">
-                                            Vous serez redirige(e) vers la page de paiement securisee apres soumission.
+                                            Vous serez redirigé(e) vers la page de paiement sécurisée après votre adhésion.
                                         </p>
                                     )}
                                 </div>
@@ -2154,12 +2174,12 @@ export default function AdhesionPage({ membershipFeeCents, prefillData, defaultC
                     <AdhesionForm membershipFeeCents={membershipFeeCents} prefillData={prefillData} defaultCouponCode={defaultCouponCode} />
 
                     <p className="mt-8 text-center text-xs text-gray-400">
-                        Deja soumis un formulaire ?{' '}
+                        Déjà adhérent(e) ?{' '}
                         <Link
                             href="/mes-formulaires"
                             className="font-medium text-sna-teal underline-offset-2 hover:underline"
                         >
-                            Acceder a mes soumissions
+                            Accéder à mes adhésions
                         </Link>
                     </p>
                 </div>
