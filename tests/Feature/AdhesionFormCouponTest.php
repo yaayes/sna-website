@@ -23,6 +23,7 @@ class AdhesionFormCouponTest extends TestCase
                     'nom' => 'Dupont',
                     'prenom' => 'Jean',
                     'email' => 'jean.dupont@example.com',
+                    'departement' => '75',
                     'aidant_type' => 'parent_handicap',
                 ],
             ],

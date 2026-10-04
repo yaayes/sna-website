@@ -655,6 +655,11 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                     nextErrors[`aidants.${index}.email`] =
                         "L'adresse e-mail est invalide.";
                 }
+
+                if (!(aidant.departement ?? '').trim()) {
+                    nextErrors[`aidants.${index}.departement`] =
+                        'Le département est obligatoire.';
+                }
             });
         }
 
@@ -1014,7 +1019,7 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                     </div>
                                     <div>
                                         <label className={labelCls}>
-                                            Departement
+                                            Département *
                                         </label>
                                         <input
                                             type="text"
@@ -1029,6 +1034,21 @@ function AdhesionForm({ membershipFeeCents, prefillData, defaultCouponCode }: { 
                                             className={inputCls}
                                             placeholder="75"
                                         />
+                                        {(stepErrors[
+                                            `aidants.${index}.departement`
+                                        ] ||
+                                            getError(
+                                                `aidants.${index}.departement`,
+                                            )) && (
+                                            <p className="mt-1 text-xs text-red-600">
+                                                {stepErrors[
+                                                    `aidants.${index}.departement`
+                                                ] ||
+                                                    getError(
+                                                        `aidants.${index}.departement`,
+                                                    )}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
