@@ -13,8 +13,12 @@
     "ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {},
     "ghcr.io/devcontainers-extra/features/ansible:2": {}
   },
+  // Runs on the host before the container starts: make sure the gh config dir exists so the bind mount below never fails
+  "initializeCommand": "mkdir -p \"${localEnv:HOME}${localEnv:USERPROFILE}/.config/gh\"",
   "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    // Share the host GitHub CLI auth with the container (gh auth login on either side works for both)
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.config/gh,target=/home/sail/.config/gh,type=bind"
   ],
   "customizations": {
     "vscode": {
