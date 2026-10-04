@@ -133,6 +133,90 @@ class AdminRepresentantManagementTest extends TestCase
         $response->assertSessionHasErrors(['department_code', 'department_name', 'first_name', 'last_name', 'role', 'short_bio']);
     }
 
+    public function test_store_accepts_sort_order_with_leading_zero(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/@/representants', [
+            'department_code' => '07',
+            'department_name' => 'Ardèche',
+            'first_name' => 'Margaux',
+            'last_name' => 'MENEYROL',
+            'role' => 'Représentante départementale',
+            'short_bio' => 'Experte en politiques publiques.',
+            'sort_order' => '07',
+            'is_active' => true,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/@/representants');
+
+        $this->assertDatabaseHas('representants', [
+            'last_name' => 'MENEYROL',
+            'department_code' => '07',
+            'sort_order' => 7,
+        ]);
+    }
+
+    public function test_update_accepts_sort_order_with_leading_zero(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $representant = Representant::factory()->create();
+
+        $response = $this->actingAs($admin)->put('/@/representants/'.$representant->id, [
+            'department_code' => $representant->department_code,
+            'department_name' => $representant->department_name,
+            'first_name' => $representant->first_name,
+            'last_name' => $representant->last_name,
+            'role' => $representant->role,
+            'short_bio' => $representant->short_bio,
+            'sort_order' => '012',
+            'is_active' => true,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertSame(12, $representant->fresh()->sort_order);
+    }
+
+    public function test_store_validation_rejects_invalid_sort_order_with_french_message(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/@/representants', [
+            'department_code' => '75',
+            'department_name' => 'Paris',
+            'first_name' => 'Margaux',
+            'last_name' => 'MENEYROL',
+            'role' => 'Représentante départementale',
+            'short_bio' => 'Experte en politiques publiques.',
+            'sort_order' => '7a',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'sort_order' => "L'ordre d'affichage doit être un nombre entier.",
+        ]);
+        $this->assertDatabaseCount('representants', 0);
+    }
+
+    public function test_store_validation_falls_back_to_french_default_messages(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/@/representants', [
+            'department_code' => str_repeat('9', 11),
+            'department_name' => 'Paris',
+            'first_name' => 'Margaux',
+            'last_name' => 'MENEYROL',
+            'role' => 'Représentante départementale',
+            'short_bio' => 'Experte en politiques publiques.',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'department_code' => 'Le champ code département ne doit pas dépasser 10 caractères.',
+        ]);
+    }
+
     public function test_admin_can_store_representant_with_photo(): void
     {
         Storage::fake('public');

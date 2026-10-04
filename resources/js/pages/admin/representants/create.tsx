@@ -211,6 +211,7 @@ export default function RepresentantCreatePage() {
                                 onChange={(e) => setData('sort_order', e.target.value)}
                                 placeholder="Ex: 1"
                             />
+                            {errors.sort_order && <p className="text-xs text-red-600">{errors.sort_order}</p>}
                         </div>
 
                         <div className="flex items-center gap-3 pt-6">
