@@ -27,6 +27,16 @@ class HomePageTest extends TestCase
         $response->assertInertia(fn ($page) => $page->component('welcome'));
     }
 
+    public function test_home_page_structured_data_uses_gmail_contact_email(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('welcome')
+            ->where('seo.jsonld.contactPoint.email', 'syndicatnationaldesaidants@gmail.com')
+        );
+    }
+
     public function test_a_propos_nous_page_returns_ok(): void
     {
         $response = $this->get('/a-propos-nous');

@@ -223,10 +223,10 @@ export default function RejoindreePage() {
                                     Contact
                                 </h4>
                                 <a
-                                    href="mailto:contact@syndicat-national-aidants.fr"
+                                    href="mailto:syndicatnationaldesaidants@gmail.com"
                                     className="block text-sm text-gray-400 transition-colors hover:text-sna-teal"
                                 >
-                                    contact@syndicat-national-aidants.fr
+                                    syndicatnationaldesaidants@gmail.com
                                 </a>
                                 <a
                                     href="/#contact"

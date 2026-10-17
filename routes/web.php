@@ -41,7 +41,7 @@ Route::get('/', fn () => inertia('welcome', [
             'contactPoint' => [
                 '@type' => 'ContactPoint',
                 'contactType' => 'customer service',
-                'email' => 'contact@syndicat-national-aidants.fr',
+                'email' => 'syndicatnationaldesaidants@gmail.com',
             ],
         ],
     ],
