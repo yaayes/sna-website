@@ -26,10 +26,10 @@ jobs:
 
       - name: Composer update (security packages)
         run: |
-          composer update laravel/framework league/commonmark phpoffice/phpspreadsheet "symfony/*" \
+          composer update laravel/framework league/commonmark phpoffice/phpspreadsheet "symfony/*" mtdowling/jmespath.php aws/aws-sdk-php \
             --with-all-dependencies --no-interaction --no-scripts
-          composer audit --locked || true
-          composer show laravel/framework league/commonmark phpoffice/phpspreadsheet symfony/http-foundation symfony/http-kernel | grep -E '^(name|versions)'
+          composer show --locked | grep -E '^(laravel/framework|league/commonmark|phpoffice/phpspreadsheet|symfony/http-foundation|symfony/http-kernel|mtdowling/jmespath.php|aws/aws-sdk-php) '
+          composer audit --locked
 
       - name: Commit composer.lock and remove this workflow
         run: |
