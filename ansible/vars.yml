@@ -24,3 +24,40 @@ redis_maxmemory_policy: 'allkeys-lru'
 
 # PHP-FPM socket
 php_fpm_socket: '/var/run/php/php{{ php_version }}-fpm.sock'
+
+# PHP extensions (installed as php{{ php_version }}-<name>)
+php_extensions:
+  - fpm
+  - cli
+  - pgsql
+  - mbstring
+  - xml
+  - curl
+  - zip
+  - bcmath
+  - intl
+  - redis
+  - gd
+  - tokenizer
+  - opcache
+
+# Nginx
+# Set to false as a temporary mitigation for CVE-2026-123007 / CVE-2026-123633
+# if the nginx repo has not shipped 1.30.7 / 1.31.9 yet.
+nginx_http2_enabled: true
+
+# ─── Security patching (roles/server/tasks/security.yml, tag: security) ──────
+security_min_php_version: '8.4.28'
+security_enforce_min_versions: false # true = fail the play if PHP/Nginx are still unpatched
+security_upgrade_postgresql: true # minor upgrades only; restarts PostgreSQL (a few seconds of downtime)
+security_full_safe_upgrade: true # also run `apt upgrade` (safe) for everything else
+security_extra_packages:
+  - openssl
+  - libssl3
+  - openssh-server
+  - sudo
+  - nodejs
+  - supervisor
+security_unattended_upgrades: true
+security_unattended_blacklist: [] # e.g. ['postgresql-'] to keep DB upgrades manual
+security_automatic_reboot: false
