@@ -1,0 +1,145 @@
+---
+# ─── Security patching ───────────────────────────────────────────────────────
+# Run on its own (no full re-provision):
+#   ansible-playbook playbook.yml -e target=staging --tags security
+#   ansible-playbook playbook.yml -e target=prod    --tags security
+#
+# Context (Nov 2026):
+#   - PHP 8.4.28 (19 Nov 2026) fixes 17 CVEs incl. CVE-2026-129289 (FPM request
+#     smuggling), CVE-2026-115560 / CVE-2026-126714 (session RCE), CVE-2026-129496.
+#   - nginx 1.30.7 stable / 1.31.9 mainline (18 Nov 2026) fix 10 CVEs incl.
+#     CVE-2026-123007 / CVE-2026-123633 (HTTP/2 memory corruption / UAF).
+#   - Redis RESTORE / Lua UAF CVEs (CVE-2026-25243, CVE-2026-23631, …) — fixed in
+#     distro security updates.
+# The base tasks install packages with `state: present`, which never upgrades an
+# already-provisioned server. This file upgrades them to `latest`.
+
+- name: Refresh apt cache (forced, ignores cache_valid_time)
+  apt:
+    update_cache: true
+
+- name: Upgrade PHP {{ php_version }} packages to latest
+  apt:
+    name: "{{ ['php' ~ php_version] + (php_extensions | map('regex_replace', '^', 'php' ~ php_version ~ '-') | list) }}"
+    state: latest
+    only_upgrade: true
+  notify: Restart PHP-FPM
+
+- name: Upgrade Nginx to latest
+  apt:
+    name:
+      - nginx
+      - 'nginx-common'
+    state: latest
+    only_upgrade: true
+  notify: Restart Nginx
+
+- name: Upgrade Redis to latest
+  apt:
+    name: redis-server
+    state: latest
+    only_upgrade: true
+  notify: Restart Redis
+
+- name: Upgrade PostgreSQL {{ postgresql_version }} to latest
+  apt:
+    name:
+      - 'postgresql-{{ postgresql_version }}'
+      - 'postgresql-client-{{ postgresql_version }}'
+    state: latest
+    only_upgrade: true
+  notify: Restart PostgreSQL
+  when: security_upgrade_postgresql | bool
+
+- name: Upgrade system security-relevant packages (OpenSSL, OpenSSH, sudo, Node.js…)
+  apt:
+    name: '{{ security_extra_packages }}'
+    state: latest
+    only_upgrade: true
+
+- name: Apply all remaining pending upgrades (safe mode, no removals)
+  apt:
+    upgrade: safe
+  when: security_full_safe_upgrade | bool
+
+# ─── Unattended security upgrades (incl. third-party repos) ─────────────────
+- name: Install unattended-upgrades
+  apt:
+    name:
+      - unattended-upgrades
+      - apt-listchanges
+    state: present
+  when: security_unattended_upgrades | bool
+
+- name: Configure unattended-upgrades origins (distro security + PHP/Nginx/PG/Node repos)
+  copy:
+    dest: /etc/apt/apt.conf.d/52sna-unattended-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      // Managed by Ansible (roles/server/tasks/security.yml)
+      Unattended-Upgrade::Origins-Pattern {
+          "origin=${distro_id},archive=${distro_codename}-security";
+          "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+          "site=ppa.launchpadcontent.net";
+          "site=packages.sury.org";
+          "site=apt.postgresql.org";
+          "site=deb.nodesource.com";
+      };
+      Unattended-Upgrade::Package-Blacklist {
+      {% for pkg in security_unattended_blacklist %}
+          "{{ pkg }}";
+      {% endfor %}
+      };
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Automatic-Reboot "{{ security_automatic_reboot | ternary('true', 'false') }}";
+      Unattended-Upgrade::Automatic-Reboot-Time "04:00";
+  when: security_unattended_upgrades | bool
+
+- name: Enable periodic apt updates + unattended upgrades
+  copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      APT::Periodic::AutocleanInterval "7";
+  when: security_unattended_upgrades | bool
+
+# ─── Verify patched versions ────────────────────────────────────────────────
+- name: Gather installed package versions
+  package_facts:
+    manager: apt
+
+- name: Evaluate PHP / Nginx versions against minimum patched releases
+  set_fact:
+    _php_pkg_version: "{{ ansible_facts.packages['php' ~ php_version ~ '-fpm'][0].version | default('0') }}"
+    _nginx_pkg_version: "{{ ansible_facts.packages['nginx'][0].version | default('0') }}"
+
+- name: Evaluate patch status
+  set_fact:
+    _php_patched: "{{ _php_pkg_version is version(security_min_php_version, '>=') }}"
+    # Stable 1.30.x needs >= 1.30.7; mainline 1.31.x needs >= 1.31.9 (1.31.0–1.31.8 are vulnerable)
+    _nginx_patched: >-
+      {{ (_nginx_pkg_version is version('1.30.7', '>=')
+          and _nginx_pkg_version is version('1.31.0', '<'))
+         or _nginx_pkg_version is version('1.31.9', '>=') }}
+
+- name: Report patch status
+  debug:
+    msg:
+      - "PHP {{ _php_pkg_version }} → {{ 'OK' if _php_patched | bool else 'STILL VULNERABLE (need >= ' ~ security_min_php_version ~ ')' }}"
+      - "Nginx {{ _nginx_pkg_version }} → {{ 'OK' if _nginx_patched | bool else 'STILL VULNERABLE (need 1.30.7+ stable or 1.31.9+ mainline) — set nginx_http2_enabled: false until the repo ships it' }}"
+
+- name: Fail if required patches are not installed
+  fail:
+    msg: >-
+      Patched packages not available yet from the configured repositories
+      (PHP {{ _php_pkg_version }}, Nginx {{ _nginx_pkg_version }}).
+      Apply mitigations (nginx_http2_enabled: false) and re-run later.
+  when:
+    - security_enforce_min_versions | bool
+    - not (_php_patched | bool) or not (_nginx_patched | bool)

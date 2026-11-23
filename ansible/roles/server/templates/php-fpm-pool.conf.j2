@@ -19,6 +19,8 @@ slowlog = /var/log/php{{ php_version }}-fpm-slow.log
 
 php_admin_value[error_log] = /var/log/php{{ php_version }}-fpm-{{ app_user }}.log
 php_admin_flag[log_errors] = on
+; Hardening — CVE-2026-115560 / CVE-2026-126714 mitigation (session upload progress)
+php_admin_flag[session.upload_progress.enabled] = off
 php_value[session.save_handler] = files
 php_value[session.save_path] = /var/lib/php/sessions
 php_value[upload_max_filesize] = 10M

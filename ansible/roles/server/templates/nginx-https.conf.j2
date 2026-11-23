@@ -6,7 +6,7 @@ server {
 }
 
 server {
-    http2 on;
+    http2 {{ 'on' if nginx_http2_enabled | default(true) | bool else 'off' }};
     listen 443 ssl;
     listen [::]:443 ssl;
     server_name {{ app_domain }};
@@ -49,6 +49,9 @@ server {
     location ~ \.php$ {
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass unix:{{ php_fpm_socket }};
+        # Never reuse FastCGI connections: required to stay safe from
+        # PHP-FPM request smuggling (CVE-2026-129289) on unpatched PHP.
+        fastcgi_keep_conn off;
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;

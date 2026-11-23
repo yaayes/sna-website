@@ -4,6 +4,16 @@
     name: 'php{{ php_version }}-fpm'
     state: restarted
 
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: Restart PostgreSQL
+  systemd:
+    name: postgresql
+    state: restarted
+
 - name: Reload Nginx
   systemd:
     name: nginx
